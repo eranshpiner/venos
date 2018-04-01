@@ -82,9 +82,29 @@ function handleMessage(sender_psid, received_message) {
     //check if message is a quick reply
     if (received_message.quick_reply) {
         //we understand this is a response to one of out quick replies
+        // response = {
+            // "text": `You sent the message: "${received_message.text}", with payload ${received_message.quick_reply.payload}`
+        //   }
         response = {
-            "text": `You sent the message: "${received_message.text}", with payload ${received_message.quick_reply.payload}`
-          }
+            "attachment":{
+              "type":"template",
+              "payload":{
+                "template_type":"generic",
+                "elements":[
+                   {
+                    "title":"Welcome!",
+                    "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/15220161427141.jpg",
+                    "subtitle":"We have the right hat for everyone."  
+                  },
+                  {
+                    "title":"Welcome2!",
+                    "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/15220161427141.jpg",
+                    "subtitle":"We have the right hat for everyone."  
+                  }
+                ]
+              }
+            }
+          };
     } else
     // Check if the message contains text
     if (received_message.text) {    

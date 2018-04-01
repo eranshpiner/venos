@@ -1,3 +1,3 @@
 # venos
 
-The Venos project
+The Venos Project

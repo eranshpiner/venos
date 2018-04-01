@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Order",
+    "description": "An order for a restaurant",
+    "type": "object",   
+    "additionalProperties": false,
+    "required": [
+        "restaurantId","orderInfo"
+    ],
+	"properties": {
+        "restaurantId": {
+            "type": "string"
+        },
+	    "orderInfo": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "orderType","firstName","lastName","menuItems"
+            ],
+            "properties": {
+                "orderType": {
+                    "type": "integer"
+                },   
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "menuItems": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "required": [
+                            "itemId","itemName","quantity"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "itemId": {
+                                "type": "integer"
+                            },
+                            "itemName": {
+                                "type": "string"
+                            },
+                            "quantity": {
+                                "type": "integer"
+                            }
+                        }    
+                    }
+                }
+            }
+        }
+    }  
+}

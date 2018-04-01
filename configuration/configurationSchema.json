@@ -1,0 +1,20 @@
+{
+"general" : {
+  "name": "the client name",
+  "address": "the client address"
+},
+  "menu": {
+  
+  },
+  "providers" : {
+    "fb": {
+    },
+    "google": {
+    }
+  },
+  "payment": {
+    
+  },
+  
+  
+}

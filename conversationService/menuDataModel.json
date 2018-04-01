@@ -1,0 +1,36 @@
+{
+    "type": "menu",
+    "categories": {
+        "uniqueCategoryId1": {
+            "type": "categoryItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "שם קטגוריה"
+            },
+            "picture":"the item picture",
+            "external": {
+                "id": "external item id on customer"
+            },
+            "items": [
+                "id1", "id2", "id3"
+            ]
+        }
+    },
+    "items": {
+       "uniqueItemId1": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "שם הפריט"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 36}
+            },
+            "picture":"the item picture",
+            "external": {
+                "id": "external item id on customer - might be used for actual order to billing"
+            }
+        }
+    }
+}

@@ -1,0 +1,155 @@
+{
+    "type": "menu",
+    "categories": {
+        "01": {
+            "type": "categoryItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "מנות ראשונות"
+            },
+            "picture":null,
+            "external": {
+                "id": "cat1"
+            },
+            "items": [
+                "11", "12", "13", "14"
+            ]
+        },
+        "02": {
+            "type": "categoryItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "פתיחים"
+            },
+            "picture":null,
+            "external": {
+                "id": "cat2"
+            },
+            "items": [
+                "21", "22", "23", "24"
+            ]
+        }
+    },
+    "items": {
+       "11": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "גיוזה עוף"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 35}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext1"
+            }
+        },
+        "12": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "טופו אגדאשי / סםייסי"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 31}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext2"
+            }
+        },
+        "13": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "טמפורה ירקות"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 29}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext3"
+            }
+        },
+        "14": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "כנפיים קריספיות"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 29}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext4"
+            }
+        },
+        "21": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "אדממה"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 16}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext5"
+            }
+        },
+        "22": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "סלמון סקין קריספי"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 16}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext6"
+            }
+        },
+        "23": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "חמוצים יפניים"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 18}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext6"
+            }
+        },
+        "24": {
+            "type": "menuItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "קימצ'י חריף"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 19}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext7"
+            }
+        }
+    }
+}

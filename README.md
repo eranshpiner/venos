@@ -1,5 +1,5 @@
 # venos
 
-The Venos Project Repository
+Venos Project Repository
 ## Components
   

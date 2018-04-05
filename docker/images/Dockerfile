@@ -1,5 +1,7 @@
 
-# container image includes Node.JS 8 as a S2I base image for Node.JS 8 applications
+# venos/nodejs8-centos7:latest
+# a base image for all Venos nodejs images. 
+# it is built on centos7 and setup with nodejs 8
 FROM centos:centos7
 
 # installing the NodeSource Node.js 8.x repo...

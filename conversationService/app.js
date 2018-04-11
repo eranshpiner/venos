@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const app = express().use(bodyParser.json());
 
 const fb = require('./providers/fb');
-
+console.log("WTF");
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });

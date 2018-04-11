@@ -19,20 +19,24 @@ function handleIncomingMessage(req, res) {
   
         // Gets the message. entry.messaging is an array, but 
         // will only ever contain one message, so we get index 0
-        let webhook_event = entry.messaging[0];
-        console.log(webhook_event);
-
-        // Get the sender PSID
-        let sender_psid = webhook_event.sender.id;
-        console.log('Sender PSID: ' + sender_psid);
-
-        // Check if the event is a message or postback and
-          // pass the event to the appropriate handler function
-          if (webhook_event.message) {
-            handleMessage(sender_psid, webhook_event.message);        
-          } else if (webhook_event.postback) {
-            handlePostback(sender_psid, webhook_event.postback);
-          }
+        if (entry.messaging) {
+            let webhook_event = entry.messaging[0];
+            console.log(webhook_event);
+    
+            // Get the sender PSID
+            let sender_psid = webhook_event.sender.id;
+            console.log('Sender PSID: ' + sender_psid);
+    
+            // Check if the event is a message or postback and
+              // pass the event to the appropriate handler function
+              if (webhook_event.message) {
+                handleMessage(sender_psid, webhook_event.message);        
+              } else if (webhook_event.postback) {
+                handlePostback(sender_psid, webhook_event.postback);
+              }
+        } else {
+            console.log('!!! no messaging attribute on entry');
+        }
 
       });
   
@@ -85,22 +89,57 @@ function handleMessage(sender_psid, received_message) {
         // response = {
             // "text": `You sent the message: "${received_message.text}", with payload ${received_message.quick_reply.payload}`
         //   }
+
         response = {
             "attachment":{
               "type":"template",
               "payload":{
                 "template_type":"generic",
                 "elements":[
-                   {
-                    "title":"Welcome!",
-                    "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/15220161427141.jpg",
-                    "subtitle":"We have the right hat for everyone."  
-                  },
-                  {
-                    "title":"Welcome2!",
-                    "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/15220161427141.jpg",
-                    "subtitle":"We have the right hat for everyone."  
-                  }
+                    {
+                        "title":"Tofu Agadeshi",
+                        "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/152201641732326.jpg",
+                        "subtitle":"Tofu cubes wrapped in cornflour, lightly fried in Agadashi sauce, green onion, radish and crushed ginger and seaweed",
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "title":"Add",
+                                "payload":"{\"item\":\"12\"}"
+                            }
+                        ]
+                    },
+                    {
+                        "title":"Vegetable Tempura",
+                        "image_url":"https://www.mishloha.co.il/files/menu_food_pic/152201641153896.jpg",
+                        "subtitle":"Zucchini, carrots, eggplant, peppers, mushrooms and sweet potato fried in Tempura.",
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "title":"Add",
+                                "payload":"some text to catch"
+                            }
+                        ]
+                    },
+                    {
+                        "title":"Tempura Mixed",
+                        "image_url":"https://www.mishloha.co.il/files/menu_food_pic/152201641842434.jpg",
+                        "subtitle":"Vegetables and fish (salmon, bream and cebas) fried in Tempura"
+                    },
+                    {
+                        "title":"Japanese Crisp Wings",
+                        "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/152201642734035.jpg",
+                        "subtitle":"Crispy wings accompanied by sweet chili sauce."
+                    },
+                    {
+                        "title":"Tofu Agadeshiי",
+                        "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/152201642734035.jpg",
+                        "subtitle":"Crispy wings accompanied by sweet chili sauce."
+                    },
+                    {
+                        "title":"Seared Tuna",
+                        "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/152201642255703.jpg",
+                        "subtitle":"Fine red tuna on the inside, burnt from the outside, served with a soba noodle salad."
+                    }
                 ]
               }
             }
@@ -153,50 +192,58 @@ function handleMessage(sender_psid, received_message) {
                 //"image_url":"http://example.com/img/red.png"
               },
               {
-                "content_type":"text",
-                "title":"Noodles",
-                "payload":"7"//,
-                //"image_url":"http://example.com/img/red.png"
-              },
-              {
-                "content_type":"text",
-                "title":"Rice",
-                "payload":"8"//,
-                //"image_url":"http://example.com/img/red.png"
-              }
-            ]
-          };
-    } else if (received_message.attachments) {
-    
-      // Gets the URL of the message attachment
-      let attachment_url = received_message.attachments[0].payload.url;
-      console.log(`Got attachment with url: "${attachment_url}"`);
-      response = {
-        "attachment": {
-          "type": "template",
-          "payload": {
-            "template_type": "generic",
-            "elements": [{
-              "title": "Is this the right picture?",
-              "subtitle": "Tap a button to answer.",
-              "image_url": attachment_url,
-              "buttons": [
-                {
-                  "type": "postback",
-                  "title": "Yes!",
-                  "payload": "yes",
+                    "content_type":"text",
+                    "title":"Noodles",
+                    "payload":"7"//,
+                    //"image_url":"http://example.com/img/red.png"
                 },
                 {
-                  "type": "postback",
-                  "title": "No!",
-                  "payload": "no",
+                    "content_type":"text",
+                    "title":"Sushi",
+                    "payload":"8"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Rice",
+                    "payload":"9"//,
+                    //"image_url":"http://example.com/img/red.png"
                 }
-              ],
-            }]
-          }
-        }
-      }
-    }  
+            ]
+        };
+    } 
+//
+// else if (received_message.attachments) {
+//
+//        // Gets the URL of the message attachment
+//      let attachment_url = received_message.attachments[0].payload.url;
+//      console.log(`Got attachment with url: "${attachment_url}"`);
+//      response = {
+//        "attachment": {
+//          "type": "template",
+//          "payload": {
+//            "template_type": "generic",
+//            "elements": [{
+//              "title": "Is this the right picture?",
+//              "subtitle": "Tap a button to answer.",
+//              "image_url": attachment_url,
+//              "buttons": [
+//                {
+//                  "type": "postback",
+//                  "title": "Yes!",
+//                  "payload": "yes",
+//                },
+//                {
+//                  "type": "postback",
+//                  "title": "No!",
+//                  "payload": "no",
+//                }
+//              ],
+//            }]
+//          }
+//        }
+//      }
+//    }
   
     // Sends the response message
     callSendAPI(sender_psid, response);    
@@ -204,6 +251,74 @@ function handleMessage(sender_psid, received_message) {
   
   function handlePostback(sender_psid, received_postback) {
     let response;
+
+    
+
+        // Create the payload for a basic text message
+        //   response = {
+        //     "text": `You sent the message: "${received_message.text}". Now send me an image!`
+        //   }
+        response =  {
+            "text": "Anything else?",
+            "quick_replies":[
+                {
+                    "content_type":"text",
+                    "title":"First Course",
+                    "payload":"1"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Starters",
+                    "payload":"2"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Sashimi Dishes",
+                    "payload":"3"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Salads",
+                    "payload":"4"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Skewers",
+                    "payload":"5"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Soups",
+                    "payload":"6"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Noodles",
+                    "payload":"7"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Sushi",
+                    "payload":"8"//,
+                    //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Rice",
+                    "payload":"9"//,
+                    //"image_url":"http://example.com/img/red.png"
+                }
+            ]
+        };
+
+    
     
     // Get the payload for the postback
     let payload = received_postback.payload;

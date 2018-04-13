@@ -1,28 +1,20 @@
 const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
-const Validator = require('jsonschema').Validator;
+const validator = require('./util/validator.js');
+const beecommTransformer = require('./transformer/beecomm.js');
 
 const app = express();
-
-var orderJsonSchema = {};
-fs.readFile(__dirname + '/schema/order.json', 'utf8', function (err, data) {
-    if (err) {
-      console.log(err)
-      return;
-    }
-    orderJsonSchema = JSON.parse(data); 
-});
 
 // Middleware
 app.use(bodyParser.json());
 
 app.post('/pushOrder', (req, res) => {
-    let v = new Validator();
-    let result = v.validate(req.body, orderJsonSchema);
+    let valid = validator.validateOrder(req.body);
     console.log(req.body); 
-    console.log(result.valid);
-    if (result.valid) {
+    console.log(valid);
+    if (valid) {
+        beecommTransformer.transfromOrder(req.body);
         res.status(201);
         res.send("Order Accepted");
     } else {

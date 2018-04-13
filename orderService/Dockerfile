@@ -1,6 +1,6 @@
 
 # container image includes Node.JS 8 over centos7
-FROM venos/nodejs8-centos7:latest
+FROM eranshpiner/venos:1.0.0
 
 # set env variables
 ENV base_dir /usr/src/venos

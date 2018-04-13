@@ -1,0 +1,179 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Beecomm Order",
+    "description": "The order json for the Beecomm POS provider",
+    "type": "object",   
+    "additionalProperties": false,
+    "required": [
+        "branchId","orderInfo"
+    ],
+	"properties": {
+        "branchId": {
+            "type": "string"
+        },
+	    "orderInfo": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "orderType","firstName","lastName","phone","remarks","discountSum",
+                "outerCompId","outerCompOrderId","items","payments","deliveryInfo",
+                "dinners","arrivalTime","email"
+            ],
+            "properties": {
+                "orderType": {
+                    "type": "integer"
+                },   
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "remarks": {
+                    "type": "string"
+                },
+                "discountSum": {
+                    "type": "string"
+                },
+                "outerCompId": {
+                    "type": "integer"
+                },
+                "outerCompOrderId": {
+                    "type": "string"
+                },
+                "dinners": {
+                    "type": "integer"
+                },
+                "arrivalTime": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },                                                                                                                
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "required": [
+                            "netId","itemName","quantity","price",
+                            "unitPrice","remarks","belongTo","billRemarks",
+                            "subItems","toppings"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "netId": {
+                                "type": "integer"
+                            },
+                            "itemName": {
+                                "type": "string"
+                            },
+                            "quantity": {
+                                "type": "integer"
+                            },
+                            "price": {
+                                "type": "number"
+                            },
+                            "unitPrice": {
+                                "type": "number"
+                            },
+                            "remarks": {
+                                "type": "string"
+                            },
+                            "belongTo": {
+                                "type": "string"
+                            },
+                            "billRemarks": {
+                                "type": "string"
+                            }, 
+                            "subItems": {
+                                "type": "array"
+                            }, 
+                            "toppings": {
+                                "type": "array"
+                            }                                                                                                                                                                                                   
+                        }    
+                    }
+                },
+                "payments": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "required": [
+                            "paymentType","paymentSum","paymentName","creditCard",
+                            "creditCardTokef","creditCardCvv","creditCardHolderID",
+                            "paymentRemark"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "paymentType": {
+                                "type": "integer"
+                            },
+                            "paymentSum": {
+                                "type": "number"
+                            },
+                            "paymentName": {
+                                "type": "string"
+                            },
+                            "creditCard": {
+                                "type": "string"
+                            },
+                            "creditCardTokef": {
+                                "type": "string"
+                            },
+                            "creditCardCvv": {
+                                "type": "string"
+                            },
+                            "creditCardHolderID": {
+                                "type": "string"
+                            },
+                            "paymentRemark": {
+                                "type": "string"
+                            }                                                                                                                                                                                                   
+                        }    
+                    }
+                },
+                "deliveryInfo": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "deliveryCost","deliveryRemarks","city","street",
+                        "homeNum","apartment","floor","companyName"
+                    ],                    
+                    "properties": {                        
+                        "deliveryCost": {
+                            "type": "number"
+                        },
+                        "deliveryRemarks": {
+                            "type": "string"
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "street": {
+                            "type": "string"
+                        },
+                        "homeNum": {
+                            "type": "string"
+                        },
+                        "apartment": {
+                            "type": "string"
+                        },
+                        "floor": {
+                            "type": "string"
+                        },
+                        "companyName": {
+                            "type": "string"
+                        }                                                                                                                                                                                                   
+                    }
+                }                                
+            }
+        }
+    }  
+}

@@ -103,7 +103,7 @@
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "minItems": 1,
+                        "minItems": 0,
                         "uniqueItems": true,
                         "required": [
                             "paymentType","paymentSum","paymentName","creditCard",

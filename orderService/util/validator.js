@@ -3,7 +3,7 @@ const fs = require('fs');
 const Validator = require('jsonschema').Validator;
 
 var orderJsonSchema = {};
-fs.readFile(__dirname + '/../schema/venos/order.json', 'utf8', function (err, data) {
+fs.readFile(__dirname + '/../schema/order.json', 'utf8', function (err, data) {
     if (err) {
       console.log(err)
       return;
@@ -11,10 +11,17 @@ fs.readFile(__dirname + '/../schema/venos/order.json', 'utf8', function (err, da
     orderJsonSchema = JSON.parse(data); 
 });
 
-function validateOrder(source) {
+function validateInternalOrder(order) {
     let validator = new Validator();
-    let result = validator.validate(source, orderJsonSchema);
+    let result = validator.validate(order, orderJsonSchema);
     return result.valid;
 }
 
-exports.validateOrder = validateOrder;
+function validateExternalOrder(order, schema) {
+    let validator = new Validator();
+    let result = validator.validate(order, schema);
+    return result.valid;
+}
+
+exports.validateInternalOrder = validateInternalOrder;
+exports.validateExternalOrder = validateExternalOrder;

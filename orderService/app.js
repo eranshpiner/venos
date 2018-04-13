@@ -1,8 +1,9 @@
+
 const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const validator = require('./util/validator.js');
-const beecommTransformer = require('./transformer/beecomm.js');
+const beecomm = require('./providers/beecomm/beecomm.js');
 
 const app = express();
 
@@ -10,11 +11,9 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post('/pushOrder', (req, res) => {
-    let valid = validator.validateOrder(req.body);
-    console.log(req.body); 
-    console.log(valid);
+    let valid = validator.validateInternalOrder(req.body);    
     if (valid) {
-        beecommTransformer.transfromOrder(req.body);
+        beecomm.transfromOrder(req.body);
         res.status(201);
         res.send("Order Accepted");
     } else {

@@ -15,7 +15,8 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
-                "orderType","firstName","lastName","menuItems"
+                "orderType","firstName","lastName","phone",
+                "remarks","dinners","email","menuItems"
             ],
             "properties": {
                 "orderType": {
@@ -27,6 +28,18 @@
                 "lastName": {
                     "type": "string"
                 },
+                "phone": {
+                    "type": "string"
+                }, 
+                "remarks": {
+                    "type": "string"
+                }, 
+                "dinners": {
+                    "type": "integer"
+                },  
+                "email": {
+                    "type": "string"
+                },                                                            
                 "menuItems": {
                     "type": "array",
                     "items": {

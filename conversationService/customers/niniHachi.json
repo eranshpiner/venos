@@ -1,36 +1,36 @@
 {
     "type": "menu",
-    "categories": {
+    "items": {
         "01": {
-            "type": "categoryItem",
+            "type": "category",
             "title": {
                 "en_US": "the item title",
                 "he_IL": "מנות ראשונות"
             },
             "picture":null,
             "external": {
-                "id": "cat1"
+                "id": "ext11"
             },
             "items": [
                 "11", "12", "13", "14"
-            ]
+            ],
+            "topLevel": true
         },
         "02": {
-            "type": "categoryItem",
+            "type": "category",
             "title": {
                 "en_US": "the item title",
                 "he_IL": "פתיחים"
             },
             "picture":null,
             "external": {
-                "id": "cat2"
+                "id": "ext22"
             },
             "items": [
                 "21", "22", "23", "24"
-            ]
-        }
-    },
-    "items": {
+            ],
+            "topLevel": true
+        },
        "11": {
             "type": "menuItem",
             "title": {
@@ -133,7 +133,7 @@
             },
             "picture":null,
             "external": {
-                "id": "ext6"
+                "id": "ext7"
             }
         },
         "24": {
@@ -148,7 +148,22 @@
             },
             "picture":null,
             "external": {
-                "id": "ext7"
+                "id": "ext8"
+            }
+        },
+        "111": {
+            "type": "menuSubItem",
+            "title": {
+                "en_US": "the item title",
+                "he_IL": "סויה"
+            },
+            "price": {
+                "en_US":{"unit":"usd", "value": 10},
+                "he_IL":{"unit":"ils", "value": 19}
+            },
+            "picture":null,
+            "external": {
+                "id": "ext111"
             }
         }
     }

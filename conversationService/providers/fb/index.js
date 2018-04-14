@@ -7,6 +7,8 @@ const niniHachi = require('./../../customers/niniHachi');
 const PAGE_ACCESS_TOKEN = "EAAXSuZCK0EJ0BAIuEnKSdaAnJtYwuwOCwcTohT1ZAEgktEeTHM9pRMifJwLRMJJZBsUdZBWOAe4AYgJDPM3MDZAsdSYGOR1VpZBJbHXNZB1UaKpzFDHPEdS3q134ss6IkMRKvugRF901yQqpJX4zkm1ZCSvZBTZC7CjESy8r2V9xQKkZCghEzZCDsMpv";
 
 function handleIncomingMessage(req, res) {
+
+    const dataModel = marshal(req);
     //This method is intended to handle all apsects of FB incoming message via webhook.
     //Following that it should transform the message to the internal data model and call the application processing
     let body = req.body;
@@ -82,6 +84,16 @@ function handleVerificationRequest(req, res) {
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
     let response;
+
+    //check if psid has an active session
+    
+    //check if the session has active orders
+
+    //yes - continue order
+    //no - 1. recognize language
+    //     2. greeting 
+
+    //handle the behavior
   
     //check if message is a quick reply
     if (received_message.quick_reply) {
@@ -358,6 +370,15 @@ function handleMessage(sender_psid, received_message) {
     }); 
   
   }
+
+  function getItems(clickedItem) {
+      //orderManager -> getMenu -> getItem - the clicked one -> getItems
+}
+
+function marshal(req) {
+  //handle happy flow
+  
+}
 
 exports.handleIncomingMessage = handleIncomingMessage;
 exports.handleOutgoingMessage = handleOutgoingMessage;

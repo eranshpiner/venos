@@ -1,0 +1,27 @@
+SessionManager
+    sessions:{
+
+    }
+    getSession
+    setSession
+    removeSession
+OrderManager
+    orders:{
+        orderId: orderInstance
+        },
+    getOrder
+    removeOrder
+    createOrder
+    }
+Order
+    menuItems:[
+        {
+            itemId: "id"
+            quantity: 2
+        }
+    ]
+        addItem
+        removeItem
+        calculateTotal
+        getId
+    }

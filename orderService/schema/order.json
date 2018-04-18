@@ -1,69 +1,39 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Order",
-    "description": "An order for a restaurant",
-    "type": "object",   
-    "additionalProperties": false,
+    "id": "/order",
+    "title": "Order Log",
+    "description": "The log of an order that was accepted by the business",
+    "type": "object",
+    "additionalProperties": false,    
     "required": [
-        "restaurantId","orderInfo"
+        "orderId",
+        "total",
+        "currency",
+        "orderInfo",
+        "orderOwner",
+        "orderPayment"
     ],
-	"properties": {
-        "restaurantId": {
+    "properties": {
+        "orderId": {
             "type": "string"
         },
-	    "orderInfo": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "orderType","firstName","lastName","phone",
-                "remarks","dinners","email","menuItems"
-            ],
-            "properties": {
-                "orderType": {
-                    "type": "integer"
-                },   
-                "firstName": {
-                    "type": "string"
-                },
-                "lastName": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                }, 
-                "remarks": {
-                    "type": "string"
-                }, 
-                "dinners": {
-                    "type": "integer"
-                },  
-                "email": {
-                    "type": "string"
-                },                                                            
-                "menuItems": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "required": [
-                            "itemId","itemName","quantity"
-                        ],
-                        "additionalProperties": false,
-                        "properties": {
-                            "itemId": {
-                                "type": "integer"
-                            },
-                            "itemName": {
-                                "type": "string"
-                            },
-                            "quantity": {
-                                "type": "integer"
-                            }
-                        }    
-                    }
-                }
-            }
-        }
-    }  
+        "total": {
+            "type": "number"
+        },
+        "currency": {
+            "type": "string"
+        },        
+        "orderInfo": {
+            "$ref": "/orderInfo"
+        },                       
+        "orderOwner": {
+            "$ref": "/orderOwner"
+        },
+        "orderPayment": {
+            "$ref": "/orderPayment"
+        },        
+        "remarks": {
+            "type": "string"                
+        }        
+    }
 }

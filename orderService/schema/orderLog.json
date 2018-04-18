@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "id": "/orderLog",
+    "title": "Order Log",
+    "description": "The record of an accepted order",
+    "type": "object",
+    "additionalProperties": false,    
+    "required": [
+        "orderId",
+        "transactionId",
+        "businessId",
+        "businessType",
+        "posId",        
+        "posVenorId",
+        "posVenorName"
+    ],
+    "properties": {
+        "orderId": {
+            "type": "string"                
+        },
+        "transactionId": {
+            "type": "string"                
+        },        
+        "businessId": {
+            "type": "string"                
+        },
+        "businessType": {
+            "type": "string"                
+        },
+        "posId": {
+            "type": "string"                
+        },        
+        "posVenorId": {
+            "type": "string"                
+        },
+        "posVenorName": {
+            "type": "string"                
+        }                
+    }
+}

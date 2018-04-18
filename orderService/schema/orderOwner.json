@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "id": "/orderOwner",
+    "title": "Order Owner",
+    "description": "The details of the owner of an order",
+    "type": "object",
+    "additionalProperties": false, 
+    "required": [
+        "firstName",
+        "lastName",
+        "phone",
+        "email",
+        "deliveryInfo"
+    ],
+    "properties": {
+        "firstName": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "phone": {
+            "type": "string"
+        },
+        "email": {
+            "type": "string"
+        },
+        "deliveryInfo": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "city",
+                "street",
+                "homeNumber"
+            ],                    
+            "properties": {                        
+                "city": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "homeNumber": {
+                    "type": "string"
+                },
+                "apartment": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "companyName": {
+                    "type": "string"
+                }                                                                                                                                                                                                   
+            }
+        }        
+    }
+}

@@ -1,6 +1,15 @@
 
 const fs = require('fs');
+const util = require('util');
 const validator = require('../../util/validator.js');
+
+// beecomm api consts
+const apiVersion = 2;
+const baseUrl = "https://biapp.beecomm.co.il:8094";
+const authenticationResource = baseUrl + util.format("/v%d/oauth/token", apiVersion);
+const orderCenterResource = baseUrl + util.format("/api/v%d/services/orderCenter", apiVersion);
+const pushOrderResource = orderCenterResource + "/pushOrder";
+
 
 var beecommOrderJsonSchema = {};
 fs.readFile(__dirname + '/order.json', 'utf8', function (err, data) {
@@ -62,16 +71,39 @@ function transfromOrder(source) {
     target.orderInfo.deliveryInfo.apartment = "";
     target.orderInfo.deliveryInfo.floor = "";
     target.orderInfo.deliveryInfo.companyName = "";
-    
-    // validate that target odrer json is valid
-    result = validator.validateExternalOrder(target, beecommOrderJsonSchema);
-    if (!result) {
-        console.log("invalid target order json");
-        return;
-    }
 
     console.log("succeeded");
+    return target;
 
 }
 
+function pushOrder(order) {
+
+    // validate that target odrer json is valid
+    result = validator.validateExternalOrder(order, beecommOrderJsonSchema);
+    if (!result) {
+        console.log("invalid target order json");
+        return false;
+    }    
+
+    console.log(pushOrderResource);
+
+    return true;
+}
+
+function pushOrder(order) {
+
+    // validate that target odrer json is valid
+    result = validator.validateExternalOrder(order, beecommOrderJsonSchema);
+    if (!result) {
+        console.log("invalid target order json");
+        return false;
+    }    
+
+    console.log(pushOrderResource);
+
+    return true;
+}
+
 exports.transfromOrder = transfromOrder;
+exports.pushOrder = pushOrder;

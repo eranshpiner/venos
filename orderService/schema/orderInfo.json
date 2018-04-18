@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "id": "/orderInfo",
+    "title": "Order Info",
+    "description": "The information of an order",
+    "additionalProperties": false,
+    "type": "array",
+    "items": {
+        "type": "object",
+        "minItems": 1,
+        "uniqueItems": true,
+        "required": [
+            "itemId",
+            "itemName",
+            "quantity",
+            "price",
+            "unitPrice"
+        ],
+        "additionalProperties": false,
+        "properties": {
+            "itemId": {
+                "type": "string"
+            },
+            "itemName": {
+                "type": "string"
+            },
+            "quantity": {
+                "type": "integer"
+            },
+            "price": {
+                "type": "number"
+            },
+            "unitPrice": {
+                "type": "number"
+            },
+            "remarks": {
+                "type": "string"
+            }                                                                                                                                                                                                   
+        }
+    }
+}

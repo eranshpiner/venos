@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "id": "/orderPayment",
+    "title": "Order Payment",
+    "description": "The payment details of an order",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "paymentType",
+        "paymentSum",
+        "paymentName",
+        "creditCard",
+        "creditCardExp",
+        "creditCardCvv",
+        "creditCardHolderId",
+        "paymentRemark"
+    ],
+    "properties": {
+        "paymentType": {
+            "type": "integer"
+        },
+        "paymentSum": {
+            "type": "number"
+        },
+        "paymentName": {
+            "type": "string"
+        },
+        "creditCard": {
+            "type": "string"
+        },
+        "creditCardExp": {
+            "type": "string"
+        },
+        "creditCardCvv": {
+            "type": "string"
+        },
+        "creditCardHolderId": {
+            "type": "string"
+        },
+        "paymentRemark": {
+            "type": "string"
+        }
+    }
+}

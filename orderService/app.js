@@ -11,16 +11,21 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post('/pushOrder', (req, res) => {
-    let valid = validator.validateInternalOrder(req.body);    
-    if (valid) {
-        beecomm.transfromOrder(req.body);
-        res.status(201);
-        res.send("Order Accepted");
-    } else {
+    let result = validator.validateInternalOrder(req.body);
+    if (!result) {
         res.status(400);
         res.send("Order Not Accepted");
+    } else {
+        res.status(201);
+        res.send("Order Accepted");
     }
-    
 });
 
 app.listen(3000, () => console.log('Restaurant Integration Service - listening on port 3000...'));
+
+
+
+
+
+
+

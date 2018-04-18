@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "id": "/order",
+    "title": "Order Log",
+    "description": "The log of an order that was accepted by the business",
+    "type": "object",
+    "additionalProperties": false,    
+    "required": [
+        "orderId",
+        "total",
+        "currency",
+        "orderInfo",
+        "orderOwner"
+    ],
+    "properties": {
+        "orderId": {
+            "type": "string"
+        },
+        "total": {
+            "type": "number"
+        },
+        "currency": {
+            "type": "string"
+        },        
+        "orderInfo": {
+            "$ref": "/orderInfo"
+        },                       
+        "orderOwner": {
+            "$ref": "/orderOwner"
+        },        
+        "remarks": {
+            "type": "string"                
+        }        
+    }
+}

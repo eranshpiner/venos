@@ -1,5 +1,5 @@
-export function getInstance() {
-    return new Order();
+export function getInstance(id) {
+    return new Order(id);
 }
 
 class Order {

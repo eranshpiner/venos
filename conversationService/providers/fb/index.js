@@ -1,14 +1,14 @@
+/*jslint node: true */
 "use strict";
 
 const request = require('request');
 const niniHachi = require('./../../customers/niniHachi');
+const VisitorMessage = require('./../../lib/dataModel/visitorMessage');
 
 //Page is Messanger101 Community
 const PAGE_ACCESS_TOKEN = "EAAXSuZCK0EJ0BAIuEnKSdaAnJtYwuwOCwcTohT1ZAEgktEeTHM9pRMifJwLRMJJZBsUdZBWOAe4AYgJDPM3MDZAsdSYGOR1VpZBJbHXNZB1UaKpzFDHPEdS3q134ss6IkMRKvugRF901yQqpJX4zkm1ZCSvZBTZC7CjESy8r2V9xQKkZCghEzZCDsMpv";
 
 function handleIncomingMessage(req, res) {
-
-    const dataModel = marshal(req);
     //This method is intended to handle all apsects of FB incoming message via webhook.
     //Following that it should transform the message to the internal data model and call the application processing
     let body = req.body;
@@ -24,22 +24,18 @@ function handleIncomingMessage(req, res) {
         if (entry.messaging) {
             let webhook_event = entry.messaging[0];
             console.log(webhook_event);
-    
-            // Get the sender PSID
-            let sender_psid = webhook_event.sender.id;
-            console.log('Sender PSID: ' + sender_psid);
-    
-            // Check if the event is a message or postback and
-              // pass the event to the appropriate handler function
-              if (webhook_event.message) {
-                handleMessage(sender_psid, webhook_event.message);        
-              } else if (webhook_event.postback) {
-                handlePostback(sender_psid, webhook_event.postback);
-              }
+
+            const visitorMessage = marshal(webhook_event);
+            sendSenderAction(visitorMessage.getVisitorId(), senderActionStates.markSeen);
+            sendSenderAction(visitorMessage.getVisitorId(), senderActionStates.on);
+            //handleMessage(sender_psid, webhook_event.message);  
+            //handlePostback(sender_psid, webhook_event.postback);
+            //the following needs to be async
+            handleMessage(visitorMessage);
+            sendSenderAction(visitorMessage.getVisitorId(), senderActionStates.off);
         } else {
             console.log('!!! no messaging attribute on entry');
         }
-
       });
   
       // Returns a '200 OK' response to all requests
@@ -82,10 +78,14 @@ function handleVerificationRequest(req, res) {
 }
 
 // Handles messages events
-function handleMessage(sender_psid, received_message) {
+function handleMessage(visitorMessage) {
     let response;
 
+    const visitorId = visitorMessage.getVisitorId();
+
     //check if psid has an active session
+    //[todo]
+    //const curSession = sessionManager.getSession(visitorId);
     
     //check if the session has active orders
 
@@ -96,7 +96,7 @@ function handleMessage(sender_psid, received_message) {
     //handle the behavior
   
     //check if message is a quick reply
-    if (received_message.quick_reply) {
+    if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.quickReply) {
         //we understand this is a response to one of out quick replies
         // response = {
             // "text": `You sent the message: "${received_message.text}", with payload ${received_message.quick_reply.payload}`
@@ -156,9 +156,7 @@ function handleMessage(sender_psid, received_message) {
               }
             }
           };
-    } else
-    // Check if the message contains text
-    if (received_message.text) {    
+    } else if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.text) {    
   
       // Create the payload for a basic text message
     //   response = {
@@ -223,42 +221,55 @@ function handleMessage(sender_psid, received_message) {
                 }
             ]
         };
-    } 
-//
-// else if (received_message.attachments) {
-//
-//        // Gets the URL of the message attachment
-//      let attachment_url = received_message.attachments[0].payload.url;
-//      console.log(`Got attachment with url: "${attachment_url}"`);
-//      response = {
-//        "attachment": {
-//          "type": "template",
-//          "payload": {
-//            "template_type": "generic",
-//            "elements": [{
-//              "title": "Is this the right picture?",
-//              "subtitle": "Tap a button to answer.",
-//              "image_url": attachment_url,
-//              "buttons": [
-//                {
-//                  "type": "postback",
-//                  "title": "Yes!",
-//                  "payload": "yes",
-//                },
-//                {
-//                  "type": "postback",
-//                  "title": "No!",
-//                  "payload": "no",
-//                }
-//              ],
-//            }]
-//          }
-//        }
-//      }
+    } else if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.attachment) {    
+
+       // Gets the URL of the message attachment
+     let attachment_url = received_message.attachments[0].payload.url;
+     console.log(`Got attachment with url: "${attachment_url}"`);
+     response = {
+       "attachment": {
+         "type": "template",
+         "payload": {
+           "template_type": "generic",
+           "elements": [{
+             "title": "Is this the right picture?",
+             "subtitle": "Tap a button to answer.",
+             "image_url": attachment_url,
+             "buttons": [
+               {
+                 "type": "postback",
+                 "title": "Yes!",
+                 "payload": "yes",
+               },
+               {
+                 "type": "postback",
+                 "title": "No!",
+                 "payload": "no",
+               }
+             ],
+           }]
+         }
+       }
+     }
+   } 
+//    else { //didn't recognize the message - define default behavior
+//         response =  {
+//             "text": "Welcome to Nini Hachi,default?"
+//         };
 //    }
   
     // Sends the response message
-    callSendAPI(sender_psid, response);    
+    if (response) {
+        let responseObj = {
+            "recipient":{
+              "id":sender_psid
+            },
+            "message":response
+          };
+        callSendAPI(visitorId, responseObj);   
+    } else {
+        console.log('NO');
+    }  
   }
   
   function handlePostback(sender_psid, received_postback) {
@@ -342,19 +353,42 @@ function handleMessage(sender_psid, received_message) {
       response = { "text": "Oops, try sending another image." }
     }
     // Send the message to acknowledge the postback
-    callSendAPI(sender_psid, response);
+    let responseObj = {
+        "recipient":{
+          "id":sender_psid
+        },
+        "message":response
+      };
+    callSendAPI(sender_psid, responseObj);
+  }
+
+  const senderActionStates = {
+      "on": "typing_on",
+      "off": "typing_off",
+      "markSeen": "mark_seen"
+  }
+
+  function sendSenderAction(sender_psid, state) {
+    let responseObj = {
+        "recipient":{
+          "id":sender_psid
+        },
+        "sender_action":state
+      };
+    callSendAPI(sender_psid, responseObj);
   }
   
   // Sends response messages via the Send API
   function callSendAPI(sender_psid, response) {
     // Construct the message body
-    let request_body = {
-      "recipient": {
-        "id": sender_psid
-      },
-      "message": response
-    }  
+    // let request_body = {
+    //   "recipient": {
+    //     "id": sender_psid
+    //   },
+    //   "message": response
+    // }  
   
+    let request_body = response;
     // Send the HTTP request to the Messenger Platform
     request({
       "uri": "https://graph.facebook.com/v2.6/me/messages",
@@ -371,13 +405,43 @@ function handleMessage(sender_psid, received_message) {
   
   }
 
-  function getItems(clickedItem) {
+  function getItems(curItemId) {
       //orderManager -> getMenu -> getItem - the clicked one -> getItems
 }
 
-function marshal(req) {
+function marshal(webhook_event) {
   //handle happy flow
-  
+  let curMessage = VisitorMessage.getInstance(Date.now());
+  console.log(`message created with id: ${curMessage.getId()}`);
+  // Get the sender PSID
+  curMessage.setVisitorId(webhook_event.sender.id);
+  console.log(`Sender PSID: ${curMessage.getVisitorId()}`);
+
+  // Check if the event is a message or postback and
+    // pass the event to the appropriate handler function
+    if (webhook_event.message) {
+
+      if (webhook_event.message.text) {
+        curMessage.setMessageType(VisitorMessage.MESSAGE_TYPES.text);
+
+      } else if (webhook_event.message.quick_reply) {
+        curMessage.setMessageType(VisitorMessage.MESSAGE_TYPES.quickReply);
+      } else if (webhook_event.message.attachments) {
+        curMessage.setMessageType(VisitorMessage.MESSAGE_TYPES.attachment);
+      } else {
+        curMessage.setMessageType(VisitorMessage.MESSAGE_TYPES.unknown);
+      }
+
+            
+    } else if (webhook_event.postback) {
+      curMessage.setMessageType(VisitorMessage.MESSAGE_TYPES.postback);
+    } else {
+      curMessage.setMessageType(VisitorMessage.MESSAGE_TYPES.unknown);
+      console.log("unknown message");
+    }
+
+    return curMessage;
+ 
 }
 
 exports.handleIncomingMessage = handleIncomingMessage;

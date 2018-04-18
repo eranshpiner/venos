@@ -18,13 +18,10 @@ function validateInternalOrder(order) {
     return result.valid;
 }
 
+function validateExternalOrder(order, schema) {
+    let result = v.validate(order, schema);
+    return result.valid;
+}
+
 exports.validateInternalOrder = validateInternalOrder;
-
-// function validateExternalOrder(order, schema) {
-//     let validator = new Validator();
-//     let result = validator.validate(order, schema);
-//     return result.valid;
-// }
-
-
-// exports.validateExternalOrder = validateExternalOrder;
+exports.validateExternalOrder = validateExternalOrder;

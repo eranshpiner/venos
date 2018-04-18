@@ -2,6 +2,7 @@
 const fs = require('fs');
 const util = require('util');
 const validator = require('../../util/validator.js');
+const beecommOrderSchema = require('./beecommOrder.json');
 
 // beecomm api consts
 const apiVersion = 2;
@@ -11,22 +12,13 @@ const orderCenterResource = baseUrl + util.format("/api/v%d/services/orderCenter
 const pushOrderResource = orderCenterResource + "/pushOrder";
 
 
-var beecommOrderJsonSchema = {};
-fs.readFile(__dirname + '/order.json', 'utf8', function (err, data) {
-    if (err) {
-      console.log(err)
-      return;
-    }
-    beecommOrderJsonSchema = JSON.parse(data); 
-});
-
 function transfromOrder(source) {
     
     // validate that source odrer json is according to the internal data-model 
     let result = validator.validateInternalOrder(source);
     if (!result) {
         console.log("invalid source order json");
-        return;
+        return null;
     }
 
     let target = {};
@@ -72,38 +64,26 @@ function transfromOrder(source) {
     target.orderInfo.deliveryInfo.floor = "";
     target.orderInfo.deliveryInfo.companyName = "";
 
-    console.log("succeeded");
+    // validate that target 'beecomm' odrer json is valid
+    result = validator.validateExternalOrder(order, beecommOrderSchema);
+    if (!result) {
+        console.log("transfomation to 'beecomm' order failed");
+        return null;
+    }    
+
     return target;
-
 }
 
-function pushOrder(order) {
 
-    // validate that target odrer json is valid
-    result = validator.validateExternalOrder(order, beecommOrderJsonSchema);
-    if (!result) {
-        console.log("invalid target order json");
-        return false;
-    }    
+function pushOrder(source) {
 
-    console.log(pushOrderResource);
+    let target = transfromOrder(source);
+    if (target == null) {
+        return -1;
+    }
 
+    console.log("pushed order to " + pushOrderResource);
     return true;
 }
 
-function pushOrder(order) {
-
-    // validate that target odrer json is valid
-    result = validator.validateExternalOrder(order, beecommOrderJsonSchema);
-    if (!result) {
-        console.log("invalid target order json");
-        return false;
-    }    
-
-    console.log(pushOrderResource);
-
-    return true;
-}
-
-exports.transfromOrder = transfromOrder;
 exports.pushOrder = pushOrder;

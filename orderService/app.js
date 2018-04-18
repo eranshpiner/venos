@@ -16,8 +16,15 @@ app.post('/pushOrder', (req, res) => {
         res.status(400);
         res.send("invalid payload");
     }
+    
     // create and save 'orderRecord'
-    // call pos provider with transformed order
+    
+    let result = beecomm.pushOrder(req.body);
+    if (result < 0) {
+        res.status(500);
+        res.send("order submission failed");
+    }
+
     // if success, create and save 'orderLog'  
 
     res.status(201);

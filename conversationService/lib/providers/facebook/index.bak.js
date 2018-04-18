@@ -135,22 +135,50 @@ function handleMessage(visitorMessage) {
                     {
                         "title":"Tempura Mixed",
                         "image_url":"https://www.mishloha.co.il/files/menu_food_pic/152201641842434.jpg",
-                        "subtitle":"Vegetables and fish (salmon, bream and cebas) fried in Tempura"
+                        "subtitle":"Vegetables and fish (salmon, bream and cebas) fried in Tempura",
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "title":"Add",
+                                "payload":"{\"item\":\"12\"}"
+                            }
+                        ]
                     },
                     {
                         "title":"Japanese Crisp Wings",
                         "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/152201642734035.jpg",
-                        "subtitle":"Crispy wings accompanied by sweet chili sauce."
+                        "subtitle":"Crispy wings accompanied by sweet chili sauce.",
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "title":"Add",
+                                "payload":"{\"item\":\"12\"}"
+                            }
+                        ]
                     },
                     {
                         "title":"Tofu Agadeshiי",
                         "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/152201642734035.jpg",
-                        "subtitle":"Crispy wings accompanied by sweet chili sauce."
+                        "subtitle":"Crispy wings accompanied by sweet chili sauce.",
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "title":"Add",
+                                "payload":"{\"item\":\"12\"}"
+                            }
+                        ]
                     },
                     {
                         "title":"Seared Tuna",
                         "image_url":"https://www.mishloha.co.il/files/menu_food_pic/thumbnail/152201642255703.jpg",
-                        "subtitle":"Fine red tuna on the inside, burnt from the outside, served with a soba noodle salad."
+                        "subtitle":"Fine red tuna on the inside, burnt from the outside, served with a soba noodle salad.",
+                        "buttons":[
+                            {
+                                "type":"postback",
+                                "title":"Add",
+                                "payload":"{\"item\":\"12\"}"
+                            }
+                        ]
                     }
                 ]
               }
@@ -218,6 +246,12 @@ function handleMessage(visitorMessage) {
                     "title":"Rice",
                     "payload":"9"//,
                     //"image_url":"http://example.com/img/red.png"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Cart",
+                    "payload":"10",
+                    "image_url":"https://cdn3.iconfinder.com/data/icons/glypho-free/64/shopping-purse-512.png"
                 }
             ]
         };
@@ -262,7 +296,7 @@ function handleMessage(visitorMessage) {
     if (response) {
         let responseObj = {
             "recipient":{
-              "id":sender_psid
+              "id": 1,//sender_psid
             },
             "message":response
           };
@@ -274,15 +308,25 @@ function handleMessage(visitorMessage) {
   
   function handlePostback(sender_psid, received_postback) {
     let response;
+    const payloadString = received_postback.payload;
+    const payloadObj = JSON.parse(payloadString);
 
-    
+    switch (payloadObj.action) {
+        case "action":
+
+            break;
+        default:
+            break;
+    }
+
+
 
         // Create the payload for a basic text message
         //   response = {
         //     "text": `You sent the message: "${received_message.text}". Now send me an image!`
         //   }
         response =  {
-            "text": "Anything else?",
+            "text": "Item id: " + payloadObj.item +" was added to your order",
             "quick_replies":[
                 {
                     "content_type":"text",
@@ -401,8 +445,7 @@ function handleMessage(visitorMessage) {
       } else {
         console.error("Unable to send message:" + err);
       }
-    }); 
-  
+    });
   }
 
   function getItems(curItemId) {
@@ -444,6 +487,8 @@ function marshal(webhook_event) {
  
 }
 
-exports.handleIncomingMessage = handleIncomingMessage;
-exports.handleOutgoingMessage = handleOutgoingMessage;
-exports.handleVerificationRequest = handleVerificationRequest;
+  module.exports = {
+      handleIncomingMessage,
+      handleOutgoingMessage,
+      handleVerificationRequest,
+  };

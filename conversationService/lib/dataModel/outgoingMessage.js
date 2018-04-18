@@ -1,13 +1,4 @@
-const MESSAGE_TYPES = {
-    "text":"text",
-    "quickReply":"quickReply",
-    "postback":"postback",
-    "attachment":"attachment",
-    "unknown":"unknown",
-    ECHO: "ECHO",
-};
-
-class VisitorMessage {
+class OutgoingMessage {
 
     constructor(id) {
         //id is just for debugging
@@ -16,7 +7,7 @@ class VisitorMessage {
 
     getId() {
         return this.id;
-    } 
+    }
 
     getVisitorId() {
         return this.visitorId;
@@ -65,5 +56,4 @@ class VisitorMessage {
 
 }
 
-VisitorMessage.MESSAGE_TYPES = MESSAGE_TYPES;
-module.exports = VisitorMessage;
+module.exports = OutgoingMessage;

@@ -1,6 +1,7 @@
 'use strict';
 
 const messageHandler = require('./../../messageHandler');
+const VisitorMessage = require('./../../dataModel/IncomingMessage');
 const transformer = require('./transformer');
 const CONST = require('./const');
 
@@ -38,11 +39,7 @@ router.get(ENDPOINT, (req, res) => {
 });
 
 router.post(ENDPOINT, (req, res) => {
-    //This method is intended to handle all apsects of FB incoming message via webhook.
-    //Following that it should transform the message to the internal data model and call the application processing
-    let body = req.body;
-
-    console.log(body);
+    const body = req.body;
     // Checks this is an event from a page subscription
     if (body.object === 'page') {
 
@@ -56,9 +53,11 @@ router.post(ENDPOINT, (req, res) => {
                 console.log('[Facebook] Incoming message', webhook_event);
 
                 const visitorMessage = transformer.from(webhook_event);
-                sendSenderAction(visitorMessage.getVisitorId(), CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
-                sendSenderAction(visitorMessage.getVisitorId(), CONST.SENDER_ACTION_MESSAGES.TYPING_ON);
-                setTimeout(() => messageHandler.handle(visitorMessage), 800);
+                if (visitorMessage.getMessageType() !== VisitorMessage.MESSAGE_TYPES.UNKNOWN) {
+                    sendSenderAction(visitorMessage.getVisitorId(), CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
+                    sendSenderAction(visitorMessage.getVisitorId(), CONST.SENDER_ACTION_MESSAGES.TYPING_ON);
+                    setTimeout(_ => messageHandler.handle(visitorMessage), 1000);
+                }
 
             } else {
                 console.log('!!! no messaging attribute on entry');

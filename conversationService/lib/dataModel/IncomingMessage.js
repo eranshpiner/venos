@@ -1,10 +1,10 @@
 const MESSAGE_TYPES = {
-    "text":"text",
-    "quickReply":"quickReply",
-    "postback":"postback",
-    "attachment":"attachment",
-    "unknown":"unknown",
-    ECHO: "ECHO",
+    TEXT: 'text',
+    QUICKREPLY: 'quickReply',
+    POSTBACK: 'postback',
+    ATTACHMENT: 'attachment',
+    UNKNOWN: 'unknown',
+    ECHO: 'ECHO',
 };
 
 class VisitorMessage {
@@ -16,7 +16,7 @@ class VisitorMessage {
 
     getId() {
         return this.id;
-    } 
+    }
 
     getVisitorId() {
         return this.visitorId;
@@ -60,6 +60,15 @@ class VisitorMessage {
 
     setProvider(provider) {
         this.provider = provider;
+        return this;
+    }
+
+    getCustomerId() {
+        return this.customerId;
+    }
+
+    setCustomerId(customerId) {
+        this.customerId = customerId;
         return this;
     }
 

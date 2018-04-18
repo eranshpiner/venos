@@ -96,7 +96,7 @@ function handleMessage(visitorMessage) {
     //handle the behavior
   
     //check if message is a quick reply
-    if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.quickReply) {
+    if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.QUICKREPLY) {
         //we understand this is a response to one of out quick replies
         // response = {
             // "text": `You sent the message: "${received_message.text}", with payload ${received_message.quick_reply.payload}`
@@ -184,7 +184,7 @@ function handleMessage(visitorMessage) {
               }
             }
           };
-    } else if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.text) {    
+    } else if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.TEXT) {
   
       // Create the payload for a basic text message
     //   response = {
@@ -255,7 +255,7 @@ function handleMessage(visitorMessage) {
                 }
             ]
         };
-    } else if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.attachment) {    
+    } else if (visitorMessage.getMessageType() === VisitorMessage.MESSAGE_TYPES.ATTACHMENT) {
 
        // Gets the URL of the message attachment
      let attachment_url = received_message.attachments[0].payload.url;

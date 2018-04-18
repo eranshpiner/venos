@@ -1,11 +1,4 @@
-const MESSAGE_TYPES = {
-    TEXT: 'text',
-    QUICKREPLY: 'quickReply',
-    POSTBACK: 'postback',
-    ATTACHMENT: 'attachment',
-    UNKNOWN: 'unknown',
-    ECHO: 'ECHO',
-};
+
 
 class VisitorMessage {
 
@@ -72,7 +65,23 @@ class VisitorMessage {
         return this;
     }
 
+    getAction() {
+        return this.action;
+    }
+
+    setAction(action) {
+        this.action = action;
+        return this;
+    }
+
+    getItemRef() {
+        return this.itemRef;
+    }
+
+    setItemRef(itemRef) {
+        this.itemRef = itemRef;
+    }
+
 }
 
-VisitorMessage.MESSAGE_TYPES = MESSAGE_TYPES;
 module.exports = VisitorMessage;

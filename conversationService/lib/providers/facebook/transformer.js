@@ -1,6 +1,7 @@
 'use strict';
 
 const IncomingMessage = require('./../../dataModel/IncomingMessage');
+const MESSAGE_TYPES = require('./../../dataModel/const').MESSAGE_TYPES;
 
 function from(fbMessage) {
     const incomingMessage = new IncomingMessage(Date.now());
@@ -10,23 +11,25 @@ function from(fbMessage) {
     incomingMessage.setProvider('facebook');
 
     if (fbMessage.message) {
-
+        incomingMessage.setMessageContent(fbMessage.message.text);
         if (fbMessage.message.is_echo === true) {
-            incomingMessage.setMessageType(IncomingMessage.MESSAGE_TYPES.ECHO);
-        }
-        else if (fbMessage.message.text) {
-            incomingMessage.setMessageType(IncomingMessage.MESSAGE_TYPES.TEXT);
+            incomingMessage.setMessageType(MESSAGE_TYPES.ECHO);
         } else if (fbMessage.message.quick_reply) {
-            incomingMessage.setMessageType(IncomingMessage.MESSAGE_TYPES.QUICKREPLY);
+            incomingMessage.setMessageType(MESSAGE_TYPES.QUICKREPLY);
+            updateMessageFromPayload(fbMessage.message.payload, incomingMessage);
         } else if (fbMessage.message.attachments) {
-            incomingMessage.setMessageType(IncomingMessage.MESSAGE_TYPES.ATTACHMENT);
+            incomingMessage.setMessageType(MESSAGE_TYPES.ATTACHMENT);
+        } else if (fbMessage.message.text) {
+            incomingMessage.setMessageType(MESSAGE_TYPES.TEXT);
         } else {
-            incomingMessage.setMessageType(IncomingMessage.MESSAGE_TYPES.UNKNOWN);
+            incomingMessage.setMessageType(MESSAGE_TYPES.UNKNOWN);
         }
     } else if (fbMessage.postback) {
-        incomingMessage.setMessageType(IncomingMessage.MESSAGE_TYPES.POSTBACK);
+        incomingMessage.setMessageType(MESSAGE_TYPES.POSTBACK);
+        incomingMessage.setMessageContent(fbMessage.postback.title);
+        updateMessageFromPayload(fbMessage.postback.payload, incomingMessage);
     } else {
-        incomingMessage.setMessageType(IncomingMessage.MESSAGE_TYPES.UNKNOWN);
+        incomingMessage.setMessageType(MESSAGE_TYPES.UNKNOWN);
         console.log("unknown message");
     }
 
@@ -34,11 +37,42 @@ function from(fbMessage) {
 
 }
 
+function updateMessageFromPayload(payload, incomingMessage) {
+    const parsedPayload = parsePayload(payload);
+    incomingMessage.setAction(parsedPayload.action);
+    incomingMessage.setItemRef(parsedPayload.itemRef);
+}
+
+function parsePayload(payload) {
+    try{
+        return JSON.parse(payload);
+    } catch (err) {
+        console.log('error parsing payload: ', payload);
+        return {};
+    }
+}
+
 
 function to(outgoingMessage) {
-    return {
+    const message = {
         text: outgoingMessage.getMessageContent(),
     };
+
+    if (outgoingMessage.getReplies())  {
+        const replies = outgoingMessage.getReplies();
+        message.quick_replies = replies.map(reply => {
+            const quickReply = {
+                content_type: "text",
+                title: reply.getTitle(),
+                payload: reply.getPayload(),
+            };
+            if (reply.getImageUrl()) {
+                quickReply.image_url = reply.getImageUrl();
+            }
+            return quickReply;
+        });
+    }
+    return message;
 
 }
 

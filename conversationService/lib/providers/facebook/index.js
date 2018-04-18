@@ -2,6 +2,7 @@
 
 const messageHandler = require('./../../messageHandler');
 const VisitorMessage = require('./../../dataModel/IncomingMessage');
+const MESSAGE_TYPES = require('./../../dataModel/const').MESSAGE_TYPES;
 const transformer = require('./transformer');
 const CONST = require('./const');
 
@@ -12,6 +13,7 @@ const request = require('request');
 const PAGE_ACCESS_TOKEN = 'EAAXSuZCK0EJ0BAIuEnKSdaAnJtYwuwOCwcTohT1ZAEgktEeTHM9pRMifJwLRMJJZBsUdZBWOAe4AYgJDPM3MDZAsdSYGOR1VpZBJbHXNZB1UaKpzFDHPEdS3q134ss6IkMRKvugRF901yQqpJX4zkm1ZCSvZBTZC7CjESy8r2V9xQKkZCghEzZCDsMpv';
 const VERIFY_TOKEN = 'af5a72d5-c241-4472-b4ef-855b90165fd5';
 const ENDPOINT = '/facebook';
+const ignoredMessageTypes = [MESSAGE_TYPES.UNKNOWN, MESSAGE_TYPES.ECHO];
 
 
 // Token verification endpoint
@@ -53,10 +55,10 @@ router.post(ENDPOINT, (req, res) => {
                 console.log('[Facebook] Incoming message', webhook_event);
 
                 const visitorMessage = transformer.from(webhook_event);
-                if (visitorMessage.getMessageType() !== VisitorMessage.MESSAGE_TYPES.UNKNOWN) {
+                if (!ignoredMessageTypes.includes(visitorMessage.getMessageType())) {
                     sendSenderAction(visitorMessage.getVisitorId(), CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
-                    sendSenderAction(visitorMessage.getVisitorId(), CONST.SENDER_ACTION_MESSAGES.TYPING_ON);
-                    setTimeout(_ => messageHandler.handle(visitorMessage), 1000);
+                    setTimeout(_ => sendSenderAction(visitorMessage.getVisitorId(), CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 2000);
+                    setTimeout(_ => messageHandler.handle(visitorMessage), 3500);
                 }
 
             } else {

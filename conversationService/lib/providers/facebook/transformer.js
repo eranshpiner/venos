@@ -1,79 +1,109 @@
 'use strict';
 
-const IncomingMessage = require('./../../dataModel/IncomingMessage');
+const Message = require('./../../dataModel/Message');
 const MESSAGE_TYPES = require('./../../dataModel/const').MESSAGE_TYPES;
 
 function from(fbMessage) {
-    const incomingMessage = new IncomingMessage(Date.now());
+  const message = new Message(Date.now());
 
-    incomingMessage.setVisitorId(fbMessage.sender.id);
-    incomingMessage.setCustomerId(fbMessage.recipient.id);
-    incomingMessage.setProvider('facebook');
+  message.providerUserDetails = fbMessage.sender;
+  message.customerId = fbMessage.recipient.id;
+  message.provider = 'facebook';
 
-    if (fbMessage.message) {
-        incomingMessage.setMessageContent(fbMessage.message.text);
-        if (fbMessage.message.is_echo === true) {
-            incomingMessage.setMessageType(MESSAGE_TYPES.ECHO);
-        } else if (fbMessage.message.quick_reply) {
-            incomingMessage.setMessageType(MESSAGE_TYPES.QUICKREPLY);
-            updateMessageFromPayload(fbMessage.message.payload, incomingMessage);
-        } else if (fbMessage.message.attachments) {
-            incomingMessage.setMessageType(MESSAGE_TYPES.ATTACHMENT);
-        } else if (fbMessage.message.text) {
-            incomingMessage.setMessageType(MESSAGE_TYPES.TEXT);
-        } else {
-            incomingMessage.setMessageType(MESSAGE_TYPES.UNKNOWN);
-        }
-    } else if (fbMessage.postback) {
-        incomingMessage.setMessageType(MESSAGE_TYPES.POSTBACK);
-        incomingMessage.setMessageContent(fbMessage.postback.title);
-        updateMessageFromPayload(fbMessage.postback.payload, incomingMessage);
+  if (fbMessage.message) {
+    message.messageContent = fbMessage.message.text;
+    if (fbMessage.message.is_echo === true) {
+      message.type = MESSAGE_TYPES.ECHO;
+    } else if (fbMessage.message.quick_reply) {
+      message.type = MESSAGE_TYPES.QUICKREPLY;
+      const payload = parsePayload(fbMessage.message.quick_reply.payload);
+      message.action = payload.action;
+      message.actionData = payload.data;
+    } else if (fbMessage.message.attachments) {
+      message.type = MESSAGE_TYPES.ATTACHMENT;
+    } else if (fbMessage.message.text) {
+      message.type = MESSAGE_TYPES.TEXT;
     } else {
-        incomingMessage.setMessageType(MESSAGE_TYPES.UNKNOWN);
-        console.log("unknown message");
+      message.type = MESSAGE_TYPES.UNKNOWN;
     }
+  } else if (fbMessage.postback) {
+    message.type = MESSAGE_TYPES.POSTBACK;
+    message.messageContent = fbMessage.postback.title;
+    const payload = parsePayload(fbMessage.postback.payload);
+    message.action = payload.action;
+    message.actionData = payload.data;
+  } else {
+    message.type = MESSAGE_TYPES.UNKNOWN;
+  }
 
-    return incomingMessage;
+  return message;
 
-}
-
-function updateMessageFromPayload(payload, incomingMessage) {
-    const parsedPayload = parsePayload(payload);
-    incomingMessage.setAction(parsedPayload.action);
-    incomingMessage.setItemRef(parsedPayload.itemRef);
 }
 
 function parsePayload(payload) {
-    try{
-        return JSON.parse(payload);
-    } catch (err) {
-        console.log('error parsing payload: ', payload);
-        return {};
-    }
+  try {
+    return JSON.parse(payload);
+  } catch (err) {
+    console.log('error parsing payload: ', payload);
+    return {};
+  }
 }
 
 
-function to(outgoingMessage) {
-    const message = {
-        text: outgoingMessage.getMessageContent(),
-    };
+function to(message) {
+  const fbMessage = {};
 
-    if (outgoingMessage.getReplies())  {
-        const replies = outgoingMessage.getReplies();
-        message.quick_replies = replies.map(reply => {
-            const quickReply = {
-                content_type: "text",
-                title: reply.getTitle(),
-                payload: reply.getPayload(),
-            };
-            if (reply.getImageUrl()) {
-                quickReply.image_url = reply.getImageUrl();
-            }
-            return quickReply;
+  // Templates
+  if (message.response.elements) {
+    const elements = message.response.elements.map(el => {
+      const element = {
+        title: el.title,
+        subtitle: el.description,
+        buttons: []
+      };
+      if (el.actions) {
+        el.actions.forEach(action => {
+          element.buttons.push({
+            type: 'postback',
+            title: action.title,
+            payload: JSON.stringify(action.payload),
+          });
         });
+      }
+      if (el.imageUrl) {
+        element.image_url = el.imageUrl;
+      }
+      return element;
+    });
+
+    fbMessage.attachment = {
+      type: 'template',
+      payload: {
+        template_type: 'generic',
+        elements,
+      },
+    };
+  } else {
+    fbMessage.text = message.response.content;
+    // Quick Replies
+    if (message.response.replies) {
+      const replies = message.response.replies;
+      fbMessage.quick_replies = replies.map(reply => {
+        const quickReply = {
+          content_type: 'text',
+          title: reply.title,
+          payload: JSON.stringify(reply.payload),
+        };
+        if (reply.imageUrl) {
+          quickReply.image_url = reply.imageUrl;
+        }
+        return quickReply;
+      });
     }
-    return message;
+  }
+
+  return fbMessage;
 
 }
 
-module.exports = { from, to };
+module.exports = {from, to};

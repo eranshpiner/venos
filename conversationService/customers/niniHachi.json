@@ -530,8 +530,8 @@
                 "he_IL": ""
             },
             "price": {
-                "en_US":{"unit":"usd", "value": },
-                "he_IL":{"unit":"ils", "value": }
+                "en_US":{"unit":"usd", "value": 15 },
+                "he_IL":{"unit":"ils", "value": 15}
             },
             "picture":null,
             "external": {

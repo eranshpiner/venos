@@ -1,7 +1,8 @@
 {
   "type": "menu",
   "welcome": {
-    "en_US": "Welcome! Choose category"
+    "en_US": "Welcome! Choose category",
+    "he_IL": "ברוכים הבאים מה תרצה להזמין?"
   },
   "items": {
     "01": {
@@ -20,9 +21,10 @@
       },
       "items": [
         "101",
-        "",
-        "",
-        ""
+        "102",
+        "103",
+        "104",
+        "105"
       ],
       "topLevel": true
     },
@@ -217,10 +219,11 @@
         "id": "ext22"
       },
       "items": [
-        "21",
-        "22",
-        "23",
-        "24"
+        "101",
+        "102",
+        "103",
+        "104",
+        "105"
       ],
       "topLevel": true
     },
@@ -618,7 +621,7 @@
         "id": "ext1"
       }
     },
-    "101": {
+    "106": {
       "type": "menuItem",
       "title": {
         "en_US": "",
@@ -643,7 +646,7 @@
         "id": "ext1"
       }
     },
-    "12": {
+    "107": {
       "type": "menuItem",
       "title": {
         "en_US": "the item title",
@@ -668,7 +671,7 @@
         "id": "ext2"
       }
     },
-    "13": {
+    "108": {
       "type": "menuItem",
       "title": {
         "en_US": "the item title",
@@ -693,7 +696,7 @@
         "id": "ext3"
       }
     },
-    "14": {
+    "109": {
       "type": "menuItem",
       "title": {
         "en_US": "the item title",
@@ -718,7 +721,7 @@
         "id": "ext4"
       }
     },
-    "21": {
+    "110": {
       "type": "menuItem",
       "title": {
         "en_US": "the item title",
@@ -743,7 +746,7 @@
         "id": "ext5"
       }
     },
-    "22": {
+    "111": {
       "type": "menuItem",
       "title": {
         "en_US": "the item title",
@@ -768,7 +771,7 @@
         "id": "ext6"
       }
     },
-    "23": {
+    "112": {
       "type": "menuItem",
       "title": {
         "en_US": "the item title",
@@ -793,7 +796,7 @@
         "id": "ext7"
       }
     },
-    "24": {
+    "113": {
       "type": "menuItem",
       "title": {
         "en_US": "the item title",

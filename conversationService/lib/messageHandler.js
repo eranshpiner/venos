@@ -87,8 +87,8 @@ function itemToElement(item, itemId, lang) {
       }
     }],
   };
-  if (item.picture) {
-    element.imageUrl = item.picture;
+  if (item.image_url) {
+    element.image_url = item.image_url;
   }
   return element;
 }

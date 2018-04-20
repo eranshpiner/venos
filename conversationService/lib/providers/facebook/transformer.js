@@ -59,6 +59,7 @@ function to(message) {
       const element = {
         title: el.title,
         subtitle: el.description,
+        image_url: el.image_url,
         buttons: []
       };
       if (el.actions) {
@@ -70,8 +71,8 @@ function to(message) {
           });
         });
       }
-      if (el.imageUrl) {
-        element.image_url = el.imageUrl;
+      if (el.image_url) {
+        element.image_url = el.image_url;
       }
       return element;
     });

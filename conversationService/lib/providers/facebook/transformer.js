@@ -6,7 +6,7 @@ const MESSAGE_TYPES = require('./../../dataModel/const').MESSAGE_TYPES;
 function from(fbMessage) {
   const message = new Message(Date.now());
 
-  message.providerUserDetails = fbMessage.sender;
+  message.userDetails = fbMessage.sender;
   message.customerId = fbMessage.recipient.id;
   message.provider = 'facebook';
 

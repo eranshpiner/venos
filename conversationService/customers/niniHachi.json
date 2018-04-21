@@ -175,8 +175,6 @@
         "id": ""
       },
       "items": [
-        "",
-        "22",
         "23",
         "24"
       ],
@@ -447,7 +445,7 @@
       ],
       "topLevel": true
     },
-    "21": {
+    "31": {
       "type": "category",
       "title": {
         "en_US": "the item title",
@@ -469,7 +467,7 @@
       ],
       "topLevel": true
     },
-    "22": {
+    "32": {
       "type": "category",
       "title": {
         "en_US": "the item title",

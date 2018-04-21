@@ -55,9 +55,9 @@ router.post(ENDPOINT, (req, res) => {
 
         const message = transformer.from(webhook_event);
         if (!ignoredMessageTypes.includes(message.type)) {
-          sendSenderAction(message.providerUserDetails.id, CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
-          setTimeout(_ => sendSenderAction(message.providerUserDetails.id, CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 2000);
-          setTimeout(_ => messageHandler.handle(message), 3500);
+          sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
+          setTimeout(_ => sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 1200);
+          setTimeout(_ => messageHandler.handle(message), 2500);
         }
 
       } else {
@@ -75,24 +75,25 @@ function sendMessage(message) {
   const messageBody = transformer.to(message);
   const fbMessage = {
     recipient: {
-      id: message.providerUserDetails.id,
+      id: message.userDetails.id,
     },
     messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
     message: messageBody,
   };
-  sendSenderAction(message.providerUserDetails.id, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
+  sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
   _sendMessage(fbMessage);
 }
 
-function sendSenderAction(psid, state) {
-  const message = {
+function sendSenderAction(message, state) {
+  const psid = message.userDetails.id;
+  const outgoingMessage = {
     recipient: {
       id: psid,
     },
     messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
     sender_action: state,
   };
-  _sendMessage(message);
+  _sendMessage(outgoingMessage);
 }
 
 function _sendMessage(message) {

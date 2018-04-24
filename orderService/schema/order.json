@@ -9,7 +9,7 @@
         "orderId",
         "total",
         "currency",
-        "orderInfo",
+        "orderItems",
         "orderOwner",
         "orderPayment"
     ],
@@ -23,8 +23,8 @@
         "currency": {
             "type": "string"
         },        
-        "orderInfo": {
-            "$ref": "/orderInfo"
+        "orderItems": {
+            "$ref": "/orderItems"
         },                       
         "orderOwner": {
             "$ref": "/orderOwner"

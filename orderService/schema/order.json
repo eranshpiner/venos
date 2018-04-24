@@ -6,17 +6,15 @@
     "type": "object",
     "additionalProperties": false,    
     "required": [
-        "orderId",
         "total",
         "currency",
         "orderItems",
         "orderOwner",
-        "orderPayment"
+        "orderPayment",
+        "brandId",
+        "brandLocationId"                
     ],
     "properties": {
-        "orderId": {
-            "type": "string"
-        },
         "total": {
             "type": "number"
         },
@@ -31,7 +29,13 @@
         },
         "orderPayment": {
             "$ref": "/orderPayment"
-        },        
+        },
+        "brandId": {
+            "type": "string"
+        },
+        "brandLocationId": {
+            "type": "string"
+        },                        
         "remarks": {
             "type": "string"                
         }        

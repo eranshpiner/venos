@@ -10,11 +10,14 @@
         "total",
         "currency",
         "orderItems",
-        "orderOwner"
+        "orderOwner",
+        "brandId",
+        "brandLocationId",
+        "orderTimestamp"        
     ],
     "properties": {
         "orderId": {
-            "type": "string"
+            "type": "number"
         },
         "total": {
             "type": "number"
@@ -27,7 +30,16 @@
         },                       
         "orderOwner": {
             "$ref": "/orderOwner"
-        },        
+        },  
+        "brandId": {
+            "type": "string"
+        },
+        "brandLocationId": {
+            "type": "string"
+        }, 
+        "orderTimestamp": {
+            "type": "number"
+        },               
         "remarks": {
             "type": "string"                
         }        

@@ -8,42 +8,46 @@
     "required": [
         "orderId",
         "transactionId",
-        "businessId",
-        "businessType",
-        "posId",        
+        "transactionTimestamp", 
+        "brandId",
+        "brandLocationId",
         "posVendorId",
-        "posVendorName",
-        "responseCode",
-        "responseStatus"
+        "posId",        
+        "posResponseStatus",
+        "posResponseCode",
+        "orderStatus"
     ],
     "properties": {
         "orderId": {
-            "type": "string"                
-        },
+            "type": "number"                
+        },       
         "transactionId": {
             "type": "string"                
-        },        
-        "businessId": {
+        },  
+        "transactionTimestamp": {
+            "type": "number"                
+        },              
+        "brandId": {
             "type": "string"                
         },
-        "businessType": {
-            "type": "string"                
-        },
-        "posId": {
+        "brandLocationId": {
             "type": "string"                
         },        
         "posVendorId": {
             "type": "string"                
         },
-        "posVendorName": {
+        "posId": {
             "type": "string"                
+        },        
+        "posResponseStatus": {
+            "type": "string"
         },
-        "responseStatus": {
-            "type":"string"
+        "posResponseCode": {
+            "type": "integer"
         },
-        "responseCode": {
-            "type": "number"
-        }   
+        "orderStatus": {
+            "type": "integer"
+        }           
                         
     }
 }

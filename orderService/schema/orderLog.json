@@ -11,8 +11,10 @@
         "businessId",
         "businessType",
         "posId",        
-        "posVenorId",
-        "posVenorName"
+        "posVendorId",
+        "posVendorName",
+        "responseCode",
+        "responseStatus"
     ],
     "properties": {
         "orderId": {
@@ -35,6 +37,13 @@
         },
         "posVendorName": {
             "type": "string"                
-        }                
+        },
+        "responseStatus": {
+            "type":"string"
+        },
+        "responseCode": {
+            "type": "number"
+        }   
+                        
     }
 }

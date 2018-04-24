@@ -2,14 +2,14 @@
 const fs = require('fs');
 
 const orderSchema = require('./../schema/order.json');
-const orderInfoSchema = require('./../schema/orderInfo.json');
+const orderItemsSchema = require('./../schema/orderItems.json');
 const orderOwnerSchema = require('./../schema/orderOwner.json');
 const orderPaymentSchema = require('./../schema/orderPayment.json');
 
 const Validator = require('jsonschema').Validator;
 const v = new Validator();
 
-v.addSchema(orderInfoSchema, "/orderInfo");
+v.addSchema(orderItemsSchema, "/orderItems");
 v.addSchema(orderOwnerSchema, "/orderOwner");
 v.addSchema(orderPaymentSchema, "/orderPayment");
 

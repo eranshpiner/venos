@@ -32,6 +32,10 @@ function from(fbMessage) {
     const payload = parsePayload(fbMessage.postback.payload);
     message.action = payload.action;
     message.actionData = payload.data;
+  } else if (fbMessage.delivery) {
+    message.type = MESSAGE_TYPES.DELIVERY;
+  } else if (fbMessage.read) {
+    message.type = MESSAGE_TYPES.READ;
   } else {
     message.type = MESSAGE_TYPES.UNKNOWN;
   }

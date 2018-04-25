@@ -12,7 +12,10 @@ const request = require('request');
 const PAGE_ACCESS_TOKEN = 'EAAXSuZCK0EJ0BAIuEnKSdaAnJtYwuwOCwcTohT1ZAEgktEeTHM9pRMifJwLRMJJZBsUdZBWOAe4AYgJDPM3MDZAsdSYGOR1VpZBJbHXNZB1UaKpzFDHPEdS3q134ss6IkMRKvugRF901yQqpJX4zkm1ZCSvZBTZC7CjESy8r2V9xQKkZCghEzZCDsMpv';
 const VERIFY_TOKEN = 'af5a72d5-c241-4472-b4ef-855b90165fd5';
 const ENDPOINT = '/facebook';
-const ignoredMessageTypes = [MESSAGE_TYPES.UNKNOWN, MESSAGE_TYPES.ECHO];
+const ignoredMessageTypes = [MESSAGE_TYPES.UNKNOWN, 
+                             MESSAGE_TYPES.ECHO, 
+                             MESSAGE_TYPES.DELIVERY,
+                             MESSAGE_TYPES.READ];
 
 
 // Token verification endpoint
@@ -58,6 +61,8 @@ router.post(ENDPOINT, (req, res) => {
           sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
           setTimeout(_ => sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 1200);
           setTimeout(_ => messageHandler.handle(message), 2500);
+        } else {
+          console.log(`message ignored: ${message.type}`);
         }
 
       } else {

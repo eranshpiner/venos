@@ -6,6 +6,8 @@ module.exports = {
     ATTACHMENT: 'attachment',
     UNKNOWN: 'unknown',
     ECHO: 'ECHO',
+    DELIVERY: 'delivery',
+    READ: 'read'
   },
   ACTIONS: {
     CHOOSE_CATEGORY: 'cc',

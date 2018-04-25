@@ -12,5 +12,7 @@ module.exports = {
   ACTIONS: {
     CHOOSE_CATEGORY: 'cc',
     ADD_TO_CART: 'atc',
+    CLICK_ITEM: 'ci',
+    PAY: 'pay'
   }
 };

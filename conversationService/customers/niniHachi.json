@@ -5,6 +5,14 @@
     "he_IL": "ברוכים הבאים מה תרצה להזמין?"
   },
   "items": {
+    "cart": {
+      "type":"cart",
+      "title": {
+        "en_US": "cart",
+        "he_IL": "עגלה"
+      },
+      "picture": "https://fb1.eu.ngrok.io/static/images/basket3.png"
+    },
     "01": {
       "type": "category",
       "title": {

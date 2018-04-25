@@ -10,26 +10,37 @@ function handle(message) {
 
 
   if (message.action) {
-    if (message.action === CONST.ACTIONS.CHOOSE_CATEGORY) {
-      const category = menu.items[message.actionData.id];
-      if (category && category.items) {
+    const curItem = (message.actionData && message.actionData.id) ? menu.items[message.actionData.id] : undefined;
+
+    if (message.action === CONST.ACTIONS.CLICK_ITEM) {
+      if (curItem && curItem.items) {
         message.response.elements = getItems(menu.items, message.actionData.id);
       } else {
         message.response.content = `oh nooooo, category ${message.actionData.id} has no items.`;
       }
     } else if (message.action === CONST.ACTIONS.ADD_TO_CART) {
-      message.response.content = `hurray, item ${message.actionData.id} has been added to cart.`;
+      message.response.content = `Thank for Choosing ${curItem.title.he_IL} has been added to cart.`;
       // TODO: cart
-      message.response.replies = getCategories(menu.items, true);
+      //in general the add cart should understand from the session manager how many items there are in and from there to build the response
+      addCart(message,menu);
+      addCategories(message, menu.items, true);
+    } else if (message.action === CONST.ACTIONS.PAY) {
+      message.response.content = `You're being forwarded to our payment system to complete your order`;
+      // TODO: cart
+      addCategories(message, menu.items, true);
     }
   } else {
-    message.response.content = menu.welcome.en_US;
-    message.response.replies = getCategories(menu.items, true);
+    message.response.content = menu.welcome.he_IL;
+    addCategories(message, menu.items, true);
   }
 
   provider.sendMessage(message);
 }
 
+function addCart(message, menu, lang = 'he_IL') {
+  message.response.replies = message.response.replies || [];
+  message.response.replies = message.response.replies.concat(cartToElement(menu.items['cart'], 'cart', lang));
+}
 
 function getItems(items, categoryId, lang = 'he_IL') {
   const category = items[categoryId];
@@ -44,7 +55,8 @@ function getItems(items, categoryId, lang = 'he_IL') {
   return res;
 }
 
-function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
+function addCategories(message, items, onlyTopLevel = false, lang = 'he_IL') {
+  message.response.replies = message.response.replies || [];
   const elements = [];
   Object.entries(items).forEach(([itemId, item]) => {
       if (onlyTopLevel && !item.topLevel) {
@@ -53,15 +65,15 @@ function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
       elements.push(categoryToElement(item, itemId, lang));
     }
   );
-  return elements.splice(0, 10); // todo limit 10
+  message.response.replies = message.response.replies.concat(elements.splice(0, 9)); // todo limit 9 + cart...
 }
 
 function categoryToElement(item, itemId, lang) {
   const element = {
-    title: item.title[lang],
-    description: item.description[lang],
+    title: item.title ? item.title[lang] : '',
+    description: item.description ? item.description[lang] : '',
     payload: {
-      action: CONST.ACTIONS.CHOOSE_CATEGORY,
+      action: CONST.ACTIONS.CLICK_ITEM,
       data: {
         id: itemId,
       },
@@ -71,6 +83,17 @@ function categoryToElement(item, itemId, lang) {
     element.imageUrl = item.picture;
   }
   return element;
+}
+
+function cartToElement(item, itemId, lang) {
+  let elem = categoryToElement(item, itemId, lang);
+  elem.payload = {
+    action: CONST.ACTIONS.PAY,
+    data: {
+      id: itemId,
+    }
+  };
+  return elem;
 }
 
 function itemToElement(item, itemId, lang) {

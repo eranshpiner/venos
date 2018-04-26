@@ -8,7 +8,7 @@
     "required": [
         "orderId",
         "transactionId",
-        "transactionTimestamp", 
+        "transactionTimeCreated", 
         "brandId",
         "brandLocationId",
         "posVendorId",
@@ -19,12 +19,12 @@
     ],
     "properties": {
         "orderId": {
-            "type": "number"                
+            "type": "string"                
         },       
         "transactionId": {
             "type": "string"                
         },  
-        "transactionTimestamp": {
+        "transactionTimeCreated": {
             "type": "number"                
         },              
         "brandId": {

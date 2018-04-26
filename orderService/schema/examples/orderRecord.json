@@ -1,0 +1,52 @@
+{
+  "orderId": "2fd3f7a0-491d-11e8-8329-3135e0d5b94e",
+  "total": 430,
+  "currency": "nis",
+  "brandId": "shabtai",
+  "brandLocationId": "kfar-vitkin",
+  "orderTimeCreation": 121232131321,
+  "remarks": "",
+  "orderOwner": {
+    "firstName": "joe",
+    "lastName": "doe",
+    "phone": "123-456-678",
+    "email": "joedoe1232@gmail.com",
+    "deliveryInfo": {
+      "city": "new-york",
+      "street": "pizza",
+      "home": "45a",
+      "apartment": 23,
+      "floor": 3
+    },
+    "orderItems": [
+      {
+        "itemId": "156",
+        "itemName": "pizza pepperoni",
+        "quantity": 3,
+        "unitPrice": 70,
+        "price": 210
+      },
+      {
+        "itemId": "435",
+        "itemName": "pizza tuna",
+        "quantity": 1,
+        "unitPrice": 60,
+        "price": 60
+      },
+      {
+        "itemId": "2",
+        "itemName": "beer",
+        "quantity": 4,
+        "unitPrice": 30,
+        "price": 120
+      },
+      {
+        "itemId": "3",
+        "itemName": "diet cola",
+        "quantity": 4,
+        "unitPrice": 10,
+        "price": 40
+      }
+    ]
+  }
+}

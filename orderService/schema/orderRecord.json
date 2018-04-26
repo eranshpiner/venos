@@ -13,11 +13,11 @@
         "orderOwner",
         "brandId",
         "brandLocationId",
-        "orderTimestamp"        
+        "orderTimeCreation"        
     ],
     "properties": {
         "orderId": {
-            "type": "number"
+            "type": "string"
         },
         "total": {
             "type": "number"
@@ -37,7 +37,7 @@
         "brandLocationId": {
             "type": "string"
         }, 
-        "orderTimestamp": {
+        "orderTimeCreation": {
             "type": "number"
         },               
         "remarks": {

@@ -1,0 +1,851 @@
+{
+  "type": "menu",
+  "welcome": {
+    "en_US": "Welcome! Choose category",
+    "he_IL": "ברוכים הבאים מה תרצה להזמין?"
+  },
+  "items": {
+    "01": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "הקמנו פס סושי נפרד, סושי לנשים בהריון עם משטח עבודה נפרד, קרש נפרד, סכין נפרדת ומחצלת גלגול נפרדת. על העמדה הזאת מכינים סושי רק לנשים בהריון, רולים וניגירי על בסיס ירקות ודגים אפויים או מטוגנים."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "101",
+        "102",
+        "103",
+        "104",
+        "105"
+      ],
+      "topLevel": true,
+      "isActive": true
+    },
+    "02": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "מגשי אירוח"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "*יש להזמין מראש."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "03": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "לפני הכל"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "לפני הכל"
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "04": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "ראשונות חמות"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "ראשונות חמות"
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "05": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "מנות סשימי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "מנות דג / בקר נאות. *ניתן לבקש כמנות ללא גלוטן (מוגש עם רוטב ללא גלוטן)."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "06": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סלטים"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סלטים"
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "07": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "קושיאקי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "שיפוד על הגריל ברוטב טריאקי.*ניתן לבקש את המנות ללא גלוטן (יוגש ללא רוטב)."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "08": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "מרקים"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "מרקים"
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "22",
+        "23",
+        "24"
+      ],
+      "topLevel": true
+    },
+    "09": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "מנות ווק"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "*ניתן לבקש את המנות כמנות ללא גלוטן (מבושלות עם סויה ללא גלוטן)."
+      },
+      "picture": null,
+      "external": {
+        "id": "ext22"
+      },
+      "items": [
+        "21",
+        "22",
+        "23",
+        "24"
+      ],
+      "topLevel": true
+    },
+    "10": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "טפאן יאקי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "מוגש על מחבת לוהטת לצד ירקות חתוכים גס, צרובים על הפלנצ'ה. *ניתן לבקש את המנות כמנות ללא גלוטן."
+      },
+      "picture": null,
+      "external": {
+        "id": "ext22"
+      },
+      "items": [
+        "101",
+        "102",
+        "103",
+        "104",
+        "105"
+      ],
+      "topLevel": true
+    },
+    "11": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "מאקי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "6 יח' אצה בחוץ"
+      },
+      "picture": null,
+      "external": {
+        "id": "ext22"
+      },
+      "items": [
+        "21",
+        "22",
+        "23",
+        "24"
+      ],
+      "topLevel": true
+    },
+    "12": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סושי סלמון"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "I/O - אורז בחוץ עם אצה בפנים. *ניתן לבקש את המנות כמנות ללא גולטן."
+      },
+      "picture": null,
+      "external": {
+        "id": "ext22"
+      },
+      "items": [
+        "21",
+        "22",
+        "23",
+        "24"
+      ],
+      "topLevel": true
+    },
+    "13": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סושי טונה אדומה"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "I/O - אורז בחוץ עם אצה בפנים. *ניתן לבקש את המנות כמנות ללא גלוטן."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "14": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סושי דגים לבנים"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "I/O - אורז בחוץ עם אצה בפנים. *ניתן לבקש את המנות כמנות ללא גולטן."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "15": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סושי ירקות"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "I/O - אורז בחוץ עם אצה בפנים. *ניתן לבקש את המנות כמנות ללא גולטן."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "16": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סושי מיוחדים"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "I/O - אורז בחוץ עם אצה בפנים."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "17": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סשימי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "4 יח' פרוסות דג נא. *ניתן לבקש את המנות כמנות ללא גולטן."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "18": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "ניגירי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "2 יח' דג / ירק מונחים על אצבע אורז. *ניתן לבקש את המנות כמנות ללא גולטן."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "19": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "קונוסים"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "קונוסים"
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "20": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "קומבינציות"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "ניתן לבקש את המנות כמנות ללא גולטן."
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "21": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "משקאות"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "משקאות"
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "22": {
+      "type": "category",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "תפריט טבעוני"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "תפריט טבעוני"
+      },
+      "picture": null,
+      "external": {
+        "id": ""
+      },
+      "items": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "topLevel": true
+    },
+    "101": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "",
+        "he_IL": "I/O סלמון אפוי ומתקתק"
+      },
+      "description": {
+        "en_US": "",
+        "he_IL": "8 יח', מלפפון, גזר ואבוקדו. עטוף בסלמון אפוי עם רוטב טריאקי מעל *ניתן לבקש כמנה ללא גלוטן."
+      },
+      "image_url": "https://www.mishloha.co.il/files/menu_food_pic/15220161427141.jpg",
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 39
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext1"
+      }
+    },
+    "102": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "",
+        "he_IL": "קומבינציה צמחונית - 24 יח'"
+      },
+      "description": {
+        "en_US": "",
+        "he_IL": "רול ריינבו ירקות, רול טופו,מאקי בטטה קריספי."
+      },
+      "image_url": "https://www.mishloha.co.il/files/menu_food_pic/15220161449785.jpg",
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 20
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 64
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext1"
+      }
+    },
+    "103": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "",
+        "he_IL": "I/O קטרפילר סלמון"
+      },
+      "description": {
+        "en_US": "",
+        "he_IL": "8 יח', סלמון אפוי ומלפפון. עטוף באבוקדו עם רוטב טריאקי מעל. *ניתן לבקש כמנה ללא גלוטן."
+      },
+      "image_url": "https://www.mishloha.co.il/files/menu_food_pic/152201614636455.jpg",
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 36
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext1"
+      }
+    },
+    "104": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "",
+        "he_IL": "סושי סנדוויץ' סלמון מטוגן"
+      },
+      "description": {
+        "en_US": "",
+        "he_IL": "4 יח', 4 משולשים של סלמון ואבוקדו מטוגנים בטמפורה עם רוטב טריאקי מעל.*ניתן לבקש כמנה ללא גלוטן."
+      },
+      "image_url": "https://www.mishloha.co.il/files/menu_food_pic/152201614770794.jpg",
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 12
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 44
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext1"
+      }
+    },
+    "105": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "",
+        "he_IL": "I/O טונה טמפורה"
+      },
+      "description": {
+        "en_US": "",
+        "he_IL": "8 יח', טונה בטמפורה, אבוקדו, בציפוי שבבי בטטה.*ניתן לבקש כמנה ללא גלוטן."
+      },
+      "image_url": "https://www.mishloha.co.il/files/menu_food_pic/15220161432573.jpg",
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 11
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 42
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext1"
+      }
+    },
+    "106": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "",
+        "he_IL": ""
+      },
+      "description": {
+        "en_US": "",
+        "he_IL": ""
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 15
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 15
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext1"
+      }
+    },
+    "107": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "טופו אגדאשי / סםייסי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 31
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext2"
+      }
+    },
+    "108": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "טמפורה ירקות"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 29
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext3"
+      }
+    },
+    "109": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "כנפיים קריספיות"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 29
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext4"
+      }
+    },
+    "110": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "אדממה"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 16
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext5"
+      }
+    },
+    "111": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סלמון סקין קריספי"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 16
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext6"
+      }
+    },
+    "112": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "חמוצים יפניים"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 18
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext7"
+      }
+    },
+    "113": {
+      "type": "menuItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "קימצ'י חריף"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 19
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext8"
+      }
+    },
+    "111": {
+      "type": "menuSubItem",
+      "title": {
+        "en_US": "the item title",
+        "he_IL": "סויה"
+      },
+      "description": {
+        "en_US": "the item title",
+        "he_IL": "סושי לנשים בהריון"
+      },
+      "price": {
+        "en_US": {
+          "unit": "usd",
+          "value": 10
+        },
+        "he_IL": {
+          "unit": "ils",
+          "value": 19
+        }
+      },
+      "picture": null,
+      "external": {
+        "id": "ext111"
+      }
+    }
+  }
+}

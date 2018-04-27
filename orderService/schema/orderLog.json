@@ -8,7 +8,7 @@
     "required": [
         "orderId",
         "transactionId",
-        "transactionTimeCreated", 
+        "transactionTimeCreation", 
         "brandId",
         "brandLocationId",
         "posVendorId",
@@ -24,7 +24,7 @@
         "transactionId": {
             "type": "string"                
         },  
-        "transactionTimeCreated": {
+        "transactionTimeCreation": {
             "type": "number"                
         },              
         "brandId": {

@@ -13,12 +13,12 @@ var order = {
          'firstName':'joe',
          'lastName':'doe',
          'phone':'123-456-678',
-         'email':'joedoe1232@gmail.com',
+         'email':'joedoe98876@gmail.com',
          'deliveryInfo': {
              'city':'new-york',
              'street':'pizza',
-             'home':'45a',
-             'apartment':23,
+             'houseNumber':'45a',
+             'apartment':'23',
              'floor':3
          },
          orderItems:
@@ -67,4 +67,31 @@ var order = {
 const fs = require('fs');
 //just safe json into disk
 fs.writeFileSync('./order.json', JSON.stringify(order,undefined,2));
+
+const format = require('../../dal/sqlFormatter');
+const dal = require ('../../dal/dbfacade');
+
+var orderRecord = format.orderRecordBuilder(order);
+//console.log('order is formatted: ' ,orderRecord);
+
+//console.log('sql:', JSON.stringify (orderRecord));
+
+dal.connect();
+
+//insert order to db (order table)
+dal.command('INSERT INTO venos.ORDER SET ?',orderRecord, (result) => {
+    console.log('result=',JSON.stringify(result,undefined,2));
+} );
+//read all orders 
+dal.query('SELECT COUNT(*) FROM venos.ORDER',(result)=> {
+    console.log('result=',JSON.stringify(result,undefined,2));
+});
+//query with parameters
+dal.queryWithParams('SELECT * from venos.ORDER WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'], (result)=>{
+    console.log('result=', JSON.stringify(result,undefined,2));
+})
+
+
+dal.close();
+
 

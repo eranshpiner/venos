@@ -1,5 +1,5 @@
 {
-  "total": 430.00,
+  "total": 430,
   "currency": "nis",
   "brandId": "shabtai",
   "brandLocationId": "kfar-vitkin",
@@ -8,12 +8,12 @@
     "firstName": "joe",
     "lastName": "doe",
     "phone": "123-456-678",
-    "email": "joedoe1232@gmail.com",
+    "email": "joedoe98876@gmail.com",
     "deliveryInfo": {
       "city": "new-york",
       "street": "pizza",
-      "home": "45a",
-      "apartment": 23,
+      "houseNumber": "45a",
+      "apartment": "23",
       "floor": 3
     },
     "orderItems": [

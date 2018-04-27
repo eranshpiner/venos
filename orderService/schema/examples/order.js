@@ -21,7 +21,8 @@ var order = {
              'apartment':'23',
              'floor':3
          },
-         orderItems:
+     },
+     orderItems:
              [
                  {
                   'itemId':'156',
@@ -52,7 +53,7 @@ var order = {
                    'price':40 
                 }    
             ],
-            orderPayment: {
+    orderPayment: {
                 'paymentType': 'credit',
                 'paymentSum': '430',
                 'paymentName':'wtf?',
@@ -61,7 +62,6 @@ var order = {
                 'creditCardCvv':'000',
                 'creditCardHolderId':'343545645454'
             }
-    }
 };
 
 const fs = require('fs');
@@ -75,13 +75,28 @@ var orderRecord = format.orderRecordBuilder(order);
 //console.log('order is formatted: ' ,orderRecord);
 
 //console.log('sql:', JSON.stringify (orderRecord));
+var orderItems = format.orderItemsBuilder(orderRecord.orderId, order);
+console.log('orderItems:', JSON.stringify (orderItems[0]));
+console.log('###orderItems.length=', orderItems.length);
 
 dal.connect();
+
+//start transaction
 
 //insert order to db (order table)
 dal.command('INSERT INTO venos.ORDER SET ?',orderRecord, (result) => {
     console.log('result=',JSON.stringify(result,undefined,2));
 } );
+
+for (i=0; i < orderItems.length; i++){
+    dal.command('INSERT INTO venos.orderItems SET ?', orderItems[i], (result) => {
+        console.log('result',JSON.stringify(result,undefined,2));
+    })
+}
+
+
+//end transaction
+
 //read all orders 
 dal.query('SELECT COUNT(*) FROM venos.ORDER',(result)=> {
     console.log('result=',JSON.stringify(result,undefined,2));
@@ -90,6 +105,8 @@ dal.query('SELECT COUNT(*) FROM venos.ORDER',(result)=> {
 dal.queryWithParams('SELECT * from venos.ORDER WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'], (result)=>{
     console.log('result=', JSON.stringify(result,undefined,2));
 })
+
+
 
 
 dal.close();

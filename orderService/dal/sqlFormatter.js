@@ -35,9 +35,34 @@ var orderRecordBuilder = (order) => {
 }
 
 
+var orderItemsBuilder = (orderId, order) => {
+
+    var dbItems = [];
+    var items = order.orderItems;
+    console.log('order=', JSON.stringify(order.orderItems,undefined,2));
+    console.log('length =', order.orderItems.lenght);
+
+    //TODO - lenght returns here undefined value!!
+    //fix it!
+    for (i=0; i < 3; i++){
+        var dbItem = {
+            itemId    : items[i].itemId,
+            itemName  : items[i].itemName,
+            quantity  : items[i].quantity,
+            price     : items[i].price,
+            unitPrice : items[i].unitPrice, 
+            orderId   : orderId, //not sure it's correct way doing that
+            remarks   : items[i].remarks
+        }
+       // console.log('dbItem=',dbItem);
+        dbItems.push(dbItem); 
+    }
+    return dbItems;
+}
 
 
 module.exports = {
     formatSql,
-    orderRecordBuilder
+    orderRecordBuilder,
+    orderItemsBuilder
 }

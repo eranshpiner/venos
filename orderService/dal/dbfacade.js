@@ -25,7 +25,7 @@ var init = () => {
 
 db.connect((error) => {
         if(error){
-            console.log('Failed connect to DB : ', err.stack);
+            console.log('Failed connect to DB : ', error.stack);
             throw error;
         }    
         console.log('Connected to db....');

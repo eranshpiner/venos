@@ -12,5 +12,7 @@ module.exports = {
   ACTIONS: {
     CHOOSE_CATEGORY: 'cc',
     ADD_TO_CART: 'atc',
+    REMOVE_FROM_CART: 'rfc',
+    GET_CART: 'gc',
   }
 };

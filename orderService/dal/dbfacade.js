@@ -1,33 +1,37 @@
 
 //TODO - create pool of connections rather than single connection
 //TODO - add connection provider when working with pool
-//support promises 
-//support clusters 
+//TODO support promises 
+//TODO support clusters 
 
 const mysql = require('mysql');
 
+//db connection
 var db;
 
 /**
- * Provides connection to data base
+ * Initializes connection to data base
  */
-//TODO - replace hardcoded parameters by properties/yaml files
-var connect = () => {
-    db = mysql.createConnection({
-        host : '127.0.0.1',
-        database : 'venos',
-        user : 'vladif',
-        password : 'bokerTov1!'
-    });
 
-db.connect((err) => {
-        if(err){
+//TODO - replace hardcoded parameters by properties/yaml files
+
+var init = () => {
+    db = mysql.createConnection({
+    host : '127.0.0.1',
+    database : 'venos',
+    user : 'vladif',
+    password : 'bokerTov1!'
+});
+
+db.connect((error) => {
+        if(error){
             console.log('Failed connect to DB : ', err.stack);
-            throw new Error('Failed connect to DB : ', err.stack);
+            throw error;
         }    
         console.log('Connected to db....');
   });
 }
+
 
 /**
  * Simple not parametrized query
@@ -39,6 +43,7 @@ var query = (sql, processResult) => {
     db.query(sql, (error,result,fields)=> {
         if (error){
             console.log(`sql ${sql} has failed with error ${error}`);
+            throw error;
         }
         processResult(result);
     }
@@ -55,6 +60,7 @@ var queryWithParams = (sql, parameters, processResult) => {
     db.query(sql, parameters, (error,result,fields)=> {
         if (error){
             console.log(`sql ${sql} has failed with error ${error}`);
+            throw error;
         }
         processResult(result);
     }
@@ -68,7 +74,7 @@ var queryWithParams = (sql, parameters, processResult) => {
  * @param {*} processResult 
  */
 var command = (sql,parameters,processResult) => { 
-    console.log('Run command ...');
+    console.log('Run parametrized command ...');
     //open transaction?
     db.query(sql,parameters,(error,result) => {
         if (error) throw error;
@@ -82,8 +88,31 @@ var command = (sql,parameters,processResult) => {
  * @param {*} parameters 
  * @param {*} processResult 
  */
-var commandWithTransaction = (sql,parameters,processResult) => { 
-    
+var commandWithTransaction = (commandsList,processResult) => { 
+    console.log('start commandWithTransaction...')
+    db.beginTransaction((error) => {
+        console.log('Failure to open transaction!', error);
+        throw error;
+    });
+
+    try {
+        for (let i=0; i < commandsList.length; i++) {
+            command (commandsList[i].query, commandsList[i].parameters, (result)=>{
+                console.log('running command : ', commandsList[i]);
+            })
+        }//for
+
+        db.commit( (error)=> {
+            throw error;
+        });
+    } 
+    catch(error) {
+        log.console('Failure in transaction!. Rollback is going to be performed', error);
+        db.rollback((error)=> {
+            console.log('Fatal error ! Rollback has failed!!', error);
+            throw error;
+        });  
+    }
 }
 
 /**
@@ -91,8 +120,7 @@ var commandWithTransaction = (sql,parameters,processResult) => {
  */
 
 var close = () => {
-    
-    db.end( (err) => {
+    db.end( (error) => {
         db.destroy();
         //TODO - end doesn't work for some reason. investigatr it
         //throw new Error('Failed close connection to DB : ', err);
@@ -102,7 +130,7 @@ var close = () => {
 
 
 module.exports = 
-{ connect,
+{   init,
     query,
     queryWithParams,
     command,

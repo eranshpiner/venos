@@ -1,19 +1,23 @@
-'use strict';
-
 const messageHandler = require('./../../messageHandler');
-const MESSAGE_TYPES = require('./../../dataModel/const').MESSAGE_TYPES;
+const MESSAGE_TYPES = require('../../const').MESSAGE_TYPES;
 const transformer = require('./transformer');
 const CONST = require('./const');
 
 const router = require('express').Router();
 const request = require('request');
 
-//Page is Messanger101 Community
-const PAGE_ACCESS_TOKEN = 'EAAXSuZCK0EJ0BAIuEnKSdaAnJtYwuwOCwcTohT1ZAEgktEeTHM9pRMifJwLRMJJZBsUdZBWOAe4AYgJDPM3MDZAsdSYGOR1VpZBJbHXNZB1UaKpzFDHPEdS3q134ss6IkMRKvugRF901yQqpJX4zkm1ZCSvZBTZC7CjESy8r2V9xQKkZCghEzZCDsMpv';
+const config = {
+  pageTokens: {
+    // Nati
+    '170386493680511': 'EAACUCGKSEZBEBAIJOM9BQhVynA5W3Fdwfi7pUjye2ZBgCmKXmhSRNweSHZB86YxiNjCZBH1Yk9SBvroAntwz9sHSpWsGlYO6wjIGi5FRsw3Cwp2gOxZBfQ2TXp2VAmZBlnxcjOUaoMim0fuLht8ZCcWbw7ZAsTGTVmKXo7foSC0YBAZDZD',
+    // Oran - Page is Messanger101 Community
+    '378370189311177': 'EAAXSuZCK0EJ0BAIuEnKSdaAnJtYwuwOCwcTohT1ZAEgktEeTHM9pRMifJwLRMJJZBsUdZBWOAe4AYgJDPM3MDZAsdSYGOR1VpZBJbHXNZB1UaKpzFDHPEdS3q134ss6IkMRKvugRF901yQqpJX4zkm1ZCSvZBTZC7CjESy8r2V9xQKkZCghEzZCDsMpv',
+  }
+};
 const VERIFY_TOKEN = 'af5a72d5-c241-4472-b4ef-855b90165fd5';
 const ENDPOINT = '/facebook';
-const ignoredMessageTypes = [MESSAGE_TYPES.UNKNOWN, 
-                             MESSAGE_TYPES.ECHO, 
+const ignoredMessageTypes = [MESSAGE_TYPES.UNKNOWN,
+                             MESSAGE_TYPES.ECHO,
                              MESSAGE_TYPES.DELIVERY,
                              MESSAGE_TYPES.READ];
 
@@ -43,50 +47,50 @@ router.get(ENDPOINT, (req, res) => {
 });
 
 router.post(ENDPOINT, (req, res) => {
-  const body = req.body;
-  // Checks this is an event from a page subscription
-  if (body.object === 'page') {
+  if (req.body && req.body.object === 'page') {
+    res.status(200).send('EVENT_RECEIVED'); // we don't want FB to hate us if we fail so we respond first
+    try {
+      req.body.entry.forEach((entry) => {
+        if (entry.messaging) {
+          entry.messaging.forEach(fbMessage => {
+            console.log('[Facebook] Incoming message', fbMessage);
 
-    // Iterates over each entry - there may be multiple if batched
-    body.entry.forEach(function (entry) {
+            const message = transformer.from(fbMessage);
+            if (!ignoredMessageTypes.includes(message.type)) {
+              sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
+              setTimeout(_ => sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 1200);
+              setTimeout(_ => messageHandler.handle(message), 2500);
+            } else {
+              console.log(`message ignored: ${message.type}`);
+            }
 
-      // Gets the message. entry.messaging is an array, but
-      // will only ever contain one message, so we get index 0
-      if (entry.messaging) {
-        const webhook_event = entry.messaging[0];
-        console.log('[Facebook] Incoming message', webhook_event);
-
-        const message = transformer.from(webhook_event);
-        if (!ignoredMessageTypes.includes(message.type)) {
-          sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
-          setTimeout(_ => sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 1200);
-          setTimeout(_ => messageHandler.handle(message), 2500);
+          });
         } else {
-          console.log(`message ignored: ${message.type}`);
+          console.log('!!! no messaging attribute on entry');
         }
-
-      } else {
-        console.log('!!! no messaging attribute on entry');
-      }
-    });
-
-    res.status(200).send('EVENT_RECEIVED');
+      });
+    } catch (e) {
+      console.log('Error handling message', e);
+    }
   } else {
     res.sendStatus(404);
   }
 });
 
 function sendMessage(message) {
-  const messageBody = transformer.to(message);
-  const fbMessage = {
-    recipient: {
-      id: message.userDetails.id,
-    },
-    messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
-    message: messageBody,
-  };
-  sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
-  _sendMessage(fbMessage);
+  const messageBodies = transformer.to(message);
+  messageBodies.forEach(messageBody => {
+    const fbMessage = {
+      recipient: {
+        id: message.userDetails.id,
+      },
+      messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
+      message: messageBody,
+    };
+    sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
+    _sendMessage(fbMessage, message.customerId);
+  });
+
 }
 
 function sendSenderAction(message, state) {
@@ -98,14 +102,14 @@ function sendSenderAction(message, state) {
     messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
     sender_action: state,
   };
-  _sendMessage(outgoingMessage);
+  _sendMessage(outgoingMessage, message.customerId);
 }
 
-function _sendMessage(message) {
+function _sendMessage(message, customerId) {
   console.log('[FacebookProvider] Outgoing message', JSON.stringify(message));
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: {'access_token': PAGE_ACCESS_TOKEN},
+    qs: {'access_token': config.pageTokens[customerId]},
     method: 'POST',
     json: message
   }, (err, res, body) => {

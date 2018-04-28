@@ -1,7 +1,7 @@
 'use strict';
 
-const Message = require('./../../dataModel/Message');
-const MESSAGE_TYPES = require('./../../dataModel/const').MESSAGE_TYPES;
+const Message = require('../../models/Message');
+const MESSAGE_TYPES = require('../../const').MESSAGE_TYPES;
 
 function from(fbMessage) {
   const message = new Message(Date.now());
@@ -55,60 +55,61 @@ function parsePayload(payload) {
 
 
 function to(message) {
-  const fbMessage = {};
-
-  // Templates
-  if (message.response.elements) {
-    const elements = message.response.elements.map(el => {
-      const element = {
-        title: el.title,
-        subtitle: el.description,
-        image_url: el.image_url,
-        buttons: []
-      };
-      if (el.actions) {
-        el.actions.forEach(action => {
-          element.buttons.push({
-            type: 'postback',
-            title: action.title,
-            payload: JSON.stringify(action.payload),
+  const responses = message.responses.map(response => {
+    const fbMessage = {};
+    // Templates
+    if (response.elements) {
+      const elements = response.elements.map(el => {
+        const element = {
+          title: el.title,
+          subtitle: el.description,
+          image_url: el.image_url,
+          buttons: []
+        };
+        if (el.actions) {
+          el.actions.forEach(action => {
+            element.buttons.push({
+              type: 'postback',
+              title: action.title,
+              payload: JSON.stringify(action.payload),
+            });
           });
+        }
+        if (el.image_url) {
+          element.image_url = el.image_url;
+        }
+        return element;
+      });
+
+      fbMessage.attachment = {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements,
+        },
+      };
+    } else {
+      fbMessage.text = response.content;
+      // Quick Replies
+      if (response.replies) {
+        const replies = response.replies;
+        fbMessage.quick_replies = replies.map(reply => {
+          const quickReply = {
+            content_type: 'text',
+            title: reply.title,
+            payload: JSON.stringify(reply.payload),
+          };
+          if (reply.imageUrl) {
+            quickReply.image_url = reply.imageUrl;
+          }
+          return quickReply;
         });
       }
-      if (el.image_url) {
-        element.image_url = el.image_url;
-      }
-      return element;
-    });
-
-    fbMessage.attachment = {
-      type: 'template',
-      payload: {
-        template_type: 'generic',
-        elements,
-      },
-    };
-  } else {
-    fbMessage.text = message.response.content;
-    // Quick Replies
-    if (message.response.replies) {
-      const replies = message.response.replies;
-      fbMessage.quick_replies = replies.map(reply => {
-        const quickReply = {
-          content_type: 'text',
-          title: reply.title,
-          payload: JSON.stringify(reply.payload),
-        };
-        if (reply.imageUrl) {
-          quickReply.image_url = reply.imageUrl;
-        }
-        return quickReply;
-      });
     }
-  }
+    return fbMessage;
+  });
 
-  return fbMessage;
-
+  return responses;
 }
 
 module.exports = {from, to};

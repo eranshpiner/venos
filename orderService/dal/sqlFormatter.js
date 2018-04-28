@@ -40,11 +40,9 @@ var orderItemsBuilder = (orderId, order) => {
     var dbItems = [];
     var items = order.orderItems;
     //console.log('order=', JSON.stringify(order.orderItems,undefined,2));
-    console.log('length =', order.orderItems.lenght);
+    console.log('length =', order.orderItems.length);
 
-    //TODO - lenght returns here undefined value!!
-    //fix it!!!
-    for (i=0; i < 3; i++){
+    for (i=0; i < order.orderItems.length; i++){
         var dbItem = {
             itemId    : items[i].itemId,
             itemName  : items[i].itemName,

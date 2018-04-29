@@ -14,5 +14,7 @@ module.exports = {
     ADD_TO_CART: 'atc',
     REMOVE_FROM_CART: 'rfc',
     GET_CART: 'gc',
+    CLICK_ITEM: 'ci',
+    PAY: 'pay'
   }
 };

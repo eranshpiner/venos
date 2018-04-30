@@ -20,17 +20,18 @@ app.post('/order', (req, res) => {
     
     // create and save 'orderRecord'
     
-    let result = beecomm.pushOrder(req.body);
-    if (result < 0) {
-        res.status(304);
-        res.send("{\"orderId\":\"317\",\"message\":\"order not accepted\"}");
-        return;
-    }
+    beecomm.pushOrder(req.body, function(result) {
+        if (result < 0) {
+            res.status(304);
+            res.send("{\"orderId\":\"317\",\"message\":\"order not accepted\"}");
+        } else {
+            res.status(201);
+            res.send("{\"orderId\":\"317\",\"transactionId\":\"tid-Gv47xTT\",\"message\":\"order accepted\",\"response\":\"" + result + "\"}");
+        }
+    });
 
     // if success, create and save 'orderLog'  
 
-    res.status(201);
-    res.send("{\"orderId\":\"317\",\"transactionId\":\"tid-Gv47xTT\",\"message\":\"order accepted\"}");
 });
 
 app.listen(3000, () => console.log('Restaurant Integration Service - listening on port 3000...'));

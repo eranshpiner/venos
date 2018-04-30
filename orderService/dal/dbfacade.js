@@ -5,6 +5,7 @@
 //TODO support clusters 
 
 const mysql = require('mysql');
+const format = require('./sqlFormatter.js');
 
 //db connection
 var db;
@@ -20,8 +21,8 @@ var init = () => {
     host : '127.0.0.1',
     database : 'venos',
     user : 'vladif',
-    password : 'bokerTov1!',
-    debug : true //TODO remove in the production
+    password : 'bokerTov1!'
+    //debug : true //TODO remove in the production
 });
 
 db.connect((error) => {
@@ -30,6 +31,8 @@ db.connect((error) => {
             throw error;
         }    
         console.log('Connected to db....');
+        //call here command or query
+
   });
 }
 
@@ -91,10 +94,10 @@ var command = (sql,parameters,processResult) => {
  */
 var commandWithTransaction = (commandsList,processResult) => { 
     console.log('start commandWithTransaction...')
-    db.beginTransaction((error) => {
-        console.log('Failure to open transaction!', error);
-        throw error;
-    });
+    // db.beginTransaction((error) => {
+    //     console.log('Failure to open transaction!', error);
+    //     throw error;
+    // });
 
     try {
         for (let i=0; i < commandsList.length; i++) {
@@ -103,9 +106,9 @@ var commandWithTransaction = (commandsList,processResult) => {
             })
         }//for
 
-        db.commit( (error)=> {
-            throw error;
-        });
+        // db.commit( (error)=> {
+        //     throw error;
+        // });
     } 
     catch(error) {
         log.console('Failure in transaction!. Rollback is going to be performed', error);
@@ -116,9 +119,16 @@ var commandWithTransaction = (commandsList,processResult) => {
     }
 }
 
-var prepareOrderRecord = () => {
+/**
+ * Prepare input for saving order record in the database
+ * @param {} order 
+ */
+var prepareOrderRecord = (order) => {
+
     console.log('start prepareOrderRecord ....');
     var commandForTransaction=[];
+    var orderRecord = format.orderRecordBuilder(order);
+    var orderItems  = format.orderItemsBuilder(orderRecord.orderId, order);
 
     var orderCommand = {
         query:'INSERT INTO venos.ORDER SET ?',
@@ -133,6 +143,7 @@ var prepareOrderRecord = () => {
         } 
         commandForTransaction.push(orderItem);
     }
+    
     console.log('end prepareOrderRecord ....');
     return commandForTransaction;
 }

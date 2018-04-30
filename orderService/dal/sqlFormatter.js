@@ -12,6 +12,7 @@ var formatSql = (command, parameters) => {
  * @param {*} order 
  */
 var orderRecordBuilder = (order) => {
+    console.log('start orderRecordBuilder...');
     var orderRecord = {
         orderId      : uuid(),
         total        : order.total,
@@ -31,6 +32,7 @@ var orderRecordBuilder = (order) => {
         company      : order.orderOwner.deliveryInfo.company,
         remarks      : order.remarks
     };
+    console.log('end orderRecordBuilder...');
     return orderRecord;
 }
 
@@ -40,7 +42,6 @@ var orderItemsBuilder = (orderId, order) => {
     var dbItems = [];
     var items = order.orderItems;
     //console.log('order=', JSON.stringify(order.orderItems,undefined,2));
-    console.log('length =', order.orderItems.length);
 
     for (i=0; i < order.orderItems.length; i++){
         var dbItem = {

@@ -19,9 +19,10 @@ app.post('/order', (req, res) => {
         res.send("{\"message\":\"invalid request\"}");
         return;
     }
-    
+
+    //init db
+    dal.init();
     // create and save 'orderRecord' (call dal)
-    
     try {
         dal.commandWithTransaction(dal.prepareOrderRecord(req.body), processResult => {
             //todo here something with result

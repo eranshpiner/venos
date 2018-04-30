@@ -25,23 +25,25 @@ function transfromOrder(source) {
     target.branchId = source.restaurantId;
     
     target.orderInfo = {};
-    target.orderInfo.orderType = source.orderInfo.orderType;
-    target.orderInfo.firstName = source.orderInfo.firstName;
-    target.orderInfo.lastName = source.orderInfo.lastName;
-    target.orderInfo.phone = source.orderInfo.phone;
-    target.orderInfo.remarks = source.orderInfo.remarks;
-    target.orderInfo.dinners = source.orderInfo.dinners;
-    target.orderInfo.email = source.orderInfo.email;
+    
+    // attributes which we do not supply yet
+    target.orderInfo.orderType = 1;
+    target.orderInfo.dinners = 2; 
     target.orderInfo.discountSum = "";
     target.orderInfo.outerCompId = 0;
     target.orderInfo.outerCompOrderId = "";
-    target.orderInfo.dinners = 0;
     target.orderInfo.arrivalTime = "";
 
+    target.orderInfo.remarks = source.remarks;
+    target.orderInfo.firstName = source.orderOwner.firstName;
+    target.orderInfo.lastName = source.orderOwner.lastName;
+    target.orderInfo.phone = source.orderOwner.phone;
+    target.orderInfo.email = source.orderOwner.email;
+
     target.orderInfo.items = [];
-    source.orderInfo.menuItems.forEach(function (item, index){
+    source.orderItems.forEach(function (item, index){
         target.orderInfo.items[index] = {};
-        target.orderInfo.items[index].netId = item.itemId; 
+        target.orderInfo.items[index].netId = parseInt(item.itemId); 
         target.orderInfo.items[index].itemName = item.itemName; 
         target.orderInfo.items[index].quantity = item.quantity;
         target.orderInfo.items[index].price = 1.0; 
@@ -65,7 +67,7 @@ function transfromOrder(source) {
     target.orderInfo.deliveryInfo.companyName = "";
 
     // validate that target 'beecomm' odrer json is valid
-    result = validator.validateExternalOrder(order, beecommOrderSchema);
+    result = validator.validateExternalOrder(target, beecommOrderSchema);
     if (!result) {
         console.log("transfomation to 'beecomm' order failed");
         return null;

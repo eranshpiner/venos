@@ -117,7 +117,7 @@ var commandWithTransaction = (commandsList,processResult) => {
 }
 
 var prepareOrderRecord = () => {
-
+    console.log('start prepareOrderRecord ....');
     var commandForTransaction=[];
 
     var orderCommand = {
@@ -133,6 +133,7 @@ var prepareOrderRecord = () => {
         } 
         commandForTransaction.push(orderItem);
     }
+    console.log('end prepareOrderRecord ....');
     return commandForTransaction;
 }
 

@@ -20,7 +20,8 @@ var init = () => {
     host : '127.0.0.1',
     database : 'venos',
     user : 'vladif',
-    password : 'bokerTov1!'
+    password : 'bokerTov1!',
+    debug : true //TODO remove in the production
 });
 
 db.connect((error) => {
@@ -115,6 +116,26 @@ var commandWithTransaction = (commandsList,processResult) => {
     }
 }
 
+var prepareOrderRecord = () => {
+
+    var commandForTransaction=[];
+
+    var orderCommand = {
+        query:'INSERT INTO venos.ORDER SET ?',
+        parameters:orderRecord
+    }
+    commandForTransaction.push(orderCommand);
+
+    for (i=0; i < orderItems.length; i++){
+        var orderItem = {
+            query:'INSERT INTO venos.orderItems SET ?',
+            parameters:orderItems[i]
+        } 
+        commandForTransaction.push(orderItem);
+    }
+    return commandForTransaction;
+}
+
 /**
  * Terminates connection to database
  */
@@ -135,6 +156,7 @@ module.exports =
     queryWithParams,
     command,
     commandWithTransaction,
+    prepareOrderRecord,
     close
 }
              

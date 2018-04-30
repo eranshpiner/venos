@@ -48,8 +48,8 @@
     }
   ],
   "orderPayment": {
-    "paymentType": "credit",
-    "paymentSum": "430",
+    "paymentType": 1,
+    "paymentSum": 55.7,
     "paymentName": "wtf?",
     "creditCard": "3434-3434-4334-3434",
     "creditCardExp": "09/20",

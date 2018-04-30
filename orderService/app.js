@@ -15,6 +15,7 @@ app.post('/order', (req, res) => {
     if (!valid) {
         res.status(400);
         res.send("{\"message\":\"invalid request\"}");
+        return;
     }
     
     // create and save 'orderRecord'
@@ -23,6 +24,7 @@ app.post('/order', (req, res) => {
     if (result < 0) {
         res.status(304);
         res.send("{\"orderId\":\"317\",\"message\":\"order not accepted\"}");
+        return;
     }
 
     // if success, create and save 'orderLog'  

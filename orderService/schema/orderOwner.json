@@ -29,7 +29,7 @@
             "required": [
                 "city",
                 "street",
-                "homeNumber"
+                "houseNumber"
             ],                    
             "properties": {                        
                 "city": {
@@ -38,7 +38,7 @@
                 "street": {
                     "type": "string"
                 },
-                "homeNumber": {
+                "houseNumber": {
                     "type": "string"
                 },
                 "apartment": {

@@ -10,25 +10,25 @@ const app = express();
 // Middleware
 app.use(bodyParser.json());
 
-app.post('/pushOrder', (req, res) => {
+app.post('/order', (req, res) => {
     let valid = validator.validateInternalOrder(req.body);
     if (!valid) {
         res.status(400);
-        res.send("invalid payload");
+        res.send("{\"message\":\"invalid request\"}");
     }
     
     // create and save 'orderRecord'
     
     let result = beecomm.pushOrder(req.body);
     if (result < 0) {
-        res.status(500);
-        res.send("order submission failed");
+        res.status(304);
+        res.send("{\"orderId\":\"317\",\"message\":\"order not accepted\"}");
     }
 
     // if success, create and save 'orderLog'  
 
     res.status(201);
-    res.send("Order Accepted");
+    res.send("{\"orderId\":\"317\",\"transactionId\":\"tid-Gv47xTT\",\"message\":\"order accepted\"}");
 });
 
 app.listen(3000, () => console.log('Restaurant Integration Service - listening on port 3000...'));

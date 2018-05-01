@@ -7,13 +7,17 @@ const validator = require('../../util/validator.js');
 const beecommOrderSchema = require('./beecommOrder.json');
 
 // beecomm api consts
+const client_id = "S1kGCnm9hkKfh0plonkVBmALJvzGcVW1a0qe8BO0PTgWTP0gmiTN300SmWpZtzMx";
+const client_secret = "5F6zsjU6HNVP61uq3UDDzl3TOAOihXzGyBEUjmO0dj0siK1LgBwPv0cMk0d2QM9V";
 const apiVersion = 2;
 const host = "biapp.beecomm.co.il";
 const port = "8094";
-const authenticationResource = util.format("/v%d/oauth/token", apiVersion);
+const tokenResource = util.format("/v%d/oauth/token", apiVersion);
 const orderCenterResource = util.format("/api/v%d/services/orderCenter", apiVersion);
 const pushOrderResource = orderCenterResource + "/pushOrder";
 
+// beecomm access token
+var access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjUzNjU3OTE2NjQsImNsaWVudCI6eyJfaWQiOiI1YWQ3MjUxYjBkZmJlMGEwOTAyOGU0ZjciLCJjbGllbnRfbmFtZSI6InZlbm9zIiwiaGViTmFtZSI6IteV16DXldehIiwidHlwZSI6ImRlbGl2ZXJ5IiwiaXNBY3RpdmUiOnRydWUsInJlZ2lzdHJhdGlvbkRhdGUiOiIxOC0wNC0yMDE4IDEzOjU5OjM5IiwibGV2ZWwiOjUsInJvbGUiOiJhcHAtY2xpZW50IiwiY2xpZW50X2lkIjoiUzFrR0NubTloa0tmaDBwbG9ua1ZCbUFMSnZ6R2NWVzFhMHFlOEJPMFBUZ1dUUDBnbWlUTjMwMFNtV3BadHpNeCIsImNsaWVudF9zZWNyZXQiOiI1RjZ6c2pVNkhOVlA2MXVxM1VERHpsM1RPQU9paFh6R3lCRVVqbU8wZGowc2lLMUxnQndQdjBjTWswZDJRTTlWIn19.wb4B4d-jo4jzKg2FOpQ7Xu43CFF2_eCXwDfwdcUMEAw";
 
 function transfromOrder(source) {
     
@@ -79,9 +83,8 @@ function transfromOrder(source) {
     return target;
 }
 
-
-function pushOrder(source, callback) {
-    
+function executePushOrder(source, callback) {
+  
     let target = transfromOrder(source);
     if (target == null) {
         return -1;
@@ -89,7 +92,7 @@ function pushOrder(source, callback) {
 
     let headers = {
         'Content-Type': 'application/json',
-        'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjUzNjU3OTE2NjQsImNsaWVudCI6eyJfaWQiOiI1YWQ3MjUxYjBkZmJlMGEwOTAyOGU0ZjciLCJjbGllbnRfbmFtZSI6InZlbm9zIiwiaGViTmFtZSI6IteV16DXldehIiwidHlwZSI6ImRlbGl2ZXJ5IiwiaXNBY3RpdmUiOnRydWUsInJlZ2lzdHJhdGlvbkRhdGUiOiIxOC0wNC0yMDE4IDEzOjU5OjM5IiwibGV2ZWwiOjUsInJvbGUiOiJhcHAtY2xpZW50IiwiY2xpZW50X2lkIjoiUzFrR0NubTloa0tmaDBwbG9ua1ZCbUFMSnZ6R2NWVzFhMHFlOEJPMFBUZ1dUUDBnbWlUTjMwMFNtV3BadHpNeCIsImNsaWVudF9zZWNyZXQiOiI1RjZ6c2pVNkhOVlA2MXVxM1VERHpsM1RPQU9paFh6R3lCRVVqbU8wZGowc2lLMUxnQndQdjBjTWswZDJRTTlWIn19.wb4B4d-jo4jzKg2FOpQ7Xu43CFF2_eCXwDfwdcUMEAw'
+        'access_token': access_token
     };
     
     let options = {
@@ -114,4 +117,39 @@ function pushOrder(source, callback) {
 
 }
 
-exports.pushOrder = pushOrder;
+function retrieveToken(callback) {
+
+    let data = querystring.stringify({
+        client_id: client_id,
+        client_secret: client_secret
+      });
+
+    let headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': data.length
+    };
+    
+    let options = {
+        host: host,
+        port: port,
+        path: tokenResource,
+        method: 'POST',
+        headers: headers
+    };
+    
+    let req = https.request(options, function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log("got token from " + tokenResource);
+            console.log('response: ' + chunk);
+            callback(chunk);
+        });
+    });
+    
+    req.write(data);
+    req.end();
+
+}
+
+exports.executePushOrder = executePushOrder;
+exports.retrieveToken = retrieveToken;

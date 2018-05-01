@@ -20,7 +20,7 @@ app.post('/order', (req, res) => {
     
     // create and save 'orderRecord'
     
-    beecomm.pushOrder(req.body, function(result) {
+    beecomm.executePushOrder(req.body, function(result) {
         if (result < 0) {
             res.status(304);
             res.send("{\"orderId\":\"317\",\"message\":\"order not accepted\"}");

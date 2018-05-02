@@ -20,33 +20,9 @@ app.post('/order', (req, res) => {
         return;
     }
 
-    //init db
-    dal.init();
-    // create and save 'orderRecord' (call dal)
-    try {
-        dal.commandWithTransaction(dal.prepareOrderRecord(req.body), processResult => {
-            //todo here something with result
-            console.log('Order is saved in db...')
-        })
-    }catch (error){
-        console.log('failed to safe order.. retry');
-    }
-
-
-    let result = beecomm.pushOrder(req.body);
-    if (result < 0) {
-        res.status(304);
-        res.send("{\"orderId\":\"317\",\"message\":\"order not accepted\"}");
-        return;
-    }
-
-    
-
 
     // if success, create and save 'orderLog'  
 
-    res.status(201);
-    res.send("{\"orderId\":\"317\",\"transactionId\":\"tid-Gv47xTT\",\"message\":\"order accepted\"}");
 });
 
 app.listen(3000, () => console.log('Restaurant Integration Service - listening on port 3000...'));

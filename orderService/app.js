@@ -21,6 +21,17 @@ app.post('/order', (req, res) => {
     }
     
     // create and save 'orderRecord'
+    //init db
+    dal.init();
+    // create and save 'orderRecord' (call dal)
+    try {
+    dal.commandWithTransaction(dal.prepareOrderRecord(req.body), processResult => {
+    //todo here something with result
+    console.log('Order is saved in db...')
+    })
+    }catch (error){
+    console.log('failed to safe order.. retry');
+    }
     
     beecomm.executePushOrder(req.body, function(result) {
         if (result < 0) {

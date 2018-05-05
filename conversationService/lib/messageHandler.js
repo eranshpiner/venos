@@ -10,51 +10,108 @@ const handlers = {};
 
 
 handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
+  let response = {};
+
   const category = menu.items[message.actionData.id];
   if (category && category.items) {
-    message.responses.push({
-      elements: getItems(menu.items, message.actionData.id),
-    });
+    response.type = CONST.RESPONSE_TYPE.ITEMS;
+    response.items = getItems(menu.items, message.actionData.id);
   } else {
-    message.responses.push({
-      content: `oh nooooo, category ${message.actionData.id} has no items.`,
-    });
+    response.type = CONST.RESPONSE_TYPE.TEXT;
+    response.text = `oh nooooo, category ${message.actionData.id} has no items.`;
+    response.replies = getCategories(menu.items, true);
   }
+  message.responses.push(response);
 };
 
 handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
+  let response = {};
+  response.type = CONST.RESPONSE_TYPE.TEXT;
+
   const itemId = message.actionData.id;
   userSession.cart = userSession.cart || [];
-  userSession.cart.push(itemId);
-  message.responses.push({
-    content: `hurray, item ${menu.items[itemId].title.he_IL} has been added to cart.`,
-    replies: getCategories(menu.items, true),
-  });
+
+  if (!menu.items[itemId]) {
+    response.text = `Sorry, I couldn't find ${itemId} on the menu, please try again.`;
+  }
+
+  const menuItem = menu.items[itemId];
+  const cartItem = userSession.cart.find((item) => item.id === itemId);
+  if (cartItem) {
+    cartItem.quantity += 1;
+    response.text = `${menuItem.title.he_IL} was already in your cart, so I've set its quantity to ${cartItem.quantity}.`;
+  } else {
+    userSession.cart.push({id: itemId, quantity: 1});
+    response.text = `hurray, item ${menuItem.title.he_IL} has been added to cart.`;
+  }
+
+  response.replies = getCategories(menu.items, true);
+
+  message.responses.push(response);
 };
 
 handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
+  let response = {};
   const itemId = message.actionData.id;
+  const isReduceQuantity = message.actionData.reduceQuantity;
+  const menuItem = menu.items[itemId];
   userSession.cart = userSession.cart || [];
-  userSession.cart.splice(userSession.cart.indexOf(itemId), 1); // TODO normal remove
-  message.responses.push({
-    content: `hurray, item ${menu.items[itemId].title.he_IL} has been removed from cart.`
-  });
+
+  const cartItemIndex = userSession.cart.findIndex((item) => item.id === itemId);
+  const cartItem = userSession.cart[cartItemIndex];
+  if (cartItemIndex === -1) {
+    response.text = `Sorry, we couldn't find ${menuItem.title.he_IL} in your cart cart.`;
+  } else {
+    if (isReduceQuantity && cartItem.quantity > 1) {
+      cartItem.quantity -= 1;
+      response.text = `hurray, item ${menuItem.title.he_IL} has been reduced to ${cartItem.quantity}.`;
+    } else {
+      userSession.cart.splice(cartItemIndex, 1); // TODO normal remove
+      response.text = `hurray, item ${menuItem.title.he_IL} has been removed from cart.`;
+    }
+  }
+
+  response.replies = getCategories(menu.items, true);
+
+  message.responses.push(response);
 };
 
 handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
-  const cart = userSession.cart;
-  if (!cart || cart.length === 0) {
+  const cart = userSession.cart || [];
+
+  if (!cart.length) {
     message.responses.push({
-      content: 'You have no items on your get, its time to get down to business!'
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: 'You have no items on your get, its time to get down to business!',
+      replies: getCategories(menu.items, true),
     });
   } else {
     message.responses.push({
-      content: `You have ${cart.length} items in your cart`,
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `You have ${cart.length} items in your cart`,
     });
     message.responses.push({
-      elements: getCartItems(menu.items, userSession.cart),
+      type: CONST.RESPONSE_TYPE.CART_SUMMARY,
+      cartItems: getCartItems(cart, menu.items),
+      cartActions: [
+        {
+          text: 'Pay Now',
+          clickData: {
+            action: CONST.ACTIONS.PAY,
+          }
+        },
+      ],
     });
   }
+};
+
+handlers[CONST.ACTIONS.EMPTY_CART] = (message, userSession) => {
+  userSession.cart = [];
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'Your card has been emptied',
+    replies: getCategories(menu.items, true),
+  });
 };
 
 async function handle(message) {
@@ -67,12 +124,14 @@ async function handle(message) {
       handlers[message.action](message, userSession);
     } else {
       message.responses.push({
-        content: `I don't know this one, ${message.action}`
+        type: CONST.RESPONSE_TYPE.TEXT,
+        text: `I don't know this one, ${message.action}`
       });
     }
   } else {
     message.responses.push({
-      content: menu.welcome.en_US,
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: menu.welcome.en_US,
       replies: getCategories(menu.items, true),
     });
   }
@@ -90,8 +149,8 @@ function getItems(items, categoryId, lang = 'he_IL') {
     category.items.forEach(itemId => {
       if (items[itemId]) {
         res.push(itemToElement(items[itemId], itemId, lang, [{
-          title: 'Add', // TODO
-          payload: {
+          text: 'Add', // TODO
+          clickData: {
             action: CONST.ACTIONS.ADD_TO_CART,
             data: {
               id: itemId,
@@ -104,22 +163,22 @@ function getItems(items, categoryId, lang = 'he_IL') {
   return res.splice(0, 10); // todo limit 10
 }
 
-function getCartItems(items, cartItems, lang = 'he_IL') {
-  const res = [];
-  cartItems.forEach(itemId => {
-    if (items[itemId]) {
-      res.push(itemToElement(items[itemId], itemId, lang, [{
-        title: 'Remove', // TODO
-        payload: {
+function getCartItems(cartItems, menuItems, lang = 'he_IL') {
+  const res = cartItems.map((cartItem) => ({
+    title: menuItems[cartItem.id].title[lang],
+    description: menuItems[cartItem.id].description[lang],
+    imageUrl: menuItems[cartItem.id].image_url,
+    actions: [
+      {
+        text: 'Remove',
+        clickData: {
           action: CONST.ACTIONS.REMOVE_FROM_CART,
-          data: {
-            id: itemId,
-          },
-        }
-      }]));
-    }
-  });
-  return res.splice(0, 10); // todo limit 10
+          data: {id: cartItem.id},
+        },
+      },
+    ],
+  }));
+return res.splice(0, 10); // todo limit 10
 }
 
 function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
@@ -136,9 +195,8 @@ function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
 
 function categoryToElement(item, itemId, lang) {
   const element = {
-    title: item.title[lang],
-    description: item.description[lang],
-    payload: {
+    text: item.title[lang],
+    clickData: {
       action: CONST.ACTIONS.CHOOSE_CATEGORY,
       data: {
         id: itemId,
@@ -158,7 +216,7 @@ function itemToElement(item, itemId, lang, actions = []) {
     actions,
   };
   if (item.image_url) {
-    element.image_url = item.image_url;
+    element.imageUrl = item.image_url;
   }
   return element;
 }

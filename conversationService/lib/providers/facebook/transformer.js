@@ -1,7 +1,8 @@
-'use strict';
-
 const Message = require('../../models/Message');
-const MESSAGE_TYPES = require('../../const').MESSAGE_TYPES;
+const MESSAGE_TYPE = require('./const').MESSAGE_TYPE;
+const RESPONSE_TYPE = require('../../const').RESPONSE_TYPE;
+
+const responseTransformers = {};
 
 function from(fbMessage) {
   const message = new Message(Date.now());
@@ -13,31 +14,31 @@ function from(fbMessage) {
   if (fbMessage.message) {
     message.messageContent = fbMessage.message.text;
     if (fbMessage.message.is_echo === true) {
-      message.type = MESSAGE_TYPES.ECHO;
+      message.type = MESSAGE_TYPE.ECHO;
     } else if (fbMessage.message.quick_reply) {
-      message.type = MESSAGE_TYPES.QUICKREPLY;
+      message.type = MESSAGE_TYPE.QUICKREPLY;
       const payload = parsePayload(fbMessage.message.quick_reply.payload);
       message.action = payload.action;
       message.actionData = payload.data;
     } else if (fbMessage.message.attachments) {
-      message.type = MESSAGE_TYPES.ATTACHMENT;
+      message.type = MESSAGE_TYPE.ATTACHMENT;
     } else if (fbMessage.message.text) {
-      message.type = MESSAGE_TYPES.TEXT;
+      message.type = MESSAGE_TYPE.TEXT;
     } else {
-      message.type = MESSAGE_TYPES.UNKNOWN;
+      message.type = MESSAGE_TYPE.UNKNOWN;
     }
   } else if (fbMessage.postback) {
-    message.type = MESSAGE_TYPES.POSTBACK;
+    message.type = MESSAGE_TYPE.POSTBACK;
     message.messageContent = fbMessage.postback.title;
     const payload = parsePayload(fbMessage.postback.payload);
     message.action = payload.action;
     message.actionData = payload.data;
   } else if (fbMessage.delivery) {
-    message.type = MESSAGE_TYPES.DELIVERY;
+    message.type = MESSAGE_TYPE.DELIVERY;
   } else if (fbMessage.read) {
-    message.type = MESSAGE_TYPES.READ;
+    message.type = MESSAGE_TYPE.READ;
   } else {
-    message.type = MESSAGE_TYPES.UNKNOWN;
+    message.type = MESSAGE_TYPE.UNKNOWN;
   }
 
   return message;
@@ -53,63 +54,116 @@ function parsePayload(payload) {
   }
 }
 
+function actionToButton(action = {}) {
+  const button = {
+    title: action.text,
+  };
+  if (action.clickData) {
+    button.type = 'postback';
+    button.payload = JSON.stringify(action.clickData);
+  } else if (action.url) {
+    button.type = 'web_url';
+    button.url = action.url;
+  }
+  return button;
+}
+
+function replyToQuickReply(reply) {
+  const quickReply = {};
+  if (reply.location) {
+    quickReply.content_type = 'location';
+  } else {
+    quickReply.content_type = 'text';
+    quickReply.title = reply.text;
+    quickReply.payload = JSON.stringify(reply.clickData);
+    if (reply.imageUrl) {
+      quickReply.image_url = reply.imageUrl;
+    }
+  }
+  return quickReply;
+}
+
+function itemToGenericElement(item) {
+  const genericElement = {
+    title: item.title,
+    subtitle: item.description,
+  };
+  if (item.actions) {
+    genericElement.buttons = item.actions.map(actionToButton);
+  }
+  if (item.imageUrl) {
+    genericElement.image_url = item.imageUrl;
+  }
+  return genericElement;
+}
+
+function itemToListElement(item) {
+  return itemToGenericElement(item);
+}
+
+responseTransformers[RESPONSE_TYPE.TEXT] = (response) => {
+  const fbResponse = {};
+
+  fbResponse.text = response.text;
+  if (response.replies) {
+    fbResponse.quick_replies = response.replies.map(replyToQuickReply);
+  }
+  return fbResponse;
+};
+
+responseTransformers[RESPONSE_TYPE.CATEGORIES] = (response) => {
+  return responseTransformers[RESPONSE_TYPE.TEXT](response);
+};
+
+responseTransformers[RESPONSE_TYPE.ITEMS] = (response) => {
+  const fbResponse = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'generic',
+        elements: response.items.map(itemToGenericElement),
+      },
+    }
+  };
+  if (response.replies) {
+    fbResponse.quick_replies = response.replies.map(replyToQuickReply);
+  }
+  return fbResponse;
+};
+
+responseTransformers[RESPONSE_TYPE.CART_SUMMARY] = (response) => {
+  // due to FB list limit of min 2, we convert 1 item to a generic template
+  if (response.cartItems.length === 1) {
+    response.cartItems[0].actions = response.cartItems[0].actions.concat(response.cartActions);
+    response.items = response.cartItems;
+    return responseTransformers[RESPONSE_TYPE.ITEMS](response);
+  }
+
+  const fbResponse = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'list',
+        top_element_style: 'compact',
+        elements: response.cartItems.map(itemToListElement),
+        buttons: response.cartActions.map(actionToButton),
+      },
+    },
+  };
+  if (response.replies) {
+    fbResponse.quick_replies = response.replies.map(replyToQuickReply);
+  }
+  return fbResponse;
+};
 
 function to(message) {
-  const responses = message.responses.map(response => {
-    const fbMessage = {};
-    // Templates
-    if (response.elements) {
-      const elements = response.elements.map(el => {
-        const element = {
-          title: el.title,
-          subtitle: el.description,
-          image_url: el.image_url,
-          buttons: []
-        };
-        if (el.actions) {
-          el.actions.forEach(action => {
-            element.buttons.push({
-              type: 'postback',
-              title: action.title,
-              payload: JSON.stringify(action.payload),
-            });
-          });
-        }
-        if (el.image_url) {
-          element.image_url = el.image_url;
-        }
-        return element;
-      });
-
-      fbMessage.attachment = {
-        type: 'template',
-        payload: {
-          template_type: 'generic',
-          elements,
-        },
-      };
+  return message.responses.map(response => {
+    if (responseTransformers[response.type]) {
+      return responseTransformers[response.type](response);
     } else {
-      fbMessage.text = response.content;
-      // Quick Replies
-      if (response.replies) {
-        const replies = response.replies;
-        fbMessage.quick_replies = replies.map(reply => {
-          const quickReply = {
-            content_type: 'text',
-            title: reply.title,
-            payload: JSON.stringify(reply.payload),
-          };
-          if (reply.imageUrl) {
-            quickReply.image_url = reply.imageUrl;
-          }
-          return quickReply;
-        });
-      }
+      return {text: response.text || ''};
     }
-    return fbMessage;
   });
-
-  return responses;
 }
 
 module.exports = {from, to};

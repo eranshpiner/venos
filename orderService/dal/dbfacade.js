@@ -63,9 +63,9 @@ var queryWithParams = (sql, parameters, processResult) => {
     db.query(sql, parameters, (error,result,fields)=> {
         if (error){
             console.log(`sql ${sql} has failed with error ${error}`);
-            throw error;
+            processResult(error,undefined);
         }
-        processResult(result);
+        processResult(undefined, result);
         console.log('result==>>>>>', result);
     });      
 }
@@ -163,8 +163,23 @@ var prepareOrderRecord = (order) => {
  */
 var prepareOrderLog = (order,submitOrderOutput) => {
     console.log('start prepareOrderLog ....');
+    var pos;
+    dal.queryWithParams('SELECT posId, posVendorId FROM venos.brandToPosvendor WHERE brandId=? AND brandLocationId=?',
+    [order.brandId,order.brandLocationId],(error, result) => {
+        
+        if (error) {
+            throw error;
+        }
+
+        pos = {
+            posId : result.posId,
+            posVendorId : result.posVendorId
+        }
+        console.log('pos==> ', pos);
+    });
+
     var commandForTransaction=[];
-    var orderLog = format.orderLogBuilder(order,submitOrderOutput);
+    var orderLog = format.orderLogBuilder(order,submitOrderOutput,pos);
 
     var orderLogCommand = {
         query:'INSERT INTO venos.ORDERLOG SET ? ',
@@ -174,7 +189,13 @@ var prepareOrderLog = (order,submitOrderOutput) => {
     return commandForTransaction;
     console.log('end prepareOrderLog ....');
 }
-
+/**
+ * Prepares input for saving log (audit) in the data base
+ * @param {*} order 
+ * @param {*} orderLog 
+ * @param {*} error 
+ * @param {*} result 
+ */
 var prepareLog = (order,orderLog,error,result) => {
     console.log('start prepareLog ....');
     var commandForTransaction=[];

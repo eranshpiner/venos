@@ -61,21 +61,9 @@ var orderItemsBuilder = (orderId, order) => {
     return dbItems;
 }
 
-var orderLogBuilder = (order, submitOrderOutput) => {
+var orderLogBuilder = (order, submitOrderOutput, pos) => {
 
     console.log('start orderLogBuilder');
-
-    let posId;
-    let posVendorId;
-    // dal.queryWithParams('SELECT posId, posVendorId FROM venos.brandToPosvendor WHERE brandId=? AND brandLocationId=?',
-    // [order.brandId,order.brandLocationId], processResult = (result) => {
-    //     console.log('posId=>>>',result.posId);
-    //     console.log('posVendorId=>>>',result.posVendorId);
-
-    //     posId = result.posId;
-    //     posVendorId = result.posVendorId;
-
-    // });
 
     var orderLog = {
          orderId         : order.orderId,
@@ -83,8 +71,8 @@ var orderLogBuilder = (order, submitOrderOutput) => {
          transactionTimeCreation : submitOrderOutput.transactionTimeCreation,
          brandId         : order.brandId,
          brandLocationId : order.brandLocationId,
-         posVendorId     : posId,
-         posId           : posVendorId,
+         posVendorId     : pos.posId,
+         posId           : pos.posVendorId,
          posResponseStatus: submitOrderOutput.orderStatus,
         //  posResponseCode : ??,
         orderStatus: submitOrderOutput.orderStatus 
@@ -120,6 +108,7 @@ var logBuilder = (order,orderLog,result,error) => {
 
     return log;
 }
+
 
 module.exports = {
     formatSql,

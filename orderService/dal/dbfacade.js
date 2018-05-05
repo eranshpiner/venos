@@ -13,7 +13,6 @@ var db;
 /**
  * Initializes connection to data base
  */
-
 //TODO - replace hardcoded parameters by properties/yaml files
 
 var init = () => {
@@ -25,15 +24,15 @@ var init = () => {
     //debug : true //TODO remove in the production
 });
 
-db.connect((error) => {
-        if(error){
-            console.log('Failed connect to DB : ', error.stack);
-            throw error;
-        }    
-        console.log('Connected to db....');
-        //call here command or query
+// db.connect((error) => {
+//         if(error){
+//             console.log('Failed connect to DB : ', error.stack);
+//             throw error;
+//         }    
+//         console.log('Connected to db....');
+//         //call here command or query
 
-  });
+//   });
 }
 
 
@@ -60,15 +59,15 @@ var query = (sql, processResult) => {
  * @param {*} processResult callback method for processing result.
  */
 var queryWithParams = (sql, parameters, processResult) => {
-    console.log('Run query ...');
+    console.log('Run query with params...');
     db.query(sql, parameters, (error,result,fields)=> {
         if (error){
             console.log(`sql ${sql} has failed with error ${error}`);
             throw error;
         }
         processResult(result);
-    }
-    );      
+        console.log('result==>>>>>', result);
+    });      
 }
 
 /**
@@ -87,36 +86,45 @@ var command = (sql,parameters,processResult) => {
 }
 
 /**
- * Insert within transaction
- * @param {} sql 
+ * Insert command within transaction support
+ * @param {*} sql 
  * @param {*} parameters 
  * @param {*} processResult 
  */
-var commandWithTransaction = (commandsList,processResult) => { 
-    console.log('start commandWithTransaction...')
-    // db.beginTransaction((error) => {
-    //     console.log('Failure to open transaction!', error);
-    //     throw error;
-    // });
-
-    try {
-        for (let i=0; i < commandsList.length; i++) {
-            command (commandsList[i].query, commandsList[i].parameters, (result)=>{
-                console.log('running command : ', commandsList[i]);
-            })
-        }//for
-
-        // db.commit( (error)=> {
-        //     throw error;
-        // });
-    } 
-    catch(error) {
-        log.console('Failure in transaction!. Rollback is going to be performed', error);
-        db.rollback((error)=> {
-            console.log('Fatal error ! Rollback has failed!!', error);
+var commandWithTransaction = (commandsList, processResult) => { 
+    console.log('start commandWithTransaction...');
+    db.beginTransaction( (error) => {
+        if (error){
+            console.log('Failure to start transaction!', error.stack);
             throw error;
-        });  
+        }
+    try {
+        for (let i = 0; i < commandsList.length; i++) {
+            command (commandsList[i].query, commandsList[i].parameters, (result)=>{
+            });
+        }
+        db.commit( (error)=> {
+            if (error){
+                console.log('Failure to commit transaction! ', error.stack);
+                throw error;
+            }
+        });
+        //call callback
+    processResult(undefined, result = {staus:'Success',code:0,component:'dbfacade.commandWithTransaction'}); 
+    //console.log('end commandWithTransaction...'); 
     }
+    catch(error) {
+        console.log('Failure in transaction!. Rollback is going to be performed', error);
+        
+        db.rollback((error) => {
+            if (error){
+             console.log('Fatal error ! Rollback has failed!!', error);
+             throw error;
+            }
+        });  
+        processResult(error = {status:'Failure', code:-1, text:error.stack, component:'dbfacade.commandWithTransaction'}, undefined);  
+    }
+    }); //end begin transaction
 }
 
 /**
@@ -149,9 +157,41 @@ var prepareOrderRecord = (order) => {
 }
 
 /**
+ * Prepares input for saving order log in the data base
+ * @param {*} order 
+ * @param {*} submitOrderOutput 
+ */
+var prepareOrderLog = (order,submitOrderOutput) => {
+    console.log('start prepareOrderLog ....');
+    var commandForTransaction=[];
+    var orderLog = format.orderLogBuilder(order,submitOrderOutput);
+
+    var orderLogCommand = {
+        query:'INSERT INTO venos.ORDERLOG SET ? ',
+        parameters:orderLog
+    }
+    commandForTransaction.push(orderLogCommand);
+    return commandForTransaction;
+    console.log('end prepareOrderLog ....');
+}
+
+var prepareLog = (order,orderLog,error,result) => {
+    console.log('start prepareLog ....');
+    var commandForTransaction=[];
+    var log = format.logBuilder(order,orderLog, error,result);
+    var logCommand = {
+        query : 'INSERT INTO venos.LOG SET ? ',
+        parameters : log
+    }
+    commandForTransaction.push(logCommand);
+    return commandForTransaction;
+
+    console.log('end prepareLog ....');
+}
+
+/**
  * Terminates connection to database
  */
-
 var close = () => {
     db.end( (error) => {
         db.destroy();
@@ -169,6 +209,8 @@ module.exports =
     command,
     commandWithTransaction,
     prepareOrderRecord,
+    prepareOrderLog,
+    prepareLog,
     close
 }
              

@@ -1,7 +1,9 @@
 const mysql = require('mysql');
 const uuid  = require ('uuid/v1');
+const dal = require ('./dbfacade.js');
 
-
+//init db
+//dal.init();
 
 var formatSql = (command, parameters) => {
     return mysql.format(command,parameters);
@@ -59,9 +61,70 @@ var orderItemsBuilder = (orderId, order) => {
     return dbItems;
 }
 
+var orderLogBuilder = (order, submitOrderOutput) => {
+
+    console.log('start orderLogBuilder');
+
+    let posId;
+    let posVendorId;
+    // dal.queryWithParams('SELECT posId, posVendorId FROM venos.brandToPosvendor WHERE brandId=? AND brandLocationId=?',
+    // [order.brandId,order.brandLocationId], processResult = (result) => {
+    //     console.log('posId=>>>',result.posId);
+    //     console.log('posVendorId=>>>',result.posVendorId);
+
+    //     posId = result.posId;
+    //     posVendorId = result.posVendorId;
+
+    // });
+
+    var orderLog = {
+         orderId         : order.orderId,
+         transactionId   : submitOrderOutput.transactionId,
+         transactionTimeCreation : submitOrderOutput.transactionTimeCreation,
+         brandId         : order.brandId,
+         brandLocationId : order.brandLocationId,
+         posVendorId     : posId,
+         posId           : posVendorId,
+         posResponseStatus: submitOrderOutput.orderStatus,
+        //  posResponseCode : ??,
+        orderStatus: submitOrderOutput.orderStatus 
+    }
+    console.log('orderLog====', orderLog);
+
+    return orderLog;
+}
+
+var logBuilder = (order,orderLog,result,error) => {
+
+    var log = {
+        orderId         : order.orderId,
+        transactionId   : orderLog.transactionId,
+        erroCode        : '',
+        errorText       : '',
+        componentName   : '',
+        status          : '',
+    }
+    if (error){
+        log.errorCode = error.errorCode;
+        log.errorText = error.errorText;
+        log.status    = 'failure';
+        log.componentName = error.componentName;
+    }else {
+        log.status='success';
+        log.componentName = result.componentName;
+    }
+
+    if (orderLog) {
+        log.transactionId = orderLog.transactionId;
+    }
+
+    return log;
+}
 
 module.exports = {
     formatSql,
     orderRecordBuilder,
-    orderItemsBuilder
+    orderItemsBuilder,
+    orderLogBuilder,
+    logBuilder
 }

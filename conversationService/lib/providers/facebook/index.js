@@ -1,5 +1,5 @@
 const messageHandler = require('./../../messageHandler');
-const MESSAGE_TYPES = require('../../const').MESSAGE_TYPES;
+const MESSAGE_TYPE = require('./const').MESSAGE_TYPE;
 const transformer = require('./transformer');
 const CONST = require('./const');
 
@@ -16,10 +16,10 @@ const config = {
 };
 const VERIFY_TOKEN = 'af5a72d5-c241-4472-b4ef-855b90165fd5';
 const ENDPOINT = '/facebook';
-const ignoredMessageTypes = [MESSAGE_TYPES.UNKNOWN,
-                             MESSAGE_TYPES.ECHO,
-                             MESSAGE_TYPES.DELIVERY,
-                             MESSAGE_TYPES.READ];
+const ignoredMessageTypes = [MESSAGE_TYPE.UNKNOWN,
+                             MESSAGE_TYPE.ECHO,
+                             MESSAGE_TYPE.DELIVERY,
+                             MESSAGE_TYPE.READ];
 
 
 // Token verification endpoint

@@ -1,7 +1,9 @@
 const mysql = require('mysql');
 const uuid  = require ('uuid/v1');
+const dal = require ('./dbfacade.js');
 
-
+//init db
+//dal.init();
 
 var formatSql = (command, parameters) => {
     return mysql.format(command,parameters);
@@ -59,9 +61,59 @@ var orderItemsBuilder = (orderId, order) => {
     return dbItems;
 }
 
+var orderLogBuilder = (order, submitOrderOutput, pos) => {
+
+    console.log('start orderLogBuilder');
+
+    var orderLog = {
+         orderId         : order.orderId,
+         transactionId   : submitOrderOutput.transactionId,
+         transactionTimeCreation : submitOrderOutput.transactionTimeCreation,
+         brandId         : order.brandId,
+         brandLocationId : order.brandLocationId,
+         posVendorId     : pos.posId,
+         posId           : pos.posVendorId,
+         posResponseStatus: submitOrderOutput.orderStatus,
+        //  posResponseCode : ??,
+        orderStatus: submitOrderOutput.orderStatus 
+    }
+    console.log('orderLog====', orderLog);
+
+    return orderLog;
+}
+
+var logBuilder = (order,orderLog,result,error) => {
+
+    var log = {
+        orderId         : order.orderId,
+        transactionId   : orderLog.transactionId,
+        erroCode        : '',
+        errorText       : '',
+        componentName   : '',
+        status          : '',
+    }
+    if (error){
+        log.errorCode = error.errorCode;
+        log.errorText = error.errorText;
+        log.status    = 'failure';
+        log.componentName = error.componentName;
+    }else {
+        log.status='success';
+        log.componentName = result.componentName;
+    }
+
+    if (orderLog) {
+        log.transactionId = orderLog.transactionId;
+    }
+
+    return log;
+}
+
 
 module.exports = {
     formatSql,
     orderRecordBuilder,
-    orderItemsBuilder
+    orderItemsBuilder,
+    orderLogBuilder,
+    logBuilder
 }

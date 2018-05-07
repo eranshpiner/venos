@@ -85,7 +85,9 @@ function executePushOrder(source, callback) {
   
     let target = transfromOrder(source);
     if (target == null) {
+        callback(  error = {code:-1, text:'failure in transfromOrder'} , undefined)
         return -1;
+        //throw new Error('failure in transfromOrder');
     }
 
     let headers = {
@@ -106,7 +108,7 @@ function executePushOrder(source, callback) {
         res.on('data', function (chunk) {
             console.log("pushed order to " + pushOrderResource);
             console.log('response: ' + chunk);
-            callback(chunk);
+            callback(undefined, chunk);
         });
     });
     
@@ -140,7 +142,7 @@ function retrieveToken(callback) {
         res.on('data', function (chunk) {
             console.log("got token from " + tokenResource);
             console.log('response: ' + chunk);
-            callback(chunk);
+            callback(undfined, chunk);
         });
     });
     

@@ -1,6 +1,8 @@
 
 const fs = require('fs');
 const util = require('util');
+const https = require('https');
+const querystring = require('querystring');
 const validator = require('../../util/validator.js');
 const beecommOrderSchema = require('./beecommOrder.json');
 
@@ -25,9 +27,9 @@ function transfromOrder(source) {
         console.log("invalid source order json");
         return null;
     }
-
+    
     let target = {};
-    target.branchId = source.restaurantId;
+    target.branchId = source.brandLocationId;
     
     target.orderInfo = {};
     
@@ -38,13 +40,13 @@ function transfromOrder(source) {
     target.orderInfo.outerCompId = 0;
     target.orderInfo.outerCompOrderId = "";
     target.orderInfo.arrivalTime = "";
-
+    
     target.orderInfo.remarks = source.remarks;
     target.orderInfo.firstName = source.orderOwner.firstName;
     target.orderInfo.lastName = source.orderOwner.lastName;
     target.orderInfo.phone = source.orderOwner.phone;
     target.orderInfo.email = source.orderOwner.email;
-
+    
     target.orderInfo.items = [];
     source.orderItems.forEach(function (item, index){
         target.orderInfo.items[index] = {};
@@ -59,7 +61,7 @@ function transfromOrder(source) {
         target.orderInfo.items[index].subItems = []; 
         target.orderInfo.items[index].toppings = []; 
     });
-
+    
     target.orderInfo.payments = [];
     target.orderInfo.deliveryInfo = {};
     target.orderInfo.deliveryInfo.deliveryCost = 0;
@@ -70,24 +72,24 @@ function transfromOrder(source) {
     target.orderInfo.deliveryInfo.apartment = "";
     target.orderInfo.deliveryInfo.floor = "";
     target.orderInfo.deliveryInfo.companyName = "";
-
+    
     // validate that target 'beecomm' odrer json is valid
     result = validator.validateExternalOrder(target, beecommOrderSchema);
     if (!result) {
         console.log("transfomation to 'beecomm' order failed");
         return null;
     }    
-
+    
     return target;
 }
 
+
 function executePushOrder(source, callback) {
-  
+    
     let target = transfromOrder(source);
     if (target == null) {
-        callback(  error = {code:-1, text:'failure in transfromOrder'} , undefined)
-        return -1;
-        //throw new Error('failure in transfromOrder');
+        callback({code: -1, message: "failure in transfromOrder"}, undefined);
+        return;
     }
 
     let headers = {

@@ -14,14 +14,42 @@ app.use(bodyParser.json());
 //init db
 dal.init();
 
-app.post('/order', (req, res) => {
-    let valid = validator.validateInternalOrder(req.body);
+var tempOrder;
 
-    if (!valid) {
+app.get('/payment', (req, res) => {
+    const order = validator.validateAndExtractJwt(req.query.jwt);
+
+    if (order == null) {
         res.status(400);
-        res.send("{\"message\":\"invalid request\"}");
+        res.send({message: "invalid jwt"});
         return;
     }
+
+    if (!validator.validateInternalOrder(order)) {
+        res.status(400);
+        res.send({message: "invalid order"});
+        return;
+    };
+
+    // create and save 'orderRecord' to get an 'orderId'
+
+    res.status(200);
+    res.send({message: "got it - here is a nice payment form...", orderId: "the 'orderId'"});
+    return;
+
+});
+
+app.post('/order', (req, res) => {
+    const orderId = req.query.orderId;
+
+    if (!validator.validateOrderId(orderId)) {
+        res.status(400);
+        res.send({message: "invalid orderId"});
+        return;
+    }
+
+    // retrieve the order from the db using the 'orderId'
+
     try {
         // create and save 'orderRecord' 
         dal.commandWithTransaction(dal.prepareOrderRecord(req.body), (error,result) => {
@@ -71,7 +99,8 @@ app.post('/order', (req, res) => {
         //after some retrieds - we should write failure to the error table
         res.status(304);
         res.send("{\"orderId\":\"317\",\"message\":\"order not accepted\"}");
-    }    
+    }   
+
 });
 
 app.listen(3000, () => console.log('Restaurant Integration Service - listening on port 3000...'));

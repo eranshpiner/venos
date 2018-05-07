@@ -11,6 +11,8 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
+
+app.use(express.static('public'));
 //init db
 dal.init();
 

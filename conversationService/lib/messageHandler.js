@@ -3,6 +3,7 @@
 const providers = require('./providers');
 const sessionManager = require('./sessionManager');
 const CONST = require('./const');
+const cordsToAddress = require('./util/locations').cordsToAddress;
 
 const menu = require('./../customers/niniHachi.json');
 
@@ -114,10 +115,25 @@ handlers[CONST.ACTIONS.EMPTY_CART] = (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD] = (message, userSession) => {
+  if (message.actionData && message.actionData.method) {
+    userSession.deliveryMethod = message.actionData.method;
+  }
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: `הכנס כתובת`,
+    replies: [{
+      type: CONST.REPLY_TYPE.LOCATION,
+    }],
+  });
+};
+
 async function handle(message) {
   const provider = providers[message.provider];
   const userSession = await sessionManager.getUserSession(message.userDetails);
 
+  userSession.locale = userSession.locale || 'he_IL';
   message.responses = message.responses || [];
   if (message.action) {
     if (handlers[message.action]) {
@@ -129,11 +145,59 @@ async function handle(message) {
       });
     }
   } else {
-    message.responses.push({
-      type: CONST.RESPONSE_TYPE.TEXT,
-      text: menu.welcome.en_US,
-      replies: getCategories(menu.items, true),
-    });
+    if (!userSession.deliveryMethod) {
+      message.responses.push({
+        type: CONST.RESPONSE_TYPE.TEXT,
+        text: 'ברוכים הבאים! לפני שנתחיל, בחר את שיטת המשלוח',
+        replies: [{
+          type: CONST.REPLY_TYPE.TEXT,
+          text: 'משלוח',
+          clickData: {
+            action: CONST.ACTIONS.CHOOSE_DELIVERY_METHOD,
+            data: {
+              method: CONST.DELIVERY_METHOD.DELIVERY,
+            },
+          },
+        }, {
+          type: CONST.REPLY_TYPE.TEXT,
+          text: 'איסוף עצמי',
+          clickData: {
+            action: CONST.ACTIONS.CHOOSE_DELIVERY_METHOD,
+            data: {
+              method: CONST.DELIVERY_METHOD.PICKUP,
+            },
+          },
+        }],
+      });
+    } else if (userSession.deliveryMethod === CONST.DELIVERY_METHOD.DELIVERY && !userSession.deliveryAddress) {
+      if (message.attachments) {
+        const coords = message.attachments[0] && message.attachments[0].payload && message.attachments[0].payload.coordinates;
+        const address = await cordsToAddress(coords);
+        userSession.deliveryAddress = address;
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: `מיקום 🔥! אנחנו שולחים ל${address}!`
+        });
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'בחר קטגוריה',
+          replies: getCategories(menu.items, true),
+        });
+      } else {
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: `אני לא יודע להבין כתובות ככה עדיין🙄, אנא שלח לי את המיקום שלך ע״י לחיצה על כפתור ה-Send Location`
+        });
+        handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD](message, userSession); // TODO: handle free text :(
+      }
+    } else {
+      message.responses.push({
+        type: CONST.RESPONSE_TYPE.TEXT,
+        text: menu.welcome[userSession.locale],
+        replies: getCategories(menu.items, true),
+      });
+
+    }
   }
 
   await sessionManager.saveUserSession(userSession);

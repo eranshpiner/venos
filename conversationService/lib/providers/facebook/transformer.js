@@ -1,6 +1,7 @@
 const Message = require('../../models/Message');
 const MESSAGE_TYPE = require('./const').MESSAGE_TYPE;
 const RESPONSE_TYPE = require('../../const').RESPONSE_TYPE;
+const REPLY_TYPE = require('../../const').REPLY_TYPE;
 
 const responseTransformers = {};
 
@@ -22,6 +23,7 @@ function from(fbMessage) {
       message.actionData = payload.data;
     } else if (fbMessage.message.attachments) {
       message.type = MESSAGE_TYPE.ATTACHMENT;
+      message.attachments = fbMessage.message.attachments;
     } else if (fbMessage.message.text) {
       message.type = MESSAGE_TYPE.TEXT;
     } else {
@@ -70,7 +72,7 @@ function actionToButton(action = {}) {
 
 function replyToQuickReply(reply) {
   const quickReply = {};
-  if (reply.location) {
+  if (reply.type === REPLY_TYPE.LOCATION) {
     quickReply.content_type = 'location';
   } else {
     quickReply.content_type = 'text';

@@ -5,7 +5,16 @@ module.exports = {
     ITEMS: 'items',
     CART_SUMMARY: 'cart-summary',
   },
+  REPLY_TYPE: {
+    TEXT: 'text',
+    LOCATION: 'location',
+  },
+  DELIVERY_METHOD: {
+    PICKUP: 'pickup',
+    DELIVERY: 'delivery',
+  },
   ACTIONS: {
+    CHOOSE_DELIVERY_METHOD: 'dm',
     CHOOSE_CATEGORY: 'cc',
     ADD_TO_CART: 'atc',
     REMOVE_FROM_CART: 'rfc',

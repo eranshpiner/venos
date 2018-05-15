@@ -79,7 +79,8 @@ router.post(ENDPOINT, (req, res) => {
 
 function sendMessage(message) {
   const messageBodies = transformer.to(message);
-  messageBodies.forEach(messageBody => {
+  sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
+  messageBodies.forEach((messageBody, idx) => {
     const fbMessage = {
       recipient: {
         id: message.userDetails.id,
@@ -87,8 +88,7 @@ function sendMessage(message) {
       messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
       message: messageBody,
     };
-    sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
-    _sendMessage(fbMessage, message.customerId);
+    setTimeout(() => _sendMessage(fbMessage, message.customerId), idx * 500);
   });
 
 }

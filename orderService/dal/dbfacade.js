@@ -164,7 +164,7 @@ var prepareOrderRecord = (order) => {
 var prepareOrderLog = (order,submitOrderOutput) => {
     console.log('start prepareOrderLog ....');
     var pos;
-    dal.queryWithParams('SELECT posId, posVendorId FROM venos.brandToPosvendor WHERE brandId=? AND brandLocationId=?',
+    queryWithParams('SELECT posId, posVendorId FROM venos.brandToPosvendor WHERE brandId=? AND brandLocationId=?',
     [order.brandId,order.brandLocationId],(error, result) => {
         
         if (error) {
@@ -172,14 +172,14 @@ var prepareOrderLog = (order,submitOrderOutput) => {
         }
 
         pos = {
-            posId : result.posId,
-            posVendorId : result.posVendorId
+            posId : /*result.posId*/ 1,
+            posVendorId : /*result.posVendorId*/ 2
         }
         console.log('pos==> ', pos);
     });
 
     var commandForTransaction=[];
-    var orderLog = format.orderLogBuilder(order,submitOrderOutput,pos);
+    var orderLog = format.orderLogBuilder(order, submitOrderOutput, pos);
 
     var orderLogCommand = {
         query:'INSERT INTO venos.ORDERLOG SET ? ',

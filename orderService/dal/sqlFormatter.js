@@ -71,8 +71,8 @@ var orderLogBuilder = (order, submitOrderOutput, pos) => {
          transactionTimeCreation : submitOrderOutput.transactionTimeCreation,
          brandId         : order.brandId,
          brandLocationId : order.brandLocationId,
-         posVendorId     : pos.posId,
-         posId           : pos.posVendorId,
+         posVendorId     : pos.posVendorId,
+         posId           : pos.posId,
          posResponseStatus: submitOrderOutput.orderStatus,
         //  posResponseCode : ??,
         orderStatus: submitOrderOutput.orderStatus 

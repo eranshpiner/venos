@@ -86,7 +86,7 @@ function executePushOrder(source, callback) {
     let target = transfromOrder(source);
     if (target == null) {
         callback(  error = {code:-1, text:'failure in transfromOrder'} , undefined)
-        return -1;
+        //return -1;
         //throw new Error('failure in transfromOrder');
     }
 

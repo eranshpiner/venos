@@ -17,7 +17,7 @@ const orderCenterResource = util.format("/api/v%d/services/orderCenter", apiVers
 const pushOrderResource = orderCenterResource + "/pushOrder";
 
 // beecomm access token
-var access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjUzNjU3OTE2NjQsImNsaWVudCI6eyJfaWQiOiI1YWQ3MjUxYjBkZmJlMGEwOTAyOGU0ZjciLCJjbGllbnRfbmFtZSI6InZlbm9zIiwiaGViTmFtZSI6IteV16DXldehIiwidHlwZSI6ImRlbGl2ZXJ5IiwiaXNBY3RpdmUiOnRydWUsInJlZ2lzdHJhdGlvbkRhdGUiOiIxOC0wNC0yMDE4IDEzOjU5OjM5IiwibGV2ZWwiOjUsInJvbGUiOiJhcHAtY2xpZW50IiwiY2xpZW50X2lkIjoiUzFrR0NubTloa0tmaDBwbG9ua1ZCbUFMSnZ6R2NWVzFhMHFlOEJPMFBUZ1dUUDBnbWlUTjMwMFNtV3BadHpNeCIsImNsaWVudF9zZWNyZXQiOiI1RjZ6c2pVNkhOVlA2MXVxM1VERHpsM1RPQU9paFh6R3lCRVVqbU8wZGowc2lLMUxnQndQdjBjTWswZDJRTTlWIn19.wb4B4d-jo4jzKg2FOpQ7Xu43CFF2_eCXwDfwdcUMEAw";
+var access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjY3NTMyMzk3MzksImNsaWVudCI6eyJfaWQiOiI1YWQ3MjUxYjBkZmJlMGEwOTAyOGU0ZjciLCJjbGllbnRfbmFtZSI6InZlbm9zIiwiaGViTmFtZSI6IteV16DXldehIiwidHlwZSI6ImRlbGl2ZXJ5IiwiaXNBY3RpdmUiOnRydWUsInJlZ2lzdHJhdGlvbkRhdGUiOiIxOC0wNC0yMDE4IDEzOjU5OjM5IiwibGV2ZWwiOjUsInJvbGUiOiJhcHAtY2xpZW50IiwiY2xpZW50X2lkIjoiUzFrR0NubTloa0tmaDBwbG9ua1ZCbUFMSnZ6R2NWVzFhMHFlOEJPMFBUZ1dUUDBnbWlUTjMwMFNtV3BadHpNeCIsImNsaWVudF9zZWNyZXQiOiI1RjZ6c2pVNkhOVlA2MXVxM1VERHpsM1RPQU9paFh6R3lCRVVqbU8wZGowc2lLMUxnQndQdjBjTWswZDJRTTlWIn19.U3-dDj7YRXlACMGoae2gSv64vB1m6VBjEP5jFFcb1ww";
 
 function transfromOrder(source) {
     
@@ -28,50 +28,49 @@ function transfromOrder(source) {
         return null;
     }
     
-    let target = {};
-    target.branchId = source.brandLocationId;
+    let target = {
+        branchId: source.brandLocationId,
+        orderInfo: {
+            orderType: 1,
+            dinners: 2,
+            discountSum: "",
+            outerCompId: 0,
+            outerCompOrderId: "",
+            arrivalTime: "",
+            remarks: source.remarks,
+            firstName: source.orderOwner.firstName,
+            lastName: source.orderOwner.lastName,
+            phone: source.orderOwner.phone,
+            email: source.orderOwner.email,
+            payments: [],
+            deliveryInfo: {
+                deliveryCost: 0,
+                deliveryRemarks: "",
+                city: "",
+                street: "",
+                homeNum: "",
+                apartment: "",
+                floor: "",
+                companyName: ""
+            },
+            items: []
+        }
+    };
     
-    target.orderInfo = {};
-    
-    // attributes which we do not supply yet
-    target.orderInfo.orderType = 1;
-    target.orderInfo.dinners = 2; 
-    target.orderInfo.discountSum = "";
-    target.orderInfo.outerCompId = 0;
-    target.orderInfo.outerCompOrderId = "";
-    target.orderInfo.arrivalTime = "";
-    
-    target.orderInfo.remarks = source.remarks;
-    target.orderInfo.firstName = source.orderOwner.firstName;
-    target.orderInfo.lastName = source.orderOwner.lastName;
-    target.orderInfo.phone = source.orderOwner.phone;
-    target.orderInfo.email = source.orderOwner.email;
-    
-    target.orderInfo.items = [];
-    source.orderItems.forEach(function (item, index){
-        target.orderInfo.items[index] = {};
-        target.orderInfo.items[index].netId = parseInt(item.itemId); 
-        target.orderInfo.items[index].itemName = item.itemName; 
-        target.orderInfo.items[index].quantity = item.quantity;
-        target.orderInfo.items[index].price = 1.0; 
-        target.orderInfo.items[index].unitPrice = 1.0; 
-        target.orderInfo.items[index].remarks = ""; 
-        target.orderInfo.items[index].belongTo = ""; 
-        target.orderInfo.items[index].billRemarks = ""; 
-        target.orderInfo.items[index].subItems = []; 
-        target.orderInfo.items[index].toppings = []; 
+    source.orderItems.forEach(function (item, index) {
+        target.orderInfo.items[index] = {
+            netId: parseInt(item.itemId),
+            itemName: item.itemName,
+            quantity: item.quantity,
+            price: 1.0,
+            unitPrice: 1.0,
+            remarks: "",
+            belongTo: "",
+            billRemarks: "",
+            subItems: [],
+            toppings: []
+        };
     });
-    
-    target.orderInfo.payments = [];
-    target.orderInfo.deliveryInfo = {};
-    target.orderInfo.deliveryInfo.deliveryCost = 0;
-    target.orderInfo.deliveryInfo.deliveryRemarks = "";
-    target.orderInfo.deliveryInfo.city = "";
-    target.orderInfo.deliveryInfo.street = "";
-    target.orderInfo.deliveryInfo.homeNum = "";
-    target.orderInfo.deliveryInfo.apartment = "";
-    target.orderInfo.deliveryInfo.floor = "";
-    target.orderInfo.deliveryInfo.companyName = "";
     
     // validate that target 'beecomm' odrer json is valid
     result = validator.validateExternalOrder(target, beecommOrderSchema);

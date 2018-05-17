@@ -78,16 +78,51 @@ app.post('/order', (req, res) => {
 
     // extract the fields of the form
     const orderId = req.body.orderId;
-    const creditCardType = req.body.creditCardType;
-    const creditCardNumber = req.body.creditCardNumber;
-    const creditCardHolderId = req.body.creditCardHolderId;
-    const creditCardCvv = req.body.creditCardCvv;
 
     if (!validator.validateOrderId(orderId)) {
+        console.log("invalid orderId");
         res.status(400);
         res.send({message: "invalid orderId"});
         return;
     }
+
+    try {
+
+        const sqlQueryString_getOrderByOrderId = "select * from order where orderId=?";
+
+        // use the 'orderId' to retrieve the 'orderRecord' from the db
+        dal.queryWithParams(sqlQueryString_getOrderByOrderId, [orderId], (error,result) => {
+            
+            if (error) {
+                throw error;
+            }
+
+            // todo: extract the 'orderId' from the result
+            const orderId = "317";
+
+            console.log("an 'orderRecord' for order %d was saved to db... result is: %s", orderId, result);
+
+            // todo: repond with a payment form - including the 'orderId' as a hidden field 
+            res.status(200);
+            res.send({message: "got it - here is a nice payment form...", orderId: orderId});
+            return;
+
+        });  
+    } 
+    catch (error) {
+        
+        console.log("an error occurred while retrieving an 'orderRecord'... error is: %s", error);
+        console.log("failed to retrieve an 'orderRecord' from db for orderId %s...", orderId);
+        
+        // todo: what should we return here... ?
+        res.status(500);
+        res.send({message: "error processing order"});
+    }
+
+    const creditCardType = req.body.creditCardType;
+    const creditCardNumber = req.body.creditCardNumber;
+    const creditCardHolderId = req.body.creditCardHolderId;
+    const creditCardCvv = req.body.creditCardCvv;
 
     try {
 

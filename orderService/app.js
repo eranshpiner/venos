@@ -13,31 +13,61 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use(express.static('public'));
+
 //init db
 dal.init();
 
-var tempOrder;
-
+// this is the GET 'payment' resource which is meant be called from the consumer client side, 
+// after being redirected from the conversation flow upon selecting to pay for an order that 
+// was completed. the provided jwt is meant to contain the actual 'order'. the response of 
+// this resource is a 'payment' form, which includes the 'orderId' as a hidden field. 
 app.get('/payment', (req, res) => {
     const order = validator.validateAndExtractJwt(req.query.jwt);
 
     if (order == null) {
+        console.log("invalid jwt");
         res.status(400);
         res.send({message: "invalid jwt"});
         return;
     }
 
     if (!validator.validateInternalOrder(order)) {
+        console.log("invalid order");
         res.status(400);
         res.send({message: "invalid order"});
         return;
     };
 
-    // create and save 'orderRecord' to get an 'orderId'
+    try {
 
-    res.status(200);
-    res.send({message: "got it - here is a nice payment form...", orderId: "the 'orderId'"});
-    return;
+        // create and save 'orderRecord' to get an 'orderId'
+        dal.commandWithTransaction(dal.prepareOrderRecord(order), (error,result) => {
+            
+            if (error) {
+                throw error;
+            }
+
+            // todo: extract the 'orderId' from the result
+            const orderId = "317";
+
+            console.log("an 'orderRecord' for order %d was saved to db... result is: %s", orderId, result);
+
+            // todo: repond with a payment form - including the 'orderId' as a hidden field 
+            res.status(200);
+            res.send({message: "got it - here is a nice payment form...", orderId: orderId});
+            return;
+
+        });  
+    } 
+    catch (error) {
+        
+        console.log("an error occurred while creating an 'orderRecord'... error is: %s", error);
+        console.log("failed to create an 'orderRecord' in db for order %s...", order);
+        
+        // todo: what should we return here... ?
+        res.status(500);
+        res.send({message: "error processing order"});
+    }
 
 });
 
@@ -50,10 +80,9 @@ app.post('/order', (req, res) => {
         return;
     }
 
-    // retrieve the order from the db using the 'orderId'
-
     try {
-        // create and save 'orderRecord' 
+
+        // retrieve the order from the db using the 'orderId'
         dal.commandWithTransaction(dal.prepareOrderRecord(req.body), (error,result) => {
             if (error) {
                 //todo - send intrenal error

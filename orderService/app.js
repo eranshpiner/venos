@@ -71,8 +71,17 @@ app.get('/payment', (req, res) => {
 
 });
 
+// this is the POST 'order' resource which is meant be called from the consumer client side, 
+// submitting the form which contains the payment details for an order (together with the 
+// 'orderId' hiddin field). 
 app.post('/order', (req, res) => {
-    const orderId = req.query.orderId;
+
+    // extract the fields of the form
+    const orderId = req.body.orderId;
+    const creditCardType = req.body.creditCardType;
+    const creditCardNumber = req.body.creditCardNumber;
+    const creditCardHolderId = req.body.creditCardHolderId;
+    const creditCardCvv = req.body.creditCardCvv;
 
     if (!validator.validateOrderId(orderId)) {
         res.status(400);

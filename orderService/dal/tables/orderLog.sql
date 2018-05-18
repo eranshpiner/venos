@@ -1,6 +1,6 @@
-CCREATE TABLE `orderLog` (
+CREATE TABLE `orderLog` (
   `transactionId` varchar(100) NOT NULL,
-  `transactionTimeCreation` bigint(20) NOT NULL,
+  `transactionCreationTime` bigint(20) NOT NULL,
   `orderId` varchar(64) NOT NULL,
   `brandId` varchar(60) NOT NULL COMMENT 'Brand ',
   `brandLocationId` varchar(60) NOT NULL COMMENT 'brand location id (branch)',

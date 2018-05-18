@@ -21,7 +21,7 @@ var orderRecordBuilder = (order) => {
         currency     : order.currency, 
         brandId      : order.brandId,
         brandLocationId   : order.brandLocationId ,
-        orderTimeCreation : new Date().getTime(), 
+        orderCreationTime : new Date().getTime(), 
         firstName    : order.orderOwner.firstName,
         lastName     : order.orderOwner.lastName,
         phone        : order.orderOwner.phone ,

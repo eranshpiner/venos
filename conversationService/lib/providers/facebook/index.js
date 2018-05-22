@@ -5,6 +5,7 @@ const CONST = require('./const');
 
 const router = require('express').Router();
 const request = require('request');
+const axios = require('axios');
 
 const config = {
   pageTokens: {
@@ -80,7 +81,7 @@ router.post(ENDPOINT, (req, res) => {
 function sendMessage(message) {
   const messageBodies = transformer.to(message);
   sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
-  messageBodies.forEach((messageBody, idx) => {
+  messageBodies.forEach(async (messageBody, idx) => {
     const fbMessage = {
       recipient: {
         id: message.userDetails.id,
@@ -88,7 +89,8 @@ function sendMessage(message) {
       messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
       message: messageBody,
     };
-    setTimeout(() => _sendMessage(fbMessage, message.customerId), idx * 500);
+    console.log(idx, message);
+    await _sendMessage(fbMessage, message.customerId);
   });
 
 }
@@ -105,20 +107,20 @@ function sendSenderAction(message, state) {
   _sendMessage(outgoingMessage, message.customerId);
 }
 
-function _sendMessage(message, customerId) {
+async function _sendMessage(message, customerId) {
   console.log('[FacebookProvider] Outgoing message', JSON.stringify(message));
-  request({
-    uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: {'access_token': config.pageTokens[customerId]},
+  const req = {
+    url: 'https://graph.facebook.com/v2.6/me/messages',
     method: 'POST',
-    json: message
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('[FacebookProvider] message sent!', body)
-    } else {
-      console.error('[FacebookProvider] Unable to send message', err);
-    }
-  });
+    params: { 'access_token': config.pageTokens[customerId] },
+    data: message
+  };
+  try {
+    const res = await axios(req);
+    console.log('[FacebookProvider] message sent!', res.data);
+  } catch (e) {
+    console.error('[FacebookProvider] Unable to send message', e);
+  }
 }
 
 module.exports = {

@@ -23,6 +23,11 @@ handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
     response.replies = getCategories(menu.items, true);
   }
   message.responses.push(response);
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'בחר מאחד המוצרים למעלה, או קטגוריה אחרת',
+    replies: getCategories(menu.items, true),
+  });
 };
 
 handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
@@ -97,9 +102,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
       cartActions: [
         {
           text: 'Pay Now',
-          clickData: {
-            action: CONST.ACTIONS.PAY,
-          }
+          clickLink: 'http://localhost:3000',
         },
       ],
     });
@@ -129,6 +132,24 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD] = (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.PAY] = async (message, userSession) => {
+  const cart = userSession.cart || [];
+
+  if (!cart.length) {
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `ימצחיק, אין לך פריטים בעגלה!`,
+      replies: [{
+        type: CONST.REPLY_TYPE.LOCATION,
+      }],
+    });
+  } else {
+    sendPaymentFlow();
+  }
+
+
+};
+
 async function handle(message) {
   const provider = providers[message.provider];
   const userSession = await sessionManager.getUserSession(message.userDetails);
@@ -137,7 +158,7 @@ async function handle(message) {
   message.responses = message.responses || [];
   if (message.action) {
     if (handlers[message.action]) {
-      handlers[message.action](message, userSession);
+      await handlers[message.action](message, userSession);
     } else {
       message.responses.push({
         type: CONST.RESPONSE_TYPE.TEXT,
@@ -213,7 +234,7 @@ function getItems(items, categoryId, lang = 'he_IL') {
     category.items.forEach(itemId => {
       if (items[itemId]) {
         res.push(itemToElement(items[itemId], itemId, lang, [{
-          text: 'Add', // TODO
+          text: 'הוסף', // TODO
           clickData: {
             action: CONST.ACTIONS.ADD_TO_CART,
             data: {

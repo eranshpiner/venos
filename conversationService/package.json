@@ -6,7 +6,7 @@
     "main": "pathToMain",
     "dependencies": {
         "axios": "^0.18.0",
-        "body-parser": "^1.18.2",
+        "body-parser": "^1.18.3",
         "express": "4.16.0",
         "request": "^2.85.0",
         "uuid": "^3.2.1"

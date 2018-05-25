@@ -110,10 +110,16 @@ var logBuilder = (order,orderLog,result,error) => {
 }
 
 
+var selectOrderDetails = (orderId) => {
+    
+}
+
+
 module.exports = {
     formatSql,
     orderRecordBuilder,
     orderItemsBuilder,
     orderLogBuilder,
-    logBuilder
+    logBuilder,
+    selectOrderDetails
 }

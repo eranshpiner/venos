@@ -109,7 +109,7 @@ function executePushOrder(source, callback) {
         res.on('data', function (chunk) {
             console.log("pushed order to " + pushOrderResource);
             console.log('response: ' + chunk);
-            callback(undefined, chunk);
+            callback(undefined, {code: res.statusCode, message: chunk});
         });
     });
     

@@ -145,7 +145,20 @@ app.post('/order', (req, res) => {
                     res.send({message: "error processing order"});
                     return;
 
-                } else {
+                } 
+
+                // todo: this probably means we need to refresh the token
+                if (result.code == 401) {
+                    console.log("encountered an error %d while executing 'pushOrder' to beecomm pos provider. error message: %s", result.code, result.message);
+
+                    // todo: what should we return here... ?
+                    res.status(500);
+                    res.send({message: "error processing order"});
+                    return;        
+                }
+
+                // todo: for now - since beecomm (Yaron) is not helping us - we treat the 400 ('branchId is invalid') as 200.OK 
+                if (result.code == 400) {
 
                     // todo: extract the 'transactionId' from the beecomm response
                     const transactionId = "tid-Gv47xTT";     
@@ -153,7 +166,7 @@ app.post('/order', (req, res) => {
                     const transactionStatus = "OK";
 
                     res.status(201);
-                    res.send({orderId: orderId, transactionId: transactionId, message: "order accepted", response: result});
+                    res.send({orderId: orderId, transactionId: transactionId, message: result.message, code: result.code});
                     
                     // todo: if success, create and save 'orderLog'     
                     console.log("saving an 'orderLog' to the db for orderId %s", orderId);

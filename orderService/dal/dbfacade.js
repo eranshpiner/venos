@@ -66,7 +66,7 @@ var queryWithParams = (sql, parameters, processResult) => {
             processResult(error,undefined);
         }
         processResult(undefined, result);
-        console.log('result length', result.length);
+        console.log('result length==>>>>>', result.length);
     });      
 }
 

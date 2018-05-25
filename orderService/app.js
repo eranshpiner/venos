@@ -1,18 +1,20 @@
 
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const validator = require('./util/validator.js');
 const beecomm = require('./providers/beecomm/beecomm.js');
 const dal = require ('./dal/dbfacade.js');
-
-
+const format = require('./dal/sqlFormatter.js');
 const app = express();
+
+app.set('views', path.join(__dirname, 'public'));
+app.set('view engine', 'ejs');
 
 // Middleware
 app.use(bodyParser.json());
-
-app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 //init db
 dal.init();
@@ -41,20 +43,19 @@ app.get('/payment', (req, res) => {
     try {
 
         // create and save 'orderRecord' to get an 'orderId'
-        dal.commandWithTransaction(dal.prepareOrderRecord(order), (error, result) => {
+        var orderReq = dal.prepareOrderRecord(order);
+        //console.log("orderReq=", orderReq.orderCommand);
+        dal.commandWithTransaction(orderReq.commands, (error, result) => {
             
             if (error) {
                 throw error;
             }
-
-            // todo: extract the 'orderId' from the result
-            const orderId = "317";
-
-            console.log("an 'orderRecord' for order %d was saved to db... result is: %s", orderId, result);
+            const orderId = orderReq.orderId;
+            console.log(`an 'orderRecord' for order ${orderId} was saved to db... result is: ${result}`);
 
             // todo: repond with a payment form - including the 'orderId' as a hidden field 
             res.status(200);
-            res.send({message: "got it - here is a nice payment form...", orderId: orderId, result: result});
+            res.render('tempPayment', {orderId});
             return;
 
         });  
@@ -77,7 +78,7 @@ app.get('/payment', (req, res) => {
 app.post('/order', (req, res) => {
 
     // extract the fields of the form
-    const orderId = req.query.orderId;
+    const orderId = req.body.orderId;
 
     if (!validator.validateOrderId(orderId)) {
         console.log("invalid orderId");
@@ -89,7 +90,7 @@ app.post('/order', (req, res) => {
     try {
 
         // todo: need a join query to retrieve both the order and the orderItems
-        const sqlQueryString_getOrderByOrderId = "select * from venos.order where orderId=?";
+        const sqlQueryString_getOrderByOrderId = "SELECT * FROM venos.order INNER JOIN venos.orderItems ON order.orderId=orderItems.orderId WHERE order.orderId=?";
 
         // use the 'orderId' to retrieve the 'orderRecord' from the db
         dal.queryWithParams(sqlQueryString_getOrderByOrderId, [orderId], (error, result) => {
@@ -104,7 +105,7 @@ app.post('/order', (req, res) => {
                 return;
             }
 
-            if (!Array.isArray(result) || result.length != 1) {
+            if (!Array.isArray(result)) {
                 console.log("got an invalid result from db retrieving an 'orderRecord' for orderId %s", orderId);
 
                 // todo: what should we return here... ?
@@ -113,11 +114,25 @@ app.post('/order', (req, res) => {
                 return;
             }
 
-            const order = result[0];
-            // const creditCardType = req.body.creditCardType;
-            // const creditCardNumber = req.body.creditCardNumber;
-            // const creditCardHolderId = req.body.creditCardHolderId;
-            // const creditCardCvv = req.body.creditCardCvv;
+            const order = format.orderRecordResultTranslator(result);
+
+            // todo: need to valite these fields before setting them of the order
+            const creditCardType = req.body.creditCardType;
+            const creditCardNumber = req.body.creditCardNumber;
+            const creditCardExp = req.body.creditCardExp;
+            const creditCardHolderId = req.body.creditCardHolderId;
+            const creditCardCvv = req.body.creditCardCvv;
+
+            order.orderPayment = {
+                paymentName: creditCardType,    
+                paymentType: 1,
+                paymentSum: order.total,
+                creditCard: creditCardNumber,
+                creditCardExp: creditCardExp,
+                creditCardCvv: creditCardCvv,
+                creditCardHolderId: creditCardHolderId,
+
+            }
 
             // call pos provider
             beecomm.executePushOrder(order, (error, result) => {
@@ -135,6 +150,7 @@ app.post('/order', (req, res) => {
                     // todo: extract the 'transactionId' from the beecomm response
                     const transactionId = "tid-Gv47xTT";     
                     const transactionCreationTime = new Date().getTime();
+                    const transactionStatus = "OK";
 
                     res.status(201);
                     res.send({orderId: orderId, transactionId: transactionId, message: "order accepted", response: result});
@@ -142,27 +158,33 @@ app.post('/order', (req, res) => {
                     // todo: if success, create and save 'orderLog'     
                     console.log("saving an 'orderLog' to the db for orderId %s", orderId);
 
+                    order.orderId = orderId;
+                    order.orderStatus = 1;
+
                     const submitOrderResult = {
                         transactionId: transactionId,
                         transactionCreationTime: transactionCreationTime,
-                        status: "OK"
+                        transactionStatus: transactionStatus
                     };
 
-                    dal.commandWithTransaction(dal.prepareOrderLog(order, submitOrderResult), (error,result) => {
+                    dal.prepareOrderLog(order, submitOrderResult, (error, result) => {
+                        dal.commandWithTransaction(result, (error,result) => {
                         
-                        if (error) {
-                            console.log("an error occurred while creating an 'orderLog' for orderId $s ... error is: %s", orderId, error);
-                            throw error;
-                        }
-
-                        console.log("an 'orderLog' was saved in db");
+                            if (error) {
+                                console.log("an error occurred while creating an 'orderLog' for orderId $s ... error is: %s", orderId, error);
+                                throw error;
+                            }
+    
+                            console.log("an 'orderLog' was saved in db");
+                        });
                     });
+
                 }
 
             });
 
         });  
-        
+
     } 
     catch (error) {
         

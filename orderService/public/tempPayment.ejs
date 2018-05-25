@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Payment card checkout</title>
+</head>
+
+<form method="post" action="/order" novalidate>
+
+    <label>Credit Card Type</label><input name="creditCardType" type="text" /><br>
+    <label>Credit Card Number</label><input name="creditCardNumber" type="text" /><br>
+    <label>Credit Card Exp</label><input name="creditCardExp" type="text" /><br>
+    <label>Credit Card CVV</label><input name="creditCardCvv" type="text" /><br>
+    <label>Credit Card Holder ID</label><input name="creditCardHolderId" type="text" /><br>
+    <input name="orderId" type="hidden" value="<%= orderId %>"/>
+    <div class="form-actions">
+        <button type="submit">Send</button>
+    </div>
+
+</form>

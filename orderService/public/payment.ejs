@@ -18,7 +18,7 @@
   <div class="tips">
 Payment card number: (4) VISA, (51 -> 55) MasterCard, (36-38-39) DinersClub, (34-37) American Express, (65) Discover, (5019) dankort
 </div>
-
+<form method="post" action="/order" novalidate>
 <div class="container">
   <div class="col1">
     <div class="card">
@@ -48,9 +48,11 @@ Payment card number: (4) VISA, (51 -> 55) MasterCard, (36-38-39) DinersClub, (34
     <input class="expire" type="text" placeholder="MM / YYYY"/>
     <label>Security Number</label>
     <input class="ccv" type="text" placeholder="CVC" maxlength="3" onkeypress='return event.charCode >= 48 && event.charCode <= 57'/>
+    <input type="hidden" value="<%= orderId %>"/>
     <button class="buy"><i class="material-icons">lock</i> Pay --.-- €</button>
   </div>
 </div>
+</form>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>

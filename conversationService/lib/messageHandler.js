@@ -4,11 +4,28 @@ const providers = require('./providers');
 const sessionManager = require('./sessionManager');
 const CONST = require('./const');
 const cordsToAddress = require('./util/locations').cordsToAddress;
-
+const strToAddress = require('./util/locations').strToAddress;
 const menu = require('./../customers/niniHachi.json');
 
 const handlers = {};
 
+handlers[CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS] = (message, userSession) => {
+  let response = {};
+
+  const address = message.actionData.address;
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: `מיקום 🔥! אנחנו שולחים ל${address}!`
+  });
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'בחר קטגוריה',
+    replies: getCategories(menu.items, true),
+  });
+
+}
 
 handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
   let response = {};
@@ -125,7 +142,7 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD] = (message, userSession) => {
 
   message.responses.push({
     type: CONST.RESPONSE_TYPE.TEXT,
-    text: `הכנס כתובת`,
+    text: `אנא הזן את הכתובת למשלוח`,
     replies: [{
       type: CONST.REPLY_TYPE.LOCATION,
     }],
@@ -194,7 +211,7 @@ async function handle(message) {
       if (message.attachments) {
         const coords = message.attachments[0] && message.attachments[0].payload && message.attachments[0].payload.coordinates;
         const address = await cordsToAddress(coords);
-        userSession.deliveryAddress = address;
+        userSession.deliveryAddress = (address && address.length > 0) ? address[0] : undefined;
         message.responses.push({
           type: CONST.RESPONSE_TYPE.TEXT,
           text: `מיקום 🔥! אנחנו שולחים ל${address}!`
@@ -205,11 +222,33 @@ async function handle(message) {
           replies: getCategories(menu.items, true),
         });
       } else {
+        const address = await strToAddress(message.messageContent);
         message.responses.push({
           type: CONST.RESPONSE_TYPE.TEXT,
-          text: `אני לא יודע להבין כתובות ככה עדיין🙄, אנא שלח לי את המיקום שלך ע״י לחיצה על כפתור ה-Send Location`
+          text: `אנא בחר את האפשרות הכי מתאימה`,
+          replies: [
+            {
+              type: CONST.REPLY_TYPE.TEXT,
+              text: 'כתובת 1',
+              clickData: {
+                action: CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS,
+                data: {
+                  address: 'כתובת 1'
+                },
+              },
+            },
+            {
+              type: CONST.REPLY_TYPE.TEXT,
+              text: 'כתובת 2',
+              clickData: {
+                action: CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS,
+                data: {
+                  address: 'כתובת 2'
+                },
+              },
+            }
+          ]
         });
-        handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD](message, userSession); // TODO: handle free text :(
       }
     } else {
       message.responses.push({

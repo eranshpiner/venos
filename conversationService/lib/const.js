@@ -15,6 +15,7 @@ module.exports = {
   },
   ACTIONS: {
     CHOOSE_DELIVERY_METHOD: 'dm',
+    CHOOSE_DELIVERY_ADDRESS: 'da',
     CHOOSE_CATEGORY: 'cc',
     ADD_TO_CART: 'atc',
     REMOVE_FROM_CART: 'rfc',

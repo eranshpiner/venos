@@ -10,6 +10,54 @@ var formatSql = (command, parameters) => {
 }
 
 /**
+ * Receives an 'orderRecord' result (from the db) and translates it to the 'order' json 
+ * @param {*} result 
+ */
+var orderRecordResultTranslator = (result) => {
+    if ((result == null) || result.length < 1) {
+        return null;
+    }
+
+    // set the base order details
+    const dbOrder = result[0];
+    const order = {
+        total: dbOrder.total,
+        currency: dbOrder.currency, 
+        brandId: dbOrder.brandId,
+        brandLocationId: dbOrder.brandLocationId,
+        remarks: "dbOrder.remarks",
+        orderItems: [],
+        orderOwner: {
+            firstName: dbOrder.firstName,
+            lastName: dbOrder.lastName,
+            phone: dbOrder.phone,
+            email: dbOrder.email,
+            deliveryInfo: {
+                city: dbOrder.city,
+                street: dbOrder.street,
+                houseNumber: dbOrder.houseNumber,
+                apartment: dbOrder.apartment,
+                floor: dbOrder.floor
+            }
+        }
+    };
+
+    // set the menu items
+    for (i=0; i < result.length; i++) {
+        dbItem = result[i];
+        order.orderItems[i] = {
+            itemId: dbItem.itemId,
+            itemName: dbItem.itemName,
+            quantity: dbItem.quantity,
+            price: dbItem.price,
+            unitPrice: dbItem.unitPrice
+        };
+    }
+
+    return order;
+}
+
+/**
  * Receives order (the initial input) and transforms it to the order record
  * @param {*} order 
  */
@@ -38,7 +86,6 @@ var orderRecordBuilder = (order) => {
     return orderRecord;
 }
 
-
 var orderItemsBuilder = (orderId, order) => {
 
     var dbItems = [];
@@ -66,18 +113,18 @@ var orderLogBuilder = (order, submitOrderOutput, pos) => {
     console.log('start orderLogBuilder');
 
     var orderLog = {
-         orderId         : order.orderId,
-         transactionId   : submitOrderOutput.transactionId,
-         transactionTimeCreation : submitOrderOutput.transactionTimeCreation,
-         brandId         : order.brandId,
-         brandLocationId : order.brandLocationId,
-         posVendorId     : pos.posVendorId,
-         posId           : pos.posId,
-         posResponseStatus: submitOrderOutput.orderStatus,
+        orderId         : order.orderId,
+        transactionId   : submitOrderOutput.transactionId,
+        transactionCreationTime : submitOrderOutput.transactionCreationTime,
+        brandId         : order.brandId,
+        brandLocationId : order.brandLocationId,
+        posVendorId     : pos.posVendorId,
+        posId           : pos.posId,
+        posResponseStatus: submitOrderOutput.transactionStatus,
         //  posResponseCode : ??,
-        orderStatus: submitOrderOutput.orderStatus 
+        orderStatus: order.orderStatus 
     }
-    console.log('orderLog====', orderLog);
+    console.log('orderLog====>', orderLog);
 
     return orderLog;
 }
@@ -121,5 +168,6 @@ module.exports = {
     orderItemsBuilder,
     orderLogBuilder,
     logBuilder,
-    selectOrderDetails
+    selectOrderDetails,
+    orderRecordResultTranslator
 }

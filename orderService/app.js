@@ -1,18 +1,19 @@
 
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const validator = require('./util/validator.js');
 const beecomm = require('./providers/beecomm/beecomm.js');
 const dal = require ('./dal/dbfacade.js');
-
-
 const app = express();
+
+app.set('views', path.join(__dirname, 'public'));
+app.set('view engine', 'ejs');
 
 // Middleware
 app.use(bodyParser.json());
-
-app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 //init db
 dal.init();
@@ -53,7 +54,7 @@ app.get('/payment', (req, res) => {
 
             // todo: repond with a payment form - including the 'orderId' as a hidden field 
             res.status(200);
-            res.send({message: "got it - here is a nice payment form...", orderId: orderId, result: result});
+            res.render('tempPayment', {orderId});
             return;
 
         });  
@@ -75,8 +76,10 @@ app.get('/payment', (req, res) => {
 // 'orderId' hiddin field). 
 app.post('/order', (req, res) => {
 
+    console.log(req.body);
+
     // extract the fields of the form
-    const orderId = req.query.orderId;
+    const orderId = req.body.orderId;
 
     if (!validator.validateOrderId(orderId)) {
         console.log("invalid orderId");

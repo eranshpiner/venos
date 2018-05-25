@@ -41,16 +41,15 @@ app.get('/payment', (req, res) => {
     try {
 
         // create and save 'orderRecord' to get an 'orderId'
-        dal.commandWithTransaction(dal.prepareOrderRecord(order), (error, result) => {
+        var orderReq = dal.prepareOrderRecord(order);
+        //console.log("orderReq=", orderReq.orderCommand);
+        dal.commandWithTransaction(orderReq.commands, (error, result) => {
             
             if (error) {
                 throw error;
             }
-
-            // todo: extract the 'orderId' from the result
-            const orderId = "317";
-
-            console.log("an 'orderRecord' for order %d was saved to db... result is: %s", orderId, result);
+            const orderId = orderReq.orderId;
+            console.log(`an 'orderRecord' for order ${orderId} was saved to db... result is: ${result}`);
 
             // todo: repond with a payment form - including the 'orderId' as a hidden field 
             res.status(200);
@@ -162,7 +161,7 @@ app.post('/order', (req, res) => {
             });
 
         });  
-        
+
     } 
     catch (error) {
         

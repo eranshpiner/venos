@@ -42,8 +42,8 @@ function createJwt() {
     validateAndExtractJwt(jwtToken);
 }
 
-// validateJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NjYwYmQiLCJpYXQiOjE1MjU1MTIwODR9.F1P3Df86YNsmmeAIQU6YEE-lierTnMiU97jkpuzM7pw");
-// createJwt();
+//  validateJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NjYwYmQiLCJpYXQiOjE1MjU1MTIwODR9.F1P3Df86YNsmmeAIQU6YEE-lierTnMiU97jkpuzM7pw");
+createJwt();
 
 exports.validateInternalOrder = validateInternalOrder;
 exports.validateExternalOrder = validateExternalOrder;

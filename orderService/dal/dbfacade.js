@@ -134,9 +134,12 @@ var commandWithTransaction = (commandsList, processResult) => {
 var prepareOrderRecord = (order) => {
 
     console.log('start prepareOrderRecord ....');
-    var commandForTransaction=[];
+
+    var commandForTransaction = [];
     var orderRecord = format.orderRecordBuilder(order);
     var orderItems  = format.orderItemsBuilder(orderRecord.orderId, order);
+
+    commandForTransaction.orderId = orderRecord.orderId;
 
     var orderCommand = {
         query:'INSERT INTO venos.ORDER SET ?',
@@ -151,9 +154,12 @@ var prepareOrderRecord = (order) => {
         } 
         commandForTransaction.push(orderItem);
     }
-    
     console.log('end prepareOrderRecord ....');
-    return commandForTransaction;
+    //return auto-generated order Id
+    return {
+        orderId: orderRecord.orderId,
+        commands: commandForTransaction
+    };
 }
 
 /**
@@ -210,6 +216,21 @@ var prepareLog = (order,orderLog,error,result) => {
     console.log('end prepareLog ....');
 }
 
+var selectOrderDetails = (orderId) => {
+    console.log('start prepareLog ....');
+    var commandForTransaction=[];
+
+    var logCommand = {
+        query : 
+        `SELECT * FROM venos.order INNER JOIN venos.orderItems ON order.orderId=orderItems.orderId
+        WHERE order.orderId=?`,
+        parameters : orderId
+    }
+    commandForTransaction.push(logCommand);
+    return commandForTransaction;
+    console.log('end prepareLog ....');
+}
+
 /**
  * Terminates connection to database
  */
@@ -222,7 +243,6 @@ var close = () => {
     console.log('Connectio to db is closed....');   
 }
 
-
 module.exports = 
 {   init,
     query,
@@ -232,6 +252,7 @@ module.exports =
     prepareOrderRecord,
     prepareOrderLog,
     prepareLog,
+    selectOrderDetails,
     close
 }
              

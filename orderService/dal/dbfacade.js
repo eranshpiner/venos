@@ -16,25 +16,13 @@ var db;
 //TODO - replace hardcoded parameters by properties/yaml files
 
 var init = () => {
-    db = mysql.createConnection({
-    host : '127.0.0.1',
-    database : 'venos',
-    user : 'vladif',
-    password : 'bokerTov1!'
-    //debug : true //TODO remove in the production
-});
-
-// db.connect((error) => {
-//         if(error){
-//             console.log('Failed connect to DB : ', error.stack);
-//             throw error;
-//         }    
-//         console.log('Connected to db....');
-//         //call here command or query
-
-//   });
+        db = mysql.createConnection({
+        host : 'venosdbservice',
+        database : 'venosdb',
+        user : 'venos',
+        password : 'venos'
+    });
 }
-
 
 /**
  * Simple not parametrized query

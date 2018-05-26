@@ -21,14 +21,13 @@ RUN npm install
 
 # copy the application bundle
 ADD app.js ./
-ADD schema ./schema
-ADD dal ./dal
-ADD providers ./providers
-ADD public ./public
-ADD util ./util
+ADD uuid.js ./
+ADD customers ./customers
+ADD lib ./lib
+ADD notes ./notes
 
 # expose service port
-EXPOSE 3000
+EXPOSE 8080
 
 # run application
 CMD [ "node", "app.js" ]

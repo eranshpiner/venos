@@ -22,7 +22,7 @@ services:
 
   orderService:
     container_name: orderservice
-    image: order-service-on-node:1.1
+    image: eranshpiner/venos-orderservice:1.1.0
     ports:
       - "3000:3000"   
     links:
@@ -35,7 +35,7 @@ services:
 
   conversationService:
     container_name: conversationservice
-    image: conversation-service-on-node:1.1
+    image: eranshpiner/venos-conversationservice:1.5.0
     ports:
       - "8080:8080"
     deploy:

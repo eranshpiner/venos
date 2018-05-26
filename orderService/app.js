@@ -91,7 +91,7 @@ app.post('/order', (req, res) => {
     try {
 
         // todo: need a join query to retrieve both the order and the orderItems
-        const sqlQueryString_getOrderByOrderId = "SELECT * FROM venos.order INNER JOIN venos.orderItems ON order.orderId=orderItems.orderId WHERE order.orderId=?";
+        const sqlQueryString_getOrderByOrderId = "SELECT * FROM venos.ORDER INNER JOIN venos.ORDERITEMS ON ORDER.orderId=ORDERITEMS.orderId WHERE ORDER.orderId=?";
 
         // use the 'orderId' to retrieve the 'orderRecord' from the db
         dal.queryWithParams(sqlQueryString_getOrderByOrderId, [orderId], (error, result) => {

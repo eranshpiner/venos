@@ -3,17 +3,16 @@ version: '3.3'
 services:
   database:
     container_name: venosdbservice
-    image: mysql:5.7
+    image: eranshpiner/venos-mysql:1.3.0
     ports:
       - "6000:3306"
     volumes:
       - dbdata:/var/lib/mysql
     restart: always
+    command: mysqld --init-file="/usr/src/db/config/init.sql"
     environment:
       MYSQL_ROOT_PASSWORD: 'admin123'
-      MYSQL_DATABASE: 'venosdb'
-      MYSQL_USER: 'venos'
-      MYSQL_PASSWORD: 'venos'
+      MYSQL_DATABASE: 'venos'
     deploy:
       resources:
         limits:
@@ -22,7 +21,7 @@ services:
 
   orderService:
     container_name: orderservice
-    image: eranshpiner/venos-orderservice:1.1.0
+    image: eranshpiner/venos-orderservice:1.2.0
     ports:
       - "3000:3000"   
     links:

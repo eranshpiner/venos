@@ -18,9 +18,9 @@ var db;
 var init = () => {
         db = mysql.createConnection({
         host : 'venosdbservice',
-        database : 'venosdb',
-        user : 'venos',
-        password : 'venos'
+        database : 'venos',
+        user : 'root',
+        password : 'admin123'
     });
 }
 
@@ -137,7 +137,7 @@ var prepareOrderRecord = (order) => {
 
     for (i=0; i < orderItems.length; i++){
         var orderItem = {
-            query:'INSERT INTO venos.orderItems SET ?',
+            query:'INSERT INTO venos.ORDERITEMS SET ?',
             parameters:orderItems[i]
         } 
         commandForTransaction.push(orderItem);
@@ -211,8 +211,8 @@ var selectOrderDetails = (orderId) => {
 
     var logCommand = {
         query : 
-        `SELECT * FROM venos.order INNER JOIN venos.orderItems ON order.orderId=orderItems.orderId
-        WHERE order.orderId=?`,
+        `SELECT * FROM venos.ORDER INNER JOIN venos.ORDERITEMS ON ORDER.orderId=ORDERITEMS.orderId
+        WHERE ORDER.orderId=?`,
         parameters : orderId
     }
     commandForTransaction.push(logCommand);

@@ -5,6 +5,14 @@ const REPLY_TYPE = require('../../const').REPLY_TYPE;
 
 const responseTransformers = {};
 
+function chunks(array, size) {
+  const results = [];
+  while (array.length) {
+    results.push(array.splice(0, size));
+  }
+  return results;
+}
+
 function from(fbMessage) {
   const message = new Message(Date.now());
 
@@ -118,19 +126,22 @@ responseTransformers[RESPONSE_TYPE.CATEGORIES] = (response) => {
 };
 
 responseTransformers[RESPONSE_TYPE.ITEMS] = (response) => {
-  const fbResponse = {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'generic',
-        elements: response.items.map(itemToGenericElement),
-      },
+  const items = chunks(response.items, 10);
+  return items.map(items => {
+    const fbResponse = {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements: items.map(itemToGenericElement),
+        },
+      }
+    };
+    if (response.replies) {
+      fbResponse.quick_replies = response.replies.map(replyToQuickReply).splice(0, 10);
     }
-  };
-  if (response.replies) {
-    fbResponse.quick_replies = response.replies.map(replyToQuickReply).splice(0, 10);
-  }
-  return fbResponse;
+    return fbResponse;
+  });
 };
 
 responseTransformers[RESPONSE_TYPE.CART_SUMMARY] = (response) => {
@@ -159,13 +170,16 @@ responseTransformers[RESPONSE_TYPE.CART_SUMMARY] = (response) => {
 };
 
 function to(message) {
-  return message.responses.map(response => {
+  let res = [];
+  message.responses.forEach(response => {
     if (responseTransformers[response.type]) {
-      return responseTransformers[response.type](response);
+      const transformed = responseTransformers[response.type](response);
+      res = res.concat(Array.isArray(transformed) ? transformed : [transformed]);
     } else {
-      return {text: response.text || ''};
+      res.push({text: response.text || ''});
     }
   });
+  return res;
 }
 
 module.exports = {from, to};

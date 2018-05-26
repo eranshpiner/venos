@@ -81,36 +81,59 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
 
 function getItemCustomization(item) {
   const customizationItem  = item.menuItem.CategoriesAdd[item.customizationItem];
-  const replies = [{
-    text: 'הכל טוב כפרה',
-    clickData: {
-      action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
-      data: {
-        id: -1,
-      },
-    },
-  }];
   // TODO: handle scenario where all customizations were already selected
-  customizationItem.itemsAdd.forEach((addItem) => {
-    if (!item.item.customizations.includes(addItem.id)) {
-      replies.push({
-        text: addItem.name,
-        clickData: {
-          action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
-          data: {
-            id: addItem.id,
-          },
-        },
-      });
-    }
-  });
   if (customizationItem.single) {
+    const items = [];
+    customizationItem.itemsAdd.forEach((addItem) => {
+      if (!item.item.customizations.includes(addItem.id)) {
+        items.push(itemToElement(addItem, null, null, [{
+          text: 'הוסף',
+          clickData: {
+            action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
+            data: {
+              id: addItem.id,
+              categoryId: item.customizationItem,
+              isSingle: true,
+            },
+          }
+        }]));
+      }
+    });
     item.customizationItem += 1;
-  }
-  return {
-    type: CONST.RESPONSE_TYPE.TEXT,
-    text: customizationItem.name,
-    replies,
+
+    return {
+      type: CONST.RESPONSE_TYPE.ITEMS,
+      text: customizationItem.name,
+      items,
+    }
+  } else {
+    const replies = [{
+      text: 'הכל טוב כפרה',
+      clickData: {
+        action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
+        data: {
+          id: -1,
+        },
+      },
+    }];
+    customizationItem.itemsAdd.forEach((addItem) => {
+      if (!item.item.customizations.includes(addItem.id)) {
+        replies.push({
+          text: addItem.name,
+          clickData: {
+            action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
+            data: {
+              id: addItem.id,
+            },
+          },
+        });
+      }
+    });
+    return {
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: customizationItem.name,
+      replies,
+    }
   }
 };
 
@@ -345,7 +368,7 @@ function getItems(items, categoryId, lang = 'he_IL') {
 
     });
   }
-  return res.splice(0, 10); // todo limit 10
+  return res;
 }
 
 function getCartItems(cartItems, menuItems, lang = 'he_IL') {
@@ -371,7 +394,7 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
     ],
     }
   });
-  return res.splice(0, 10); // todo limit 10
+  return res;
 }
 
 function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
@@ -383,7 +406,7 @@ function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
       elements.push(categoryToElement(item, itemId, lang));
     }
   );
-  return elements.splice(0, 10); // todo limit 10
+  return elements;
 }
 
 function categoryToElement(item, itemId, lang) {

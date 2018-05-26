@@ -5,7 +5,7 @@ services:
     container_name: venosdbservice
     image: eranshpiner/venos-mysql:1.3.0
     ports:
-      - "6000:3306"
+      - '6000:3306'
     volumes:
       - dbdata:/var/lib/mysql
     restart: always
@@ -23,7 +23,7 @@ services:
     container_name: orderservice
     image: eranshpiner/venos-orderservice:1.2.0
     ports:
-      - "3000:3000"   
+      - '3000:3000'   
     links:
       - database      
     deploy:
@@ -36,14 +36,34 @@ services:
     container_name: conversationservice
     image: eranshpiner/venos-conversationservice:1.5.0
     ports:
-      - "8080:8080"
+      - '8080:8080'
     deploy:
       resources:
         limits:
           cpus: '0.50'
           memory: 256M
 
+  letsencrypt:
+      restart: always
+      image: linuxserver/letsencrypt
+      container_name: letsencrypt
+      ports:
+        - '80:80'
+        - '443:443'
+      links:
+        - conversationService
+        - orderService
+      volumes:
+        - './web/conf:/config/nginx/site-confs:ro'
+        - 'certs:/etc/nginx/conf:rw'
+      environment:
+        - EMAIL=n@natiziv.com
+        - URL=natiziv.com
+        - SUBDOMAINS=venos
+        - ONLY_SUBDOMAINS=true
+        - VALIDATION=http
 
 volumes:
   dbdata:
+  certs:
 

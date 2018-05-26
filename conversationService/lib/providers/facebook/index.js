@@ -4,9 +4,9 @@ const transformer = require('./transformer');
 const CONST = require('./const');
 
 const router = require('express').Router();
-const request = require('request');
 const axios = require('axios');
 
+const queue = [];
 const config = {
   pageTokens: {
     // Nati
@@ -80,10 +80,10 @@ router.post(ENDPOINT, (req, res) => {
   }
 });
 
-function sendMessage(message) {
+async function sendMessage(message) {
   const messageBodies = transformer.to(message);
   sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_OFF);
-  messageBodies.forEach(async (messageBody, idx) => {
+  for (let messageBody of messageBodies) {
     const fbMessage = {
       recipient: {
         id: message.userDetails.id,
@@ -91,9 +91,8 @@ function sendMessage(message) {
       messaging_type: CONST.MESSAGING_TYPE.RESPONSE,
       message: messageBody,
     };
-    console.log(idx, message);
     await _sendMessage(fbMessage, message.customerId);
-  });
+  }
 
 }
 

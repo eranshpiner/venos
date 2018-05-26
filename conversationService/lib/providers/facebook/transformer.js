@@ -63,9 +63,9 @@ function actionToButton(action = {}) {
   if (action.clickData) {
     button.type = 'postback';
     button.payload = JSON.stringify(action.clickData);
-  } else if (action.url) {
+  } else if (action.clickLink) {
     button.type = 'web_url';
-    button.url = action.url;
+    button.url = action.clickLink;
   }
   return button;
 }

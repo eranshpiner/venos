@@ -119,7 +119,7 @@ async function _sendMessage(message, customerId) {
     const res = await axios(req);
     console.log('[FacebookProvider] message sent!', res.data);
   } catch (e) {
-    console.error('[FacebookProvider] Unable to send message', e);
+    console.error(`[FacebookProvider] Unable to send message: ${e.response.status} ${e.response.statusText}`, e.response.data);
   }
 }
 

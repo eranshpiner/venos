@@ -5,7 +5,8 @@ const sessionManager = require('./sessionManager');
 const CONST = require('./const');
 const cordsToAddress = require('./util/locations').cordsToAddress;
 const strToAddress = require('./util/locations').strToAddress;
-const menu = require('./../customers/niniHachi.json');
+
+const menu = require('./../customers/niniHachiMenu.json').rest.menu;
 
 const handlers = {};
 
@@ -52,20 +53,23 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   response.type = CONST.RESPONSE_TYPE.TEXT;
 
   const itemId = message.actionData.id;
+  const categoryId = message.actionData.categoryId;
   userSession.cart = userSession.cart || [];
 
-  if (!menu.items[itemId]) {
-    response.text = `Sorry, I couldn't find ${itemId} on the menu, please try again.`;
+ var menuItem1 = menu.items[categoryId].items.find(function(element) {   return element.id === itemId; });
+
+  if (!menuItem1) {
+    response.text = `Sorry, I couldn't find ${menuItem1.id} on the menu, please try again.`;
   }
 
-  const menuItem = menu.items[itemId];
-  const cartItem = userSession.cart.find((item) => item.id === itemId);
+  const menuItem = menuItem1;
+  const cartItem = userSession.cart.find((item) => item.id === menuItem1.id);
   if (cartItem) {
     cartItem.quantity += 1;
-    response.text = `${menuItem.title.he_IL} was already in your cart, so I've set its quantity to ${cartItem.quantity}.`;
+    response.text = `${menuItem.name} was already in your cart, so I've set its quantity to ${cartItem.quantity}.`;
   } else {
-    userSession.cart.push({id: itemId, quantity: 1});
-    response.text = `hurray, item ${menuItem.title.he_IL} has been added to cart.`;
+    userSession.cart.push({id: menuItem1.id, quantity: 1, categoryId: categoryId});
+    response.text = `hurray, item ${menuItem1.name} has been added to cart.`;
   }
 
   response.replies = getCategories(menu.items, true);
@@ -76,6 +80,7 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
 handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
   let response = {};
   const itemId = message.actionData.id;
+  const itemName = message.actionData.name;
   const isReduceQuantity = message.actionData.reduceQuantity;
   const menuItem = menu.items[itemId];
   userSession.cart = userSession.cart || [];
@@ -83,14 +88,14 @@ handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
   const cartItemIndex = userSession.cart.findIndex((item) => item.id === itemId);
   const cartItem = userSession.cart[cartItemIndex];
   if (cartItemIndex === -1) {
-    response.text = `Sorry, we couldn't find ${menuItem.title.he_IL} in your cart cart.`;
+    response.text = `Sorry, we couldn't find ${itemName} in your cart cart.`;
   } else {
     if (isReduceQuantity && cartItem.quantity > 1) {
       cartItem.quantity -= 1;
-      response.text = `hurray, item ${menuItem.title.he_IL} has been reduced to ${cartItem.quantity}.`;
+      response.text = `hurray, item ${itemName} has been reduced to ${cartItem.quantity}.`;
     } else {
       userSession.cart.splice(cartItemIndex, 1); // TODO normal remove
-      response.text = `hurray, item ${menuItem.title.he_IL} has been removed from cart.`;
+      response.text = `hurray, item ${itemName} has been removed from cart.`;
     }
   }
 
@@ -270,47 +275,56 @@ function getItems(items, categoryId, lang = 'he_IL') {
   const category = items[categoryId];
   const res = [];
   if (category && category.items) {
-    category.items.forEach(itemId => {
-      if (items[itemId]) {
-        res.push(itemToElement(items[itemId], itemId, lang, [{
+    category.items.forEach(item => {
+      // if (items[itemId]) {
+        res.push(itemToElement(item, item.id, lang, [{
           text: 'הוסף', // TODO
           clickData: {
             action: CONST.ACTIONS.ADD_TO_CART,
             data: {
-              id: itemId,
+              id: item.id,
+              categoryId: categoryId
             },
           }
         }]));
-      }
+
     });
   }
   return res.splice(0, 10); // todo limit 10
 }
 
 function getCartItems(cartItems, menuItems, lang = 'he_IL') {
-  const res = cartItems.map((cartItem) => ({
-    title: menuItems[cartItem.id].title[lang],
-    description: menuItems[cartItem.id].description[lang],
-    imageUrl: menuItems[cartItem.id].image_url,
-    actions: [
+
+  const res = cartItems.map((cartItem) => {
+    var menuItem2 = menuItems[cartItem.categoryId].items.find(function(element) {   return element.id === cartItem.id; });
+    return {
+      title: menuItem2.name,
+        description: menuItem2.desc,
+      imageUrl: menuItem2.image.substring(2, menuItem2.image.length),
+      actions: [
       {
         text: 'Remove',
         clickData: {
           action: CONST.ACTIONS.REMOVE_FROM_CART,
-          data: {id: cartItem.id},
+          data: {
+            id: cartItem.id,
+            name:menuItem2.name
+
+          },
         },
       },
     ],
-  }));
-return res.splice(0, 10); // todo limit 10
+    }
+  });
+  return res.splice(0, 10); // todo limit 10
 }
 
 function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
   const elements = [];
   Object.entries(items).forEach(([itemId, item]) => {
-      if (onlyTopLevel && !item.topLevel) {
-        return;
-      }
+      // if (onlyTopLevel && !item.topLevel) {
+      //   return;
+      // }
       elements.push(categoryToElement(item, itemId, lang));
     }
   );
@@ -319,7 +333,7 @@ function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
 
 function categoryToElement(item, itemId, lang) {
   const element = {
-    text: item.title[lang],
+    text: item.name,
     clickData: {
       action: CONST.ACTIONS.CHOOSE_CATEGORY,
       data: {
@@ -327,20 +341,22 @@ function categoryToElement(item, itemId, lang) {
       },
     },
   };
-  if (item.picture) {
-    element.imageUrl = item.picture;
+  if (item.image) {
+    var image = item.image.substring(2, item.image.length);
+    element.imageUrl = image;
   }
   return element;
 }
 
 function itemToElement(item, itemId, lang, actions = []) {
   const element = {
-    title: item.title[lang],
-    description: item.description[lang],
+    title: item.name,
+    description: item.desc,
     actions,
   };
-  if (item.image_url) {
-    element.imageUrl = item.image_url;
+  if (item.image) {
+    var image = item.image.substring(2, item.image.length);
+    element.imageUrl = image;
   }
   return element;
 }

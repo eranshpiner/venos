@@ -1,4 +1,5 @@
 
+const util = require('util');
 const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
 
@@ -9,15 +10,26 @@ const auth = {
     }
 }
 
-const nodemailerMailgun = nodemailer.createTransport(mg(auth));
+const mgTransport = nodemailer.createTransport(mg(auth));
 
-function sendEmail(toArray, subject, text, callback) {
-    nodemailerMailgun.sendMail({
+function sendOrderConfirmationEmail(order, transactionId, callback) {
+
+    const html = util.format(
+        'Hello %s!<br><br> Venos sent your order to %s. <br>The confirmation id with %s is - %s.<br> Enjoy!<br> <br> The Venos Team. ', 
+        order.orderOwner.firstName, 
+        order.brandId, 
+        order.brandId, 
+        transactionId
+    );
+
+    const toArray = [{name: order.orderOwner.firstName, address: order.orderOwner.email}];
+
+    mgTransport.sendMail({
         from: {name: 'Venos', address: 'venos@venos-mail.natiziv.com'},
         to: toArray,
-        subject: subject,
-        text: text
+        subject: "Your order was sent!",
+        html: html,
       }, callback);
 }
 
-exports.sendEmail = sendEmail;
+exports.sendOrderConfirmationEmail = sendOrderConfirmationEmail;

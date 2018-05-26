@@ -169,10 +169,16 @@ app.post('/order', (req, res) => {
                     res.status(201);
                     res.send({orderId: orderId, transactionId: transactionId, message: result.message, code: result.code});
                     
-                    // send the confimation e-mail
+                    // send the confirmation e-mail
                     if (order.orderOwner.email != null) {
-                        var toArray = [{name: order.orderOwner.firstName, address: order.orderOwner.email}];
-                        mailer.sendEmail(toArray, 'Your order was sent!', 'Venos sent your order to ' + order.brandId);
+                        const toArray = [{name: order.orderOwner.firstName, address: order.orderOwner.email}];
+                        mailer.sendOrderConfirmationEmail(order, transactionId, (error, result) => {
+                            if (error) {
+                                console.log('an error occurred attempting to send confirmation email for orderId [%s] and transactionId [%s]', orderId, transactionId);    
+                            } else {
+                                console.log('a confirmation email for orderId [%s] and transactionId [%s] was sent!', orderId, transactionId);
+                            }       
+                        });
                     }
 
                     // todo: if success, create and save 'orderLog'     
@@ -191,7 +197,7 @@ app.post('/order', (req, res) => {
                         dal.commandWithTransaction(result, (error,result) => {
                         
                             if (error) {
-                                console.log("an error occurred while creating an 'orderLog' for orderId $s ... error is: %s", orderId, error);
+                                console.log("an error occurred while creating an 'orderLog' for orderId %s ... error is: %s", orderId, error);
                                 throw error;
                             }
     

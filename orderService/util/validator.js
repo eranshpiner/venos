@@ -36,13 +36,13 @@ function validateOrderId(orderId) {
 }
 
 function createJwt() {
-    let payload = "{\"total\":430,\"currency\":\"nis\",\"brandId\":\"shabtai\",\"brandLocationId\":\"kfar-vitkin\",\"remarks\":\"\",\"orderOwner\":{\"firstName\":\"vladi\",\"lastName\":\"king\",\"phone\":\"123-456-678\",\"email\":\"vladif86@gmail.com\",\"deliveryInfo\":{\"city\":\"new-york\",\"street\":\"pizza\",\"houseNumber\":\"45a\",\"apartment\":\"23\",\"floor\":3}},\"orderItems\":[{\"itemId\":\"156\",\"itemName\":\"pizzapepperoni\",\"quantity\":3,\"unitPrice\":70,\"price\":210},{\"itemId\":\"435\",\"itemName\":\"pizzatuna\",\"quantity\":1,\"unitPrice\":60,\"price\":60},{\"itemId\":\"2\",\"itemName\":\"beer\",\"quantity\":4,\"unitPrice\":30,\"price\":120},{\"itemId\":\"3\",\"itemName\":\"dietcola\",\"quantity\":4,\"unitPrice\":10,\"price\":40}],\"orderPayment\":{\"paymentType\":1,\"paymentSum\":55.7,\"paymentName\":\"wtf?\",\"creditCard\":\"3434-3434-4334-3434\",\"creditCardExp\":\"09/20\",\"creditCardCvv\":\"000\",\"creditCardHolderId\":\"343545645454\"}}";
+    let payload = "{\"total\":430,\"currency\":\"nis\",\"brandId\":\"shabtai\",\"brandLocationId\":\"kfar-vitkin\",\"remarks\":\"\",\"orderOwner\":{\"firstName\":\"vladi\",\"lastName\":\"king\",\"phone\":\"123-456-678\",\"email\":\"eranshpiner@gmail.com\",\"deliveryInfo\":{\"city\":\"new-york\",\"street\":\"pizza\",\"houseNumber\":\"45a\",\"apartment\":\"23\",\"floor\":3}},\"orderItems\":[{\"itemId\":\"156\",\"itemName\":\"pizzapepperoni\",\"quantity\":3,\"unitPrice\":70,\"price\":210},{\"itemId\":\"435\",\"itemName\":\"pizzatuna\",\"quantity\":1,\"unitPrice\":60,\"price\":60},{\"itemId\":\"2\",\"itemName\":\"beer\",\"quantity\":4,\"unitPrice\":30,\"price\":120},{\"itemId\":\"3\",\"itemName\":\"dietcola\",\"quantity\":4,\"unitPrice\":10,\"price\":40}],\"orderPayment\":{\"paymentType\":1,\"paymentSum\":55.7,\"paymentName\":\"wtf?\",\"creditCard\":\"3434-3434-4334-3434\",\"creditCardExp\":\"09/20\",\"creditCardCvv\":\"000\",\"creditCardHolderId\":\"343545645454\"}}";
     let jwtToken = jwt.sign(payload, secret);
     console.log(jwtToken);
     validateAndExtractJwt(jwtToken);
 }
 
-//  validateJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NjYwYmQiLCJpYXQiOjE1MjU1MTIwODR9.F1P3Df86YNsmmeAIQU6YEE-lierTnMiU97jkpuzM7pw");
+// validateJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NjYwYmQiLCJpYXQiOjE1MjU1MTIwODR9.F1P3Df86YNsmmeAIQU6YEE-lierTnMiU97jkpuzM7pw");
 // createJwt();
 
 exports.validateInternalOrder = validateInternalOrder;

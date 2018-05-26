@@ -126,7 +126,7 @@ responseTransformers[RESPONSE_TYPE.CATEGORIES] = (response) => {
 };
 
 responseTransformers[RESPONSE_TYPE.ITEMS] = (response) => {
-  const items = chunks(response.items, 10);
+  const items = chunks(response.items.splice(0,10), 10); // TODO: remove splice(0,10)
   return items.map(items => {
     const fbResponse = {
       attachment: {

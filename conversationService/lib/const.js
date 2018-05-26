@@ -4,6 +4,7 @@ module.exports = {
     CATEGORIES: 'categories',
     ITEMS: 'items',
     CART_SUMMARY: 'cart-summary',
+    ADDRESS_LIST: 'addressList'
   },
   REPLY_TYPE: {
     TEXT: 'text',
@@ -23,6 +24,8 @@ module.exports = {
     GET_CART: 'gc',
     EMPTY_CART: 'ec',
     CLICK_ITEM: 'ci',
-    PAY: 'pay'
+    PAY: 'pay',
+    FIX_DELIVERY_ADDRESS: 'fda',
+    APPROVE_DELIVERY_ADDRESS: 'ada'
   }
 };

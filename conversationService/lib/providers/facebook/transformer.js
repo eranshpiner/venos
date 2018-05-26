@@ -144,6 +144,25 @@ responseTransformers[RESPONSE_TYPE.ITEMS] = (response) => {
   });
 };
 
+responseTransformers[RESPONSE_TYPE.ADDRESS_LIST] = (response) => {
+  // due to FB list limit of min 2, we convert 1 item to a generic template
+  if (response.items.length === 1) {
+    response.items[0].actions = response.items[0].actions.concat(response.items);
+    return responseTransformers[RESPONSE_TYPE.ITEMS](response);
+  }
+  const fbResponse = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'list',
+        top_element_style: 'compact',
+        elements: response.items.map(itemToListElement),
+      },
+    },
+  };
+  return fbResponse;
+}
+
 responseTransformers[RESPONSE_TYPE.CART_SUMMARY] = (response) => {
   // due to FB list limit of min 2, we convert 1 item to a generic template
   if (response.cartItems.length === 1) {

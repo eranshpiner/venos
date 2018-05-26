@@ -8,7 +8,33 @@ const strToAddress = require('./util/locations').strToAddress;
 
 const menu = require('./../customers/niniHachiMenu.json').rest.menu;
 
+const addressFlow = {
+  "step1": "הכנס עיר",
+  "step2": "הכנס רחוב",
+  "step3": "הכנס מספר בית",
+  "step4": "הכנס מספר דירה",
+  "step5": "הכנסה קומה",
+};
+
 const handlers = {};
+
+handlers[CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS] = (message, userSession) => {
+  let response = {};
+
+  const address = message.actionData.address;
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: `מיקום 🔥! אנחנו שולחים ל${address}!`
+  });
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'בחר קטגוריה',
+    replies: getCategories(menu.items, true),
+  });
+
+} 
 
 handlers[CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS] = (message, userSession) => {
   let response = {};
@@ -294,44 +320,46 @@ async function handle(message) {
     } else if (userSession.deliveryMethod === CONST.DELIVERY_METHOD.DELIVERY && !userSession.deliveryAddress) {
       if (message.attachments) {
         const coords = message.attachments[0] && message.attachments[0].payload && message.attachments[0].payload.coordinates;
-        const address = await cordsToAddress(coords);
-        userSession.deliveryAddress = (address && address.length > 0) ? address[0] : undefined;
+        const addresses = await cordsToAddress(coords);
+        const address = (addresses && addresses.length > 0) ? addresses[0] : undefined;
+        userSession.deliveryAddress = address.address;
         message.responses.push({
           type: CONST.RESPONSE_TYPE.TEXT,
-          text: `מיקום 🔥! אנחנו שולחים ל${address}!`
-        });
-        message.responses.push({
-          type: CONST.RESPONSE_TYPE.TEXT,
-          text: 'בחר קטגוריה',
-          replies: getCategories(menu.items, true),
-        });
-      } else {
-        const address = await strToAddress(message.messageContent);
-        message.responses.push({
-          type: CONST.RESPONSE_TYPE.TEXT,
-          text: `אנא בחר את האפשרות הכי מתאימה`,
+          text: `הכתובת שלך לחץ מטה לאשר או לתקן את הכתובת, : ${userSession.deliveryAddress}!`,
           replies: [
             {
               type: CONST.REPLY_TYPE.TEXT,
-              text: 'כתובת 1',
+              text: 'אשר כתובת',
               clickData: {
-                action: CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS,
+                action: CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS,
                 data: {
-                  address: 'כתובת 1'
+                  action: CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS,
+                  address: userSession.deliveryAddress
                 },
               },
             },
             {
               type: CONST.REPLY_TYPE.TEXT,
-              text: 'כתובת 2',
+              text: 'תקן כתובת',
               clickData: {
-                action: CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS,
+                action: CONST.ACTIONS.FIX_DELIVERY_ADDRESS,
                 data: {
-                  address: 'כתובת 2'
+                  action: CONST.ACTIONS.FIX_DELIVERY_ADDRESS
                 },
               },
             }
-          ]
+          ]  
+        });
+      } else {
+        const addresses = await strToAddress(message.messageContent);
+        message.responses.push({
+        type: CONST.RESPONSE_TYPE.TEXT,
+        text: `אנא בחר את האפשרות הכי מתאימה`
+        });
+        
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.ADDRESS_LIST,
+          items: getPossibleAddresses(addresses)
         });
       }
     } else {
@@ -370,6 +398,26 @@ function getItems(items, categoryId, lang = 'he_IL') {
     });
   }
   return res;
+}
+
+function getPossibleAddresses(addresses, lang = 'he_IL') {
+  const res = addresses.map((address) => ({
+    type: CONST.REPLY_TYPE.TEXT,
+    title:address.address,
+    actions: [
+      {
+        text: address.address,
+        clickData: {
+          action: CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS,
+          data: {
+            address: address.address,
+            placeId: address.placeId
+          },
+        }
+      }
+    ]
+  }));
+  return res.splice(0, 4); // todo limit 10
 }
 
 function getCartItems(cartItems, menuItems, lang = 'he_IL') {

@@ -7,6 +7,7 @@ const validator = require('./util/validator.js');
 const beecomm = require('./providers/beecomm/beecomm.js');
 const dal = require ('./dal/dbfacade.js');
 const format = require('./dal/sqlFormatter.js');
+const mailer = require('./util/mailer.js');
 const app = express();
 
 app.set('views', path.join(__dirname, 'public'));
@@ -168,6 +169,12 @@ app.post('/order', (req, res) => {
                     res.status(201);
                     res.send({orderId: orderId, transactionId: transactionId, message: result.message, code: result.code});
                     
+                    // send the confimation e-mail
+                    if (order.orderOwner.email != null) {
+                        var toArray = [{name: order.orderOwner.firstName, address: order.orderOwner.email}];
+                        mailer.sendEmail(toArray, 'Your order was sent!', 'Venos sent your order to ' + order.brandId);
+                    }
+
                     // todo: if success, create and save 'orderLog'     
                     console.log("saving an 'orderLog' to the db for orderId %s", orderId);
 

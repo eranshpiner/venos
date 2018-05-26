@@ -54,26 +54,81 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
 
   const itemId = message.actionData.id;
   const categoryId = message.actionData.categoryId;
+  const menuItem = menu.items[categoryId].items.find((e) => e.id === itemId);
   userSession.cart = userSession.cart || [];
 
- var menuItem1 = menu.items[categoryId].items.find(function(element) {   return element.id === itemId; });
-
-  if (!menuItem1) {
-    response.text = `Sorry, I couldn't find ${menuItem1.id} on the menu, please try again.`;
+  if (!menuItem) {
+    response.text = `Sorry, I couldn't find it on the menu, please try again.`;
   }
+  const cartItem = {id: menuItem.id, quantity: 1, categoryId: categoryId, customizations: []};
+  userSession.cart.push(cartItem);
 
-  const menuItem = menuItem1;
-  const cartItem = userSession.cart.find((item) => item.id === menuItem1.id);
-  if (cartItem) {
-    cartItem.quantity += 1;
-    response.text = `${menuItem.name} was already in your cart, so I've set its quantity to ${cartItem.quantity}.`;
+  if (menuItem.CategoriesAdd && menuItem.CategoriesAdd.length) {
+    cartItem.hasCustomization = true;
+    userSession.currentItem = {
+      item: cartItem,
+      menuItem,
+      customizationItem: 0,
+      customizationItemsTotal: menuItem.CategoriesAdd.length,
+    };
+    Object.assign(response, getItemCustomization(userSession.currentItem));
   } else {
-    userSession.cart.push({id: menuItem1.id, quantity: 1, categoryId: categoryId});
-    response.text = `hurray, item ${menuItem1.name} has been added to cart.`;
+    response.text = `hurray, item ${menuItem.name} has been added to cart.`;
+    response.replies = getCategories(menu.items, true);
+  }
+  message.responses.push(response);
+};
+
+function getItemCustomization(item) {
+  const customizationItem  = item.menuItem.CategoriesAdd[item.customizationItem];
+  const replies = [{
+    text: 'הכל טוב כפרה',
+    clickData: {
+      action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
+      data: {
+        id: -1,
+      },
+    },
+  }];
+  // TODO: handle scenario where all customizations were already selected
+  customizationItem.itemsAdd.forEach((addItem) => {
+    if (!item.item.customizations.includes(addItem.id)) {
+      replies.push({
+        text: addItem.name,
+        clickData: {
+          action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
+          data: {
+            id: addItem.id,
+          },
+        },
+      });
+    }
+  });
+  if (customizationItem.single) {
+    item.customizationItem += 1;
+  }
+  return {
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: customizationItem.name,
+    replies,
+  }
+};
+
+handlers[CONST.ACTIONS.CHOOSE_CUSTOMIZATION] = (message, userSession) => {
+  let response = {};
+  const customizationId = message.actionData.id;
+  if (customizationId === -1) {
+    userSession.currentItem.customizationItem += 1;
   }
 
-  response.replies = getCategories(menu.items, true);
-
+  if (userSession.currentItem.customizationItem >= userSession.currentItem.customizationItemsTotal) {
+    response.type = CONST.RESPONSE_TYPE.TEXT;
+    response.text = 'מגניב! בוא נמשיך';
+    response.replies = getCategories(menu.items, true);
+  } else {
+    userSession.currentItem.item.customizations.push(customizationId);
+    Object.assign(response, getItemCustomization(userSession.currentItem));
+  }
   message.responses.push(response);
 };
 

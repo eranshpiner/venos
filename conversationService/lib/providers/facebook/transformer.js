@@ -108,7 +108,7 @@ responseTransformers[RESPONSE_TYPE.TEXT] = (response) => {
 
   fbResponse.text = response.text;
   if (response.replies) {
-    fbResponse.quick_replies = response.replies.map(replyToQuickReply);
+    fbResponse.quick_replies = response.replies.map(replyToQuickReply).splice(0, 10);
   }
   return fbResponse;
 };
@@ -128,7 +128,7 @@ responseTransformers[RESPONSE_TYPE.ITEMS] = (response) => {
     }
   };
   if (response.replies) {
-    fbResponse.quick_replies = response.replies.map(replyToQuickReply);
+    fbResponse.quick_replies = response.replies.map(replyToQuickReply).splice(0, 10);
   }
   return fbResponse;
 };
@@ -153,7 +153,7 @@ responseTransformers[RESPONSE_TYPE.CART_SUMMARY] = (response) => {
     },
   };
   if (response.replies) {
-    fbResponse.quick_replies = response.replies.map(replyToQuickReply);
+    fbResponse.quick_replies = response.replies.map(replyToQuickReply).splice(0, 10);
   }
   return fbResponse;
 };

@@ -110,7 +110,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
   if (!cart.length) {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: 'You have no items on your get, its time to get down to business!',
+      text: 'עוד לא בחרת כלום. בוא נתחיל! בחר קטגוריה',
       replies: getCategories(menu.items, true),
     });
   } else {
@@ -123,7 +123,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
       cartItems: getCartItems(cart, menu.items),
       cartActions: [
         {
-          text: 'Pay Now',
+          text: 'הזמן עכשיו',
           clickLink: 'http://localhost:3000',
         },
       ],
@@ -303,7 +303,7 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
       imageUrl: menuItem2.image.substring(2, menuItem2.image.length),
       actions: [
       {
-        text: 'Remove',
+        text: 'הסר',
         clickData: {
           action: CONST.ACTIONS.REMOVE_FROM_CART,
           data: {

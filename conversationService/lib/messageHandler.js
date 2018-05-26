@@ -6,6 +6,8 @@ const CONST = require('./const');
 const cordsToAddress = require('./util/locations').cordsToAddress;
 const strToAddress = require('./util/locations').strToAddress;
 
+const cartUtils = require('./util/cart');
+
 const menu = require('./../customers/niniHachiMenu.json').rest.menu;
 
 const addressFlow = {
@@ -34,7 +36,7 @@ handlers[CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS] = (message, userSession) => {
     replies: getCategories(menu.items, true),
   });
 
-} 
+}
 
 handlers[CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS] = (message, userSession) => {
   let response = {};
@@ -229,7 +231,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
       cartActions: [
         {
           text: 'הזמן עכשיו',
-          clickLink: 'http://localhost:3000',
+          clickLink: cartUtils.getPaymentURL(userSession),
         },
       ],
     });
@@ -348,7 +350,7 @@ async function handle(message) {
                 },
               },
             }
-          ]  
+          ]
         });
       } else {
         const addresses = await strToAddress(message.messageContent);
@@ -356,7 +358,7 @@ async function handle(message) {
         type: CONST.RESPONSE_TYPE.TEXT,
         text: `אנא בחר את האפשרות הכי מתאימה`
         });
-        
+
         message.responses.push({
           type: CONST.RESPONSE_TYPE.ADDRESS_LIST,
           items: getPossibleAddresses(addresses)

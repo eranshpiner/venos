@@ -35,6 +35,7 @@ handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
   if (category && category.items) {
     response.type = CONST.RESPONSE_TYPE.ITEMS;
     response.items = getItems(menu.items, message.actionData.id);
+    response.replies = getCategories(menu.items, true);
   } else {
     response.type = CONST.RESPONSE_TYPE.TEXT;
     response.text = `oh nooooo, category ${message.actionData.id} has no items.`;

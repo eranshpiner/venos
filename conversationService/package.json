@@ -1,17 +1,20 @@
 {
-    "name": "fb",
-    "description": "fb",
-    "authors": "oran",
-    "version": "1.0.0",
-    "main": "pathToMain",
-    "dependencies": {
-        "@google/maps": "^0.4.6",
-        "axios": "^0.18.0",
-        "body-parser": "^1.18.3",
-        "express": "4.16.0",
-        "jsonwebtoken": "^8.2.1",
-        "lodash": "^4.17.10",
-        "request": "^2.85.0",
-        "uuid": "^3.2.1"
-    }
+  "name": "fb",
+  "description": "fb",
+  "authors": "oran",
+  "version": "1.0.0",
+  "main": "pathToMain",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "@google/maps": "^0.4.6",
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "express": "4.16.0",
+    "jsonwebtoken": "^8.2.1",
+    "lodash": "^4.17.10",
+    "request": "^2.87.0",
+    "uuid": "^3.2.1"
+  }
 }

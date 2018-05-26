@@ -261,22 +261,12 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD] = (message, userSession) => {
   });
 };
 
-handlers[CONST.ACTIONS.PAY] = async (message, userSession) => {
-  const cart = userSession.cart || [];
-
-  if (!cart.length) {
-    message.responses.push({
-      type: CONST.RESPONSE_TYPE.TEXT,
-      text: `ימצחיק, אין לך פריטים בעגלה!`,
-      replies: [{
-        type: CONST.REPLY_TYPE.LOCATION,
-      }],
-    });
-  } else {
-    sendPaymentFlow();
-  }
-
-
+handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
+  await sessionManager.resetSession(userSession);
+  message.responses.push({
+    type: CONST.REPLY_TYPE.TEXT,
+    text: 'Your session has been reset, say anything to restart'
+  });
 };
 
 async function handle(message) {

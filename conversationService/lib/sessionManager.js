@@ -14,4 +14,8 @@ async function saveUserSession(session) {
   await Session.createOrUpdate(session.id, session);
 }
 
-module.exports = {getUserSession, saveUserSession};
+async function resetSession(session) {
+  await Session.remove(session)
+}
+
+module.exports = {getUserSession, saveUserSession, resetSession};

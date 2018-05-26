@@ -24,8 +24,8 @@ module.exports = {
     GET_CART: 'gc',
     EMPTY_CART: 'ec',
     CLICK_ITEM: 'ci',
-    PAY: 'pay',
     FIX_DELIVERY_ADDRESS: 'fda',
-    APPROVE_DELIVERY_ADDRESS: 'ada'
+    APPROVE_DELIVERY_ADDRESS: 'ada',
+    RESET_SESSION: 'reset_session',
   }
 };

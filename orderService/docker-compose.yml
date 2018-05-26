@@ -1,0 +1,50 @@
+version: '3.3'
+
+services:
+  database:
+    container_name: venosdbservice
+    image: mysql:5.7
+    ports:
+      - "6000:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'admin123'
+      MYSQL_DATABASE: 'venosdb'
+      MYSQL_USER: 'venos'
+      MYSQL_PASSWORD: 'venos'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+  orderService:
+    container_name: orderservice
+    image: order-service-on-node:1.1
+    ports:
+      - "3000:3000"   
+    links:
+      - database      
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+  conversationService:
+    container_name: conversationservice
+    image: conversation-service-on-node:1.1
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+
+volumes:
+  dbdata:
+

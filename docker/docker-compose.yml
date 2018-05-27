@@ -55,7 +55,7 @@ services:
         - orderService
       volumes:
         - './web/conf:/config/nginx/site-confs:ro'
-        - './web/certs:/etc/letsencrypt:rw'
+        - './web/certs:/config/etc/letsencrypt:rw'
       environment:
         - EMAIL=n@natiziv.com
         - URL=natiziv.com

@@ -55,15 +55,13 @@ services:
         - orderService
       volumes:
         - './web/conf:/config/nginx/site-confs:ro'
-        - 'certs:/etc/nginx/conf:rw'
+        - './web/certs:/etc/letsencrypt:rw'
       environment:
         - EMAIL=n@natiziv.com
         - URL=natiziv.com
-        - SUBDOMAINS=venos
+        - SUBDOMAINS=venos-stg
         - ONLY_SUBDOMAINS=true
         - VALIDATION=http
 
 volumes:
   dbdata:
-  certs:
-

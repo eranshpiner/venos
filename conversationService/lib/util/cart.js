@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const secret = 'this_is_the_secret';
-const PAYMENT_URL = (jwt) => `https://venos.natiziv.com/payment?jwt=${jwt}`;
+const PAYMENT_URL = (jwt) => `https://venos-stg.natiziv.com/payment?jwt=${jwt}`;
 
 function getPaymentURL(userSession) {
 

@@ -15,7 +15,7 @@ function getPaymentURL(userSession) {
       "firstName": "joe",
       "lastName": "doe",
       "phone": "123-456-678",
-      "email": "7739985@gmail.com",
+      "email": "tzuvys@gmail.com",
       "deliveryInfo": {
         "city": "new-york",
         "street": "pizza",

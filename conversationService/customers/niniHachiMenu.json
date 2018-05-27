@@ -100,39 +100,6 @@
       },
 			"items": [
 				{
-					"id": 38753,
-					"name": "ניני האצ'י",
-					"isDisableDiscount": false,
-					"displayOrder": 0,
-					"items": [
-						{
-							"id": 6083114,
-							"name": "שימו לב!",
-							"desc": "<span style=\"color: #222222; font-family: arial, sans-serif; font-size: 12.8px;\"><strong>זמני ההגעה של השליחים שלנו עשויים להשתנות בשיקול המסעדה!</strong></span><strong>&nbsp;</strong>",
-							"price": 0,
-							"image": "",
-							"imageThumbnail": "",
-							"displayOrder": 1,
-							"inStock": true,
-							"CategoriesAdd": [],
-							"tags": [],
-							"discounts": [],
-							"itemProperties": [],
-							"likeUnlike": {
-								"didUserLike": false,
-								"didUserUnlike": false,
-								"likes": 0,
-								"unlikes": 0
-							},
-							"posItems": [],
-							"didUserLike": false,
-							"didUserUnlike": false,
-							"didUserOrder": false,
-							"numberOfPreviousOrders": 0
-						}
-					]
-				},
-				{
 					"id": 38841,
 					"name": "סושי לנשים בהריון",
 					"isDisableDiscount": false,

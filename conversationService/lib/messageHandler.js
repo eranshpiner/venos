@@ -72,9 +72,24 @@ handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
   message.responses.push(response);
   message.responses.push({
     type: CONST.RESPONSE_TYPE.TEXT,
-    text: 'בחר מאחד המוצרים למעלה, או קטגוריה אחרת',
+    text: 'למעלה תוכל למצוא את המנות שבקטגוריה שבחרת או פשוט תבחר קטגוריה אחרת',
     replies: getCategories(menu.items, true),
   });
+};
+
+handlers[CONST.ACTIONS.MORE] = (message, userSession) => {
+  let response = {};
+
+  const sliceStart = message.actionData.sliceStart;
+  const sliceEnd = message.actionData.sliceEnd;
+
+  // message.responses.push(response);
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'קבל עוד אופציות',
+    replies: getCategories(menu.items, true, sliceStart, sliceEnd),
+  });
+
 };
 
 handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
@@ -203,6 +218,7 @@ handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
     } else {
       userSession.cart.splice(cartItemIndex, 1); // TODO normal remove
       response.text = `hurray, item ${itemName} has been removed from cart.`;
+      response.replies = getCategories(menu.items, true);
     }
   }
 
@@ -223,7 +239,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
   } else {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: `You have ${cart.length} items in your cart`,
+      text: ` יש לך${cart.length}פריטים בעגלה `,
     });
     message.responses.push({
       type: CONST.RESPONSE_TYPE.CART_SUMMARY,
@@ -265,7 +281,7 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
   await sessionManager.resetSession(userSession);
   message.responses.push({
     type: CONST.REPLY_TYPE.TEXT,
-    text: 'Your session has been reset, say anything to restart'
+    text: 'הפסנו לך הכל. תרשום משהו כדי להתחיל'
   });
 };
 
@@ -438,15 +454,56 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
   return res;
 }
 
-function getCategories(items, onlyTopLevel = false, lang = 'he_IL') {
+function getCategories(items, onlyTopLevel = false, lang = 'he_IL', sliceStart, sliceEnd ) {
   const elements = [];
-  Object.entries(items).forEach(([itemId, item]) => {
-      // if (onlyTopLevel && !item.topLevel) {
-      //   return;
-      // }
-      elements.push(categoryToElement(item, itemId, lang));
+
+  if(!sliceStart & !sliceEnd) {
+    for (var i = 0, len = 7; i <= len; i++) {
+
+      elements.push(categoryToElement(items[i], i, lang));
+
     }
-  );
+    sliceStart = 8;
+    sliceEnd = 15;
+  } else if (sliceEnd <= items.length){
+
+    for (var i = sliceStart, len = sliceEnd; i <= len; i++) {
+
+      elements.push(categoryToElement(items[i], i, lang, sliceStart, sliceEnd));
+
+    }
+    sliceStart += 8;
+    sliceEnd +=8;
+
+
+  }else{
+    for (var i = sliceStart, len = items.length; i < len; i++) {
+
+      elements.push(categoryToElement(items[i], i, lang, sliceStart, items.length));
+
+    }
+
+  }
+
+
+  // Object.entries(items).forEach(([itemId, item]) => {
+  //
+  //   elements.push(categoryToElement(item, itemId, lang))
+  //
+  //   }
+  // );
+
+  // if(!sliceStart & !sliceEnd){
+  //   elements.push(elements.slice(0, 7));
+  //   sliceStart = 8;
+  //   sliceEnd = 15;
+  // }else{
+  //   elements.push(elements.slice(sliceStart, sliceEnd));
+  //
+  // }
+
+  elements.push (cartButtonToElement());
+  elements.push (moreButtonToElement(sliceStart, sliceEnd));
   return elements;
 }
 
@@ -464,6 +521,34 @@ function categoryToElement(item, itemId, lang) {
     var image = item.image.substring(2, item.image.length);
     element.imageUrl = image;
   }
+  return element;
+}
+
+function cartButtonToElement() {
+  const element = {
+    text: 'הזמנה',
+    image_url:"https://visualpharm.com/assets/482/Shopping%20Cart-595b40b65ba036ed117d241c.svg",
+    clickData: {
+      action: CONST.ACTIONS.GET_CART,
+      data: {
+        id: CONST.ACTIONS.GET_CART,
+      },
+    },
+  };
+  return element;
+}
+function moreButtonToElement(sliceStart, sliceEnd) {
+  const element = {
+    text: 'עוד',
+    image_url:"https://visualpharm.com/assets/482/Shopping%20Cart-595b40b65ba036ed117d241c.svg",
+    clickData: {
+      action: CONST.ACTIONS.MORE,
+      data: {
+        sliceStart: sliceStart,
+        sliceEnd: sliceEnd,
+      },
+    },
+  };
   return element;
 }
 

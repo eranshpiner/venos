@@ -27,5 +27,6 @@ module.exports = {
     FIX_DELIVERY_ADDRESS: 'fda',
     APPROVE_DELIVERY_ADDRESS: 'ada',
     RESET_SESSION: 'reset_session',
+    MORE: 'more'
   }
 };

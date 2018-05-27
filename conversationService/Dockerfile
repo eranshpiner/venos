@@ -10,27 +10,17 @@ ENV data_dir ${base_dir}/data
 # create dirs
 RUN mkdir ${base_dir}; mkdir ${app_dir}; mkdir ${data_dir}
 
-# set the working dir 
+# set the working dir
 WORKDIR ${app_dir}
 
 # copy the 'package.json' file
-COPY package.json ./
+COPY . ./
 
 # RUN npm install (--only=production to exclude devDependencies)
-RUN npm install
-
-# copy the application bundle
-ADD app.js ./
-ADD uuid.js ./
-ADD customers ./customers
-ADD lib ./lib
-ADD notes ./notes
+RUN npm install --only=production
 
 # expose service port
 EXPOSE 8080
 
 # run application
-CMD [ "node", "app.js" ]
-
- 
-
+CMD [ "npm", "start" ]

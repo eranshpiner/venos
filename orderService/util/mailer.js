@@ -12,12 +12,13 @@ const auth = {
 
 const mgTransport = nodemailer.createTransport(mg(auth));
 
-function sendOrderConfirmationEmail(order, transactionId, callback) {
+function sendOrderConfirmationEmail(order, orderId, transactionId, callback) {
 
     const html = util.format(
-        'Hello %s!<br><br> Venos sent your order to %s. <br>The confirmation id with %s is - %s.<br> Enjoy!<br> <br> The Venos Team. ', 
+        'Hello %s!<br><br> Venos sent your order to "%s". <br>The order number is - [%s]. <br> The confirmation id with "%s" is - [%s].<br><br> Enjoy!<br> <br> The Venos Team. ', 
         order.orderOwner.firstName, 
         order.brandId, 
+        orderId,
         order.brandId, 
         transactionId
     );

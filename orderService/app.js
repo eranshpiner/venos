@@ -162,23 +162,27 @@ app.post('/order', (req, res) => {
                 if (result.code == 400) {
 
                     // todo: extract the 'transactionId' from the beecomm response
-                    const transactionId = "tid-Gv47xTT";     
+                    const transactionId = "333444555";     
                     const transactionCreationTime = new Date().getTime();
                     const transactionStatus = "OK";
 
                     res.status(201);
-                    res.send({orderId: orderId, transactionId: transactionId, message: result.message, code: result.code});
-                    
+                    // todo: for now, we reply with a "fake" 'order accepted' response
+                    // res.send({orderId: orderId, transactionId: transactionId, message: result.message, code: result.code});
+
                     // send the confirmation e-mail
                     if (order.orderOwner.email != null) {
+                        res.send({status: 'OK', message: 'order number ' + orderId + ' was accepted and a confirmation e-mail for ' + order.orderOwner.firstName + ' was sent to ' + order.orderOwner.email});
                         const toArray = [{name: order.orderOwner.firstName, address: order.orderOwner.email}];
-                        mailer.sendOrderConfirmationEmail(order, transactionId, (error, result) => {
+                        mailer.sendOrderConfirmationEmail(order, orderId, transactionId, (error, result) => {
                             if (error) {
                                 console.log('an error occurred attempting to send confirmation email for orderId [%s] and transactionId [%s]', orderId, transactionId);    
                             } else {
                                 console.log('a confirmation email for orderId [%s] and transactionId [%s] was sent!', orderId, transactionId);
                             }       
                         });
+                    } else {
+                        res.send({status: 'OK', message: 'order number ' + orderId + ' was accepted!'});
                     }
 
                     // todo: if success, create and save 'orderLog'     

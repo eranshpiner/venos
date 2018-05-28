@@ -15,7 +15,7 @@ async function saveUserSession(session) {
 }
 
 async function resetSession(session) {
-  await Session.remove(session)
+  await Session.remove(session.id)
 }
 
 module.exports = {getUserSession, saveUserSession, resetSession};

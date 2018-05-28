@@ -12,7 +12,7 @@ const auth = {
 
 const mgTransport = nodemailer.createTransport(mg(auth));
 
-function sendOrderConfirmationEmail(order, orderId, transactionId, callback) {
+function sendOrderConfirmationEmail(provider, providerOrder, callback) {
 
     // const html = util.format(
     //     'Hello %s!<br><br> Venos sent your order to "%s". <br>The order number is - [%s]. <br> The confirmation id with "%s" is - [%s].<br><br> Enjoy!<br> <br> The Venos Team. ', 
@@ -33,13 +33,13 @@ function sendOrderConfirmationEmail(order, orderId, transactionId, callback) {
     // }, callback);
 
     // todo: for now, we just send the email to '7739985@gmail.com' (seba) with the order json as is 
-    const toArray = [{name: order.brandId, address: '7739985@gmail.com'}];
+    const toArray = [{name: provider, address: '7739985@gmail.com'}];
 
     mgTransport.sendMail({
         from: {name: 'Venos', address: 'venos@venos-mail.natiziv.com'},
         to: toArray,
-        subject: "Your order was sent!",
-        text: JSON.stringify(order)
+        subject: "Order was sent!",
+        text: JSON.stringify(providerOrder, null, 2)
     }, callback);
 
 }

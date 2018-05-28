@@ -4,6 +4,7 @@ const util = require('util');
 const https = require('https');
 const querystring = require('querystring');
 const validator = require('../../util/validator.js');
+const mailer = require('../../util/mailer.js');
 const beecommOrderSchema = require('./beecommOrder.json');
 
 // beecomm api consts
@@ -90,7 +91,7 @@ function executePushOrder(source, callback) {
         callback({code: 1, message: "failure in transfromOrder"}, undefined);
         return;
     }
-
+    
     let headers = {
         'Content-Type': 'application/json',
         'access_token': access_token
@@ -115,16 +116,26 @@ function executePushOrder(source, callback) {
     
     req.write(JSON.stringify(target));
     req.end();
-
+    
+    // todo: for now we send the confirmation e-mail to '7739985@gmail.com' (seba) 
+    mailer.sendOrderConfirmationEmail(target.branchId , target, (error, result) => {
+        if (error) {
+            console.log(error)
+            console.log('an error occurred attempting to send confirmation email for orderId [%s]', source.orderId);    
+        } else {
+            console.log('a confirmation email for orderId [%s] was sent!', source.orderId);
+        }       
+    });    
+    
 }
 
 function retrieveToken(callback) {
-
+    
     let data = querystring.stringify({
         client_id: client_id,
         client_secret: client_secret
-      });
-
+    });
+    
     let headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Content-Length': data.length
@@ -149,7 +160,7 @@ function retrieveToken(callback) {
     
     req.write(data);
     req.end();
-
+    
 }
 
 exports.executePushOrder = executePushOrder;

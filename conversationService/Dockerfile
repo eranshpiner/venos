@@ -13,7 +13,7 @@ RUN mkdir ${base_dir}; mkdir ${app_dir}; mkdir ${data_dir}
 # set the working dir
 WORKDIR ${app_dir}
 
-# copy the 'package.json' file
+# copy the application files
 COPY . ./
 
 # RUN npm install (--only=production to exclude devDependencies)

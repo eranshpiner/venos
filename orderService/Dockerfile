@@ -13,19 +13,11 @@ RUN mkdir ${base_dir}; mkdir ${app_dir}; mkdir ${data_dir}
 # set the working dir 
 WORKDIR ${app_dir}
 
-# copy the 'package.json' file
-COPY package.json ./
+# copy the application files
+COPY . ./
 
 # RUN npm install (--only=production to exclude devDependencies)
-RUN npm install
-
-# copy the application bundle
-ADD app.js ./
-ADD schema ./schema
-ADD dal ./dal
-ADD providers ./providers
-ADD public ./public
-ADD util ./util
+RUN npm install --only=production
 
 # expose service port
 EXPOSE 3000

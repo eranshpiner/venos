@@ -380,7 +380,9 @@ async function handle(message) {
     }
   }
 
-  await sessionManager.saveUserSession(userSession);
+  if (message.action && message.action !== CONST.ACTIONS.RESET_SESSION) {
+    await sessionManager.saveUserSession(userSession);
+  }
 
   provider.sendMessage(message);
 }

@@ -157,8 +157,8 @@ app.post('/order', (req, res) => {
                     return;        
                 }
                 
-                // todo: for now - since beecomm (Yaron) is not helping us - we treat the 400 ('branchId is invalid') as 200.OK 
-                if (result.code == 400) {
+                // todo: for now - since beecomm (Yaron) is not helping us - we treat the "mock" 200 as OK 
+                if (result.code == 200) {
                     
                     // todo: extract the 'transactionId' from the beecomm response
                     const transactionId = "333444555";     

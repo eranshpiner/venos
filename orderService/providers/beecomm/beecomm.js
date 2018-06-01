@@ -92,32 +92,34 @@ function executePushOrder(source, callback) {
         return;
     }
     
-    let headers = {
-        'Content-Type': 'application/json',
-        'access_token': access_token
-    };
+    // todo: for now we always say 'OK' and send the confirmation e-mail to '7739985@gmail.com' (seba) 
     
-    let options = {
-        host: host,
-        port: port,
-        path: pushOrderResource,
-        method: 'POST',
-        headers: headers
-    };
+    // let headers = {
+    //     'Content-Type': 'application/json',
+    //     'access_token': access_token
+    // };
     
-    let req = https.request(options, function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log("pushed order to " + pushOrderResource);
-            console.log('response: ' + chunk);
-            callback(undefined, {code: res.statusCode, message: chunk});
-        });
-    });
+    // let options = {
+    //     host: host,
+    //     port: port,
+    //     path: pushOrderResource,
+    //     method: 'POST',
+    //     headers: headers
+    // };
     
-    req.write(JSON.stringify(target));
-    req.end();
+    // let req = https.request(options, function(res) {
+    //     res.setEncoding('utf8');
+    //     res.on('data', function (chunk) {
+    //         console.log("pushed order to " + pushOrderResource);
+    //         console.log('response: ' + chunk);
+    //         callback(undefined, {code: res.statusCode, message: chunk});
+    //     });
+    // });
     
-    // todo: for now we send the confirmation e-mail to '7739985@gmail.com' (seba) 
+    // req.write(JSON.stringify(target));
+    // req.end();
+    
+    callback(undefined, {code: '200', message: 'OK'});
     mailer.sendOrderConfirmationEmail(target.branchId , target, (error, result) => {
         if (error) {
             console.log(error)

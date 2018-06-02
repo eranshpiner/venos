@@ -63,8 +63,8 @@ router.post(ENDPOINT, (req, res) => {
             const message = transformer.from(fbMessage);
             if (!ignoredMessageTypes.includes(message.type)) {
               sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.MARK_SEEN);
-              setTimeout(_ => sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 1200);
-              setTimeout(_ => messageHandler.handle(message), 2500);
+              setTimeout(_ => sendSenderAction(message, CONST.SENDER_ACTION_MESSAGES.TYPING_ON), 600);
+              setTimeout(_ => messageHandler.handle(message), 1250);
             } else {
               console.log(`message ignored: ${message.type}`);
             }

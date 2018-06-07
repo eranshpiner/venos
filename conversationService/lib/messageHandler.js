@@ -281,7 +281,7 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
   await sessionManager.resetSession(userSession);
   message.responses.push({
     type: CONST.REPLY_TYPE.TEXT,
-    text: 'הפסנו לך הכל. תרשום משהו כדי להתחיל'
+    text: 'אפסנו לך הכל. תרשום משהו כדי להתחיל'
   });
 };
 

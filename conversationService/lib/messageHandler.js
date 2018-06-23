@@ -360,15 +360,55 @@ async function handle(message) {
         });
       } else {
         const addresses = await strToAddress(message.messageContent);
-        message.responses.push({
-        type: CONST.RESPONSE_TYPE.TEXT,
-        text: `אנא בחר את האפשרות הכי מתאימה`
-        });
+        if (!addresses.length) {
+          message.responses.push({
+            type: CONST.RESPONSE_TYPE.TEXT,
+            text: `לא הצלחנו למצוא את הכתובת שהזנת, אנא הזן שנית`,
+            replies: [{
+              type: CONST.REPLY_TYPE.LOCATION,
+            }],
+          });
+        } else if (addresses.length === 1) {
+          userSession.deliveryAddress = addresses[0].address;
+          message.responses.push({
+            type: CONST.RESPONSE_TYPE.TEXT,
+            text: `אנא אשר שהכתובת שהזנת הינה: ${addresses[0].address}`,
+            replies: [{
+              type: CONST.REPLY_TYPE.LOCATION,
+            },
+              {
+                type: CONST.REPLY_TYPE.TEXT,
+                text: 'אשר כתובת',
+                clickData: {
+                  action: CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS,
+                  data: {
+                    action: CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS,
+                    address: userSession.deliveryAddress
+                  },
+                },
+              },
+              {
+                type: CONST.REPLY_TYPE.TEXT,
+                text: 'תקן כתובת',
+                clickData: {
+                  action: CONST.ACTIONS.FIX_DELIVERY_ADDRESS,
+                  data: {
+                    action: CONST.ACTIONS.FIX_DELIVERY_ADDRESS
+                  },
+                },
+              }],
+          });
+        } else {
+          message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: `אנא בחר את האפשרות הכי מתאימה`
+          });
 
-        message.responses.push({
-          type: CONST.RESPONSE_TYPE.ADDRESS_LIST,
-          items: getPossibleAddresses(addresses)
-        });
+          message.responses.push({
+            type: CONST.RESPONSE_TYPE.ADDRESS_LIST,
+            items: getPossibleAddresses(addresses)
+          });
+          }
       }
     } else {
       message.responses.push({

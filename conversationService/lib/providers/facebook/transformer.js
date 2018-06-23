@@ -147,7 +147,7 @@ responseTransformers[RESPONSE_TYPE.ITEMS] = (response) => {
 responseTransformers[RESPONSE_TYPE.ADDRESS_LIST] = (response) => {
   // due to FB list limit of min 2, we convert 1 item to a generic template
   if (response.items.length === 1) {
-    response.items[0].actions = response.items[0].actions.concat(response.items);
+    //response.items[0].actions = response.items[0].actions.concat(response.items);
     return responseTransformers[RESPONSE_TYPE.ITEMS](response);
   }
   const fbResponse = {

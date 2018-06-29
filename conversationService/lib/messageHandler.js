@@ -91,7 +91,14 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   if (!menuItem) {
     response.text = `Sorry, I couldn't find it on the menu, please try again.`;
   }
-  const cartItem = {id: menuItem.id, quantity: 1, categoryId: categoryId, customizations: {}};
+  const cartItem = {
+    id: menuItem.id,
+    name: menuItem.name,
+    price: menuItem.price,
+    quantity: 1,
+    categoryId: categoryId,
+    customizations: {}
+  };
   userSession.cart.push(cartItem);
 
   if (menuItem.CategoriesAdd && menuItem.CategoriesAdd.length) {

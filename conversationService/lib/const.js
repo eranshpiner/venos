@@ -5,7 +5,8 @@ module.exports = {
     ITEMS: 'items',
     ITEM_CUSTOMIZATIONS: 'items-customizations',
     CART_SUMMARY: 'cart-summary',
-    ADDRESS_LIST: 'addressList'
+    ADDRESS_LIST: 'addressList',
+    ORDER_RECEIPT: 'order-receipt',
   },
   REPLY_TYPE: {
     TEXT: 'text',

@@ -41,61 +41,76 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
   });
 }
 
+function getReceipt(cart = []) {
+  const items = [...cart.items];
+  return {
+    recipientName: 'TODO',
+    orderNumber: '12345',
+    currency: 'ILS',
+    timestamp: '1530298536336',
+    address: {
+      city: 'TODO-city',
+      address: 'address',
+      postalCode: '12345',
+      state: '',
+      country: 'Israel',
+    },
+    adjustments: [],
+    summary: {
+      subTotal: 100,
+      shipping: 10,
+      tax: 0,
+      total: 110,
+    },
+    items,
+  };
+}
+
 function getPaymentURL(userSession) {
+  const cart = userSession || {};
+
+  let total = 0;
+  const orderItems = cart.map(item => {
+    const price = item.price * item.quantity;
+    total += price;
+    return {
+      itemId: item.id.toString(),
+      itemName: item.name,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      price,
+    }
+  });
 
   const payload = {
-    "total": 430,
-    "currency": "nis",
-    "brandId": "shabtai",
-    "brandLocationId": "kfar-vitkin",
-    "remarks": "",
-    "orderOwner": {
-      "firstName": "joe",
-      "lastName": "doe",
-      "phone": "123-456-678",
-      "email": "tzuvys@gmail.com",
-      "deliveryInfo": {
-        "city": "new-york",
-        "street": "pizza",
-        "houseNumber": "45a",
-        "apartment": "23",
-        "floor": 3
-      }
+    total,
+    currency: 'nis',
+    brandId: 'shabtai',
+    brandLocationId: 'kfar-vitkin',
+    remarks: '',
+    orderOwner: {
+      firstName: 'joe',
+      lastName: 'doe',
+      phone: '123-456-678',
+      email: 'tzuvys@gmail.com',
+      deliveryInfo: {
+        city: 'new-york',
+        street: 'pizza',
+        houseNumber: '45a',
+        apartment: '23',
+        floor: 3
+      },
     },
-    "orderItems": [{
-      "itemId": "156",
-      "itemName": "pizzapepperoni",
-      "quantity": 3,
-      "unitPrice": 70,
-      "price": 210
-    }, {
-      "itemId": "435",
-      "itemName": "pizzatuna",
-      "quantity": 1,
-      "unitPrice": 60,
-      "price": 60
-    }, {
-      "itemId": "2",
-      "itemName": "beer",
-      "quantity": 4,
-      "unitPrice": 30,
-      "price": 120
-    }, {
-      "itemId": "3",
-      "itemName": "dietcola",
-      "quantity": 4,
-      "unitPrice": 10,
-      "price": 40
-    }],
-    "orderPayment": {
-      "paymentType": 1,
-      "paymentSum": 55.7,
-      "paymentName": "wtf?",
-      "creditCard": "3434-3434-4334-3434",
-      "creditCardExp": "09/20",
-      "creditCardCvv": "000",
-      "creditCardHolderId": "343545645454"
-    }
+    orderItems: orderItems,
+    orderPayment: {
+      paymentType: 1,
+      paymentSum: total,
+      paymentName: 'wtf?',
+      creditCard: '3434-3434-4334-3434',
+      creditCardExp: '09/20',
+      creditCardCvv: '000',
+      creditCardHolderId: '343545645454',
+    },
   };
 
   const jwtToken = jwt.sign(JSON.stringify(payload), secret);
@@ -105,4 +120,5 @@ function getPaymentURL(userSession) {
 module.exports = {
   getCartItems,
   getPaymentURL,
+  getReceipt,
 };

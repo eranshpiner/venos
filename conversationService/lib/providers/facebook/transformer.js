@@ -5,10 +5,15 @@ const REPLY_TYPE = require('../../const').REPLY_TYPE;
 
 const responseTransformers = {};
 
-function chunks(array, size) {
+function chunks(array = [], size = 0) {
   const results = [];
   while (array.length) {
-    results.push(array.splice(0, size));
+    if (array.length - size > 0 && array.length < size*2) {
+      // the last chunk is at least 2 items
+      results.push(array.splice(0, size-1));
+    } else {
+      results.push(array.splice(0, size));
+    }
   }
   return results;
 }
@@ -161,31 +166,35 @@ responseTransformers[RESPONSE_TYPE.ADDRESS_LIST] = (response) => {
     },
   };
   return fbResponse;
-}
+};
 
 responseTransformers[RESPONSE_TYPE.CART_SUMMARY] = (response) => {
-  // due to FB list limit of min 2, we convert 1 item to a generic template
+// due to FB list limit of min 2, we convert 1 item to a generic template
   if (response.cartItems.length === 1) {
     response.cartItems[0].actions = response.cartItems[0].actions.concat(response.cartActions);
     response.items = response.cartItems;
     return responseTransformers[RESPONSE_TYPE.ITEMS](response);
   }
-
-  const fbResponse = {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'list',
-        top_element_style: 'compact',
-        elements: response.cartItems.map(itemToListElement),
-        buttons: response.cartActions.map(actionToButton),
+  const items = chunks(response.cartItems, 4);
+  return items.map((itemsChunk, idx) => {
+    const fbResponse = {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'list',
+          top_element_style: 'compact',
+          elements: itemsChunk.map(itemToListElement),
+        },
       },
-    },
-  };
-  if (response.replies) {
-    fbResponse.quick_replies = response.replies.map(replyToQuickReply).splice(0, 10);
-  }
-  return fbResponse;
+    };
+    if (idx === (items.length - 1) && response.cartActions) {
+      fbResponse.attachment.payload.buttons = response.cartActions.map(actionToButton);
+    }
+    if (response.replies) {
+      fbResponse.quick_replies = response.replies.map(replyToQuickReply).splice(0, 10);
+    }
+    return fbResponse;
+  });
 };
 
 function to(message) {

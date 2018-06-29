@@ -24,14 +24,25 @@ function getItemCustomization(item) {
     });
     item.customizationItemPosition += 1;
 
+    const replies = [{
+      text: 'אני אוותר',
+      clickData: {
+        action: CONST.ACTIONS.CHOOSE_CUSTOMIZATION,
+        data: {
+          id: -1,
+        },
+      },
+    }];
+
     return [
       {
         type: CONST.RESPONSE_TYPE.TEXT,
         text: customizationItem.name,
       },
       {
-        type: CONST.RESPONSE_TYPE.ITEMS,
+        type: CONST.RESPONSE_TYPE.ITEM_CUSTOMIZATIONS,
         items,
+        replies,
       }];
   } else {
     const replies = [{

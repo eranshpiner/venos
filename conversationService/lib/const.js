@@ -3,6 +3,7 @@ module.exports = {
     TEXT: 'text',
     CATEGORIES: 'categories',
     ITEMS: 'items',
+    ITEM_CUSTOMIZATIONS: 'items-customizations',
     CART_SUMMARY: 'cart-summary',
     ADDRESS_LIST: 'addressList'
   },

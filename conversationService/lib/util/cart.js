@@ -18,6 +18,9 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
         });
       });
     }
+    if (cartItem.notes) {
+      descAdd.push(`הערות: ${cartItem.notes}`);
+    }
     return {
       title: menuItem.name,
       description: descAdd.length ? descAdd.join('\n') : menuItem.desc,

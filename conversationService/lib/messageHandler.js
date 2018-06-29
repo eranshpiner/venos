@@ -118,7 +118,6 @@ handlers[CONST.ACTIONS.CHOOSE_CUSTOMIZATION] = (message, userSession) => {
   const customizationCategoryId = message.actionData.categoryId;
   const currentItem = userSession.currentItem;
 
-
   if (customizationId === -1) {
     userSession.currentItem.customizationItemPosition += 1;
   } else {
@@ -129,20 +128,21 @@ handlers[CONST.ACTIONS.CHOOSE_CUSTOMIZATION] = (message, userSession) => {
   }
 
   if (userSession.currentItem.customizationItemPosition >= userSession.currentItem.customizationItemsTotal) {
+    userSession.currentItem.waitingForItemNotes = true;
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: 'מגניב! בוא נמשיך',
-      replies: getCategories(menu.items, true),
+      text: 'במידה וישנם הערות נוספות למנה, אנא רשום אותם כעת',
     });
   } else {
     const customizations = customizationsUtil.getItemCustomization(userSession.currentItem);
     customizations.forEach(custRes => message.responses.push(custRes));
   }
-
 };
 
 handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
-  let response = {};
+  let response = {
+    type: CONST.RESPONSE_TYPE.TEXT,
+  };
   const itemId = message.actionData.id;
   const itemName = message.actionData.name;
   const isReduceQuantity = message.actionData.reduceQuantity;
@@ -156,6 +156,7 @@ handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
     if (isReduceQuantity && cartItem.quantity > 1) {
       cartItem.quantity -= 1;
       response.text = `hurray, item ${itemName} has been reduced to ${cartItem.quantity}.`;
+      response.replies = getCategories(menu.items, true);
     } else {
       userSession.cart.splice(cartItemIndex, 1); // TODO normal remove
       response.text = `hurray, item ${itemName} has been removed from cart.`;
@@ -243,7 +244,16 @@ async function handle(message) {
       });
     }
   } else {
-    if (!userSession.deliveryMethod) {
+    if (userSession.currentItem && userSession.currentItem.waitingForItemNotes === true) {
+      userSession.currentItem.waitingForItemNotes = false;
+      userSession.currentItem.item.notes = message.messageContent;
+      message.responses.push({
+        type: CONST.RESPONSE_TYPE.TEXT,
+        text: 'מגניב! בוא נמשיך',
+        replies: getCategories(menu.items, true),
+      });
+    }
+    else if (!userSession.deliveryMethod) {
       message.responses.push({
         type: CONST.RESPONSE_TYPE.TEXT,
         text: 'ברוכים הבאים! לפני שנתחיל, בחר את שיטת המשלוח',

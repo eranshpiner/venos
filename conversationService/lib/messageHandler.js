@@ -191,6 +191,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
           clickLink: cartUtils.getPaymentURL(userSession),
         },
       ],
+      replies: getCategories(menu.items, true),
     });
   }
 };

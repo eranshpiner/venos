@@ -18,6 +18,8 @@ module.exports = {
   },
   ACTIONS: {
     CHOOSE_DELIVERY_METHOD: 'dm',
+    CHOOSE_DELIVERY_METHOD_PICKUP: 'pu',
+    CHOOSE_DELIVERY_METHOD_DELIVERY: 'dl',
     CHOOSE_DELIVERY_ADDRESS: 'da',
     CHOOSE_CATEGORY: 'cc',
     CHOOSE_CUSTOMIZATION: 'choose_customization',
@@ -29,6 +31,7 @@ module.exports = {
     FIX_DELIVERY_ADDRESS: 'fda',
     APPROVE_DELIVERY_ADDRESS: 'ada',
     RESET_SESSION: 'reset_session',
+    GET_MORE_INFO: 'get_more_info_on_item',
     MORE: 'more'
   }
 };

@@ -1,3 +1,5 @@
+'use strict';
+
 const providers = require('./providers');
 const sessionManager = require('./sessionManager');
 const CONST = require('./const');
@@ -8,7 +10,9 @@ const customizationsUtil = require('./util/customizations');
 
 const cartUtils = require('./util/cart');
 
-const menu = require('./../customers/niniHachiMenu.json').rest.menu;
+const restConfigFile = require('./../customers/niniHachiMenu.json');
+const menu = restConfigFile.rest.menu;
+const branches = restConfigFile.rest.branches;
 
 const handlers = {};
 
@@ -139,6 +143,16 @@ handlers[CONST.ACTIONS.CHOOSE_CUSTOMIZATION] = (message, userSession) => {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
       text: 'במידה וישנם הערות נוספות למנה, אנא רשום אותם כעת',
+      replies: [{
+        type: CONST.REPLY_TYPE.TEXT,
+        text: 'לא צריך',
+        clickData: {
+          action: "",
+          data: {
+            method: "",
+          },
+        },
+      }],
     });
   } else {
     const customizations = customizationsUtil.getItemCustomization(userSession.currentItem);
@@ -235,6 +249,50 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSession) => {
+  if(branches.length == 1) {
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text:   'תבחר מתי נוח לך לבוא לקחת' + "/n" + branches[0].branchName + `תוכל לאסוף מסניף `,
+      replies: [
+        {
+          type: CONST.REPLY_TYPE.TEXT,
+          text: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000)),
+          clickData: {
+            action: CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS,
+            data: {
+              action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
+              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000))
+            },
+          },
+        },
+        {
+          type: CONST.REPLY_TYPE.TEXT,
+          text:  msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (40 * 60 * 1000)),
+          clickData: {
+            action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
+            data: {
+              action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
+              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (40 * 60 * 1000))
+            },
+          },
+        },
+        {
+          type: CONST.REPLY_TYPE.TEXT,
+          text: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (80 * 60 * 1000)),
+          clickData: {
+            action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
+            data: {
+              action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
+              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (120 * 60 * 1000))
+            },
+          },
+        }
+      ]
+    });
+  }
+};
+
 async function handle(message) {
   const provider = providers[message.provider];
   const userSession = await sessionManager.getUserSession(message.userDetails);
@@ -277,7 +335,7 @@ async function handle(message) {
           type: CONST.REPLY_TYPE.TEXT,
           text: 'איסוף עצמי',
           clickData: {
-            action: CONST.ACTIONS.CHOOSE_DELIVERY_METHOD,
+            action: CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP,
             data: {
               method: CONST.DELIVERY_METHOD.PICKUP,
             },
@@ -384,6 +442,19 @@ async function handle(message) {
   }
 
   provider.sendMessage(message);
+}
+
+function msToHMS( duration ) {
+  var milliseconds = parseInt((duration % 1000) / 100),
+    seconds = parseInt((duration / 1000) % 60),
+    minutes = parseInt((duration / (1000 * 60)) % 60),
+    hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+  hours = (hours < 10) ? "0" + hours : hours;
+  minutes = (minutes < 10) ? "0" + minutes : minutes;
+  seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+  return hours + ":" + minutes;
 }
 
 function getCategories(items, onlyTopLevel = false, lang = 'he_IL', sliceStart, sliceEnd) {

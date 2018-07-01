@@ -67,7 +67,7 @@ function getReceipt(cart = []) {
 }
 
 function getPaymentURL(userSession) {
-  const cart = userSession.cart || {};
+  const cart = userSession.cart || [];
 
   let total = 0;
   const orderItems = cart.map(item => {

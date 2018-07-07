@@ -8,22 +8,26 @@ const PAYMENT_URL = (jwt) => `https://venos-stg.natiziv.com/payment?jwt=${jwt}`;
 function getCartItems(cartItems, menuItems, lang = 'he_IL') {
   return cartItems.map((cartItem) => {
     const menuItem = menuItems[cartItem.categoryId].items.find((element) => element.id === cartItem.id);
-    const descAdd = [];
+    const description = [];
     if (cartItem.customizations) {
       Object.entries(cartItem.customizations).forEach(([catId, items]) => {
         const catAdds = menuItem.CategoriesAdd.find(catAdds => catAdds.id.toString() === catId.toString());
         items.forEach(item => {
           const custItem = catAdds.itemsAdd.find(itemAdd => itemAdd.id === item);
-          descAdd.push(custItem.name);
+          description.push(custItem.name);
         });
       });
     }
     if (cartItem.notes) {
-      descAdd.push(`הערות: ${cartItem.notes}`);
+      description.push(`הערות: ${cartItem.notes}`);
     }
+    if (!description.length) {
+      description.push(menuItem.desc);
+    }
+    description.push(`${cartItem.quantity}x ₪${cartItem.price}`);
     return {
       title: menuItem.name,
-      description: descAdd.length ? descAdd.join('\n') : menuItem.desc,
+      description: description.join('\n'),
       imageUrl: menuItem.image.substring(2, menuItem.image.length),
       actions: [
         {

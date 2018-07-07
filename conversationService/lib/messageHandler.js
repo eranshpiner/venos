@@ -1,5 +1,3 @@
-'use strict';
-
 const providers = require('./providers');
 const sessionManager = require('./sessionManager');
 const CONST = require('./const');
@@ -51,19 +49,26 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_ADDRESS] = (message, userSession) => {
 };
 
 handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
-  let response = {};
-
   const category = menu.items[message.actionData.id];
   if (category && category.items) {
-    response.type = CONST.RESPONSE_TYPE.ITEMS;
-    response.items = generics.getItems(menu.items, message.actionData.id);
-    response.replies = getCategories(menu.items, true);
+    if (category.desc) {
+      message.responses.push({
+        type: CONST.RESPONSE_TYPE.TEXT,
+        text: generics.sanitizeHtml(category.desc),
+      });
+    }
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.ITEMS,
+      items: generics.getItems(menu.items, message.actionData.id),
+      replies: getCategories(menu.items, true),
+    });
   } else {
-    response.type = CONST.RESPONSE_TYPE.TEXT;
-    response.text = `oh nooooo, category ${message.actionData.id} has no items.`;
-    response.replies = getCategories(menu.items, true);
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `oh nooooo, category ${message.actionData.id} has no items.`,
+      replies: getCategories(menu.items, true),
+    });
   }
-  message.responses.push(response);
   message.responses.push({
     type: CONST.RESPONSE_TYPE.TEXT,
     text: 'למעלה תוכל למצוא את המנות שבקטגוריה שבחרת או פשוט תבחר קטגוריה אחרת',
@@ -72,8 +77,6 @@ handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
 };
 
 handlers[CONST.ACTIONS.MORE] = (message, userSession) => {
-  let response = {};
-
   const sliceStart = message.actionData.sliceStart;
   const sliceEnd = message.actionData.sliceEnd;
 
@@ -147,9 +150,9 @@ handlers[CONST.ACTIONS.CHOOSE_CUSTOMIZATION] = (message, userSession) => {
         type: CONST.REPLY_TYPE.TEXT,
         text: 'לא צריך',
         clickData: {
-          action: "",
+          action: CONST.ACTIONS.CHOOSE_NOTES,
           data: {
-            method: "",
+            type: -1,
           },
         },
       }],
@@ -158,6 +161,15 @@ handlers[CONST.ACTIONS.CHOOSE_CUSTOMIZATION] = (message, userSession) => {
     const customizations = customizationsUtil.getItemCustomization(userSession.currentItem);
     customizations.forEach(custRes => message.responses.push(custRes));
   }
+};
+
+handlers[CONST.ACTIONS.CHOOSE_NOTES]  = (message, userSession) => {
+  userSession.currentItem.waitingForItemNotes = false;
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'מגניב! בוא נמשיך',
+    replies: getCategories(menu.items, true),
+  });
 };
 
 handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
@@ -202,7 +214,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
   } else {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: ` יש לך${cart.length}פריטים בעגלה `,
+      text: `  יש לך${cart.length}פריטים בעגלה  `,
     });
     message.responses.push({
       type: CONST.RESPONSE_TYPE.CART_SUMMARY,

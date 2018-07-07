@@ -23,6 +23,7 @@ module.exports = {
     CHOOSE_DELIVERY_ADDRESS: 'da',
     CHOOSE_CATEGORY: 'cc',
     CHOOSE_CUSTOMIZATION: 'choose_customization',
+    CHOOSE_NOTES: 'cn',
     ADD_TO_CART: 'atc',
     REMOVE_FROM_CART: 'rfc',
     GET_CART: 'gc',

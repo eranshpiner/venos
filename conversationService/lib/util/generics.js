@@ -1,5 +1,14 @@
 const CONST = require('./../const');
 
+function sanitizeHtml(string) {
+  return string
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (match, num) => String.fromCharCode(num))
+    .replace(/&#x([A-Za-z0-9]+);/g, (match, num) => String.fromCharCode(parseInt(num, 16)))
+    .replace(/(<([^>]+)>)/ig, '');
+}
+
 function categoryToElement(item, itemId, lang) {
   const element = {
     text: item.name,
@@ -47,7 +56,7 @@ function moreButtonToElement(sliceStart, sliceEnd) {
 function itemToElement(item, itemId, lang, actions = []) {
   const element = {
     title: item.name,
-    description: item.desc,
+    description: sanitizeHtml(item.desc),
     actions,
   };
   if (item.image) {
@@ -78,6 +87,7 @@ function getItems(items, categoryId, lang = 'he_IL') {
 }
 
 module.exports = {
+  sanitizeHtml,
   categoryToElement,
   itemToElement,
   cartButtonToElement,

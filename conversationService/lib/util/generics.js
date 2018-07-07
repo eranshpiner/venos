@@ -1,6 +1,6 @@
 const CONST = require('./../const');
 
-function sanitizeHtml(string) {
+function sanitizeHtml(string = '') {
   return string
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/&nbsp;/g, ' ')
@@ -56,9 +56,11 @@ function moreButtonToElement(sliceStart, sliceEnd) {
 function itemToElement(item, itemId, lang, actions = []) {
   const element = {
     title: item.name,
-    description: sanitizeHtml(item.desc),
     actions,
   };
+  if (item.desc) {
+    element.description = sanitizeHtml(item.desc);
+  }
   if (item.image) {
     element.imageUrl = item.image.substring(2, item.image.length);
   }

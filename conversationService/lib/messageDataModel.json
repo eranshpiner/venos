@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://domain/messageDataModel.json",
+  "title": "Message",
+  "description": "top level object for data model",
+  "type": "object",
+  "properties": {
+    "id" : {
+      "description": "unique identifier",
+      "type": "number"
+    },
+    "request": {
+      "$ref": "#/definitions/message"
+    },
+    "response": {
+      "type": "array",
+      "$ref": "#/definitions/message"
+    },
+    "userDetails": {
+      "description": "details of the message sender",
+      "type": "object"
+    },
+    "customerId": {
+      "description": "details of the message recipient",
+      "type": "object"
+    },
+    "provider": {
+      "description": "source of the message like FB / GRBM / etc.",
+      "type": "string",
+      "enum": ["facebook"]
+    },
+    "action": {
+      "description": "a custom response text",
+      "type": "object"
+    },
+    "actionData": {
+      "description": "a custom response object",
+      "type": "object"
+    },
+    "messageContent": {
+      "description": "the content of the incoming message",
+      "type": "string"
+    }
+  },
+  "required": [ "id", "request", "response" ],
+  "definitions": {
+    "message": {
+      "description": "internal data model",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "the type of the message",
+          "type": "string",
+          "enum": ["text", "another1", "another2"]
+        },
+        "text": {
+          "description": "the simple / text of the message typed by consumer or responded by system",
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "$ref": "#/definitions/item"
+        },
+        "context": {
+          "type": "object",
+          "description": "a placeholder for provider specific data that is not generalized as part of data model"
+        }
+      }
+    },
+    "item": {
+      "description": "every item in the data model tha is a result or outcome for a element item",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "unique id of the item"
+        },
+        "externalId": {
+          "type": "string",
+          "description": "the id for the external relevant system"
+        },
+        "price": {
+          "type": "number",
+          "description": "the price of the item"
+        },
+        "image": {
+          "type": "string",
+          "description": "the url of the image"
+        },
+        "title": {
+          "type": "string",
+          "description": "the text title of the item"
+        },
+        "description": {
+          "type": "string",
+          "description": "the description of the item"
+        },
+        "customizations": {
+          "type": "array",
+          "description": "the changes to the item",
+          "$ref": "#/definitions/customization"
+
+        }
+      }
+    },
+    "customization": {
+      "description": "you can customize each item",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "the text / title of the customization"
+        },
+        "isMultiSelect": {
+          "type": "boolean",
+          "description": "is it possible to choose more than one - without 1,2,3 etc."
+        },
+        "items": {
+          "type": "array",
+          "$ref": "#/definitions/item"
+        }
+      }
+    }
+  }
+}

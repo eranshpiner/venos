@@ -1,18 +1,18 @@
 version: 0.0
 os: linux
 files:
-  - source: conversationService/
-    destination: /home/ec2-user/venos/conversationService/
-  - source: docker/
-    destination: /home/ec2-user/venos/docker/
-  - source: orderService/
-    destination: /home/ec2-user/venos/orderService/
+  - source: conversationService
+    destination: /home/ec2-user/venos/conversationService
+  - source: docker
+    destination: /home/ec2-user/venos/docker
+  - source: orderService
+    destination: /home/ec2-user/venos/orderService
   - source: README.md
-    destination: /home/ec2-user/venos/README.md
+    destination: /home/ec2-user/venos
   - source: deploy.sh
-    destination: /home/ec2-user/venos/deploy.sh  
+    destination: /home/ec2-user/venos  
   - source: docker-compose.yml
-    destination: /home/ec2-user/venos/docker-compose.yml 
+    destination: /home/ec2-user/venos 
 hooks:
   BeforeInstall:
     - location: docker/scripts/before_install.sh

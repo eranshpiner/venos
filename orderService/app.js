@@ -181,22 +181,31 @@ app.post('/order', (req, res) => {
                     res.send({status: 'OK', message: 'order number ' + orderId + ' was accepted!'});
                     
                     // notifying the 'conversationService' of the succeeded transaction
+                    
+                    // conversation service consts
+                    const convServiceHost = 'https://venos-stg.natiziv.com';
+                    const convServiceNotificationOrderResource = '/notification/order';
+                    const convServiceNotificationOrderUrl = convServiceHost + convServiceNotificationOrderResource;
+
                     let bodyJson = {
                         orderContext: {
                             transactionId: transactionId, 
                             paymentMethod: {
                                 currency: order.currency,
                                 creditCardType: order.orderPayment.paymentName, 
-                                creditCardDigits: '0000'
+                                creditCardDigits: validator.getCreditCardLastDigits(order.orderPayment.creditCard)
                             }
                         },
                         conversationContext: orderToConversionContext.get(orderId)
                     };
+
+                    console.log("logged here ---->>>> " + JSON.stringify(bodyJson));    
+
                     let body = validator.createJwt(bodyJson);
                     
                     request({
                         method: 'POST',
-                        url: 'https://venos-stg.natiziv.com/notification/order',
+                        url: convServiceNotificationOrderUrl,
                         json: {jwt: body}
                     },
                     function (error, response, body) {

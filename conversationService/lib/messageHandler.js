@@ -263,40 +263,42 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
 
 handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSession) => {
   if(branches.length == 1) {
+    const branchPickupTimeInMinutes = branches[0].branchPickUpTimeInMinutes;
+    const branchTimeZoneOffsetInMinutes = branches[0].branchTimeZoneOffset;
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
       text:   'תבחר מתי נוח לך לבוא לקחת' + "/n" + branches[0].branchName + `תוכל לאסוף מסניף `,
       replies: [
         {
           type: CONST.REPLY_TYPE.TEXT,
-          text: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000)),
-          clickData: {
-            action: CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS,
+          text: msToHMS(Date.now() + (branchPickupTimeInMinutes + branchTimeZoneOffsetInMinutes) * 60000),
+            clickData: {
+            action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
             data: {
               action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
-              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000))
+              time: msToHMS(Date.now() + (branchPickupTimeInMinutes + branchTimeZoneOffsetInMinutes) * 60000),
             },
           },
         },
         {
           type: CONST.REPLY_TYPE.TEXT,
-          text:  msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (40 * 60 * 1000)),
+          text:  msToHMS(Date.now() + (branchPickupTimeInMinutes + 40 + branchTimeZoneOffsetInMinutes) * 60000),
           clickData: {
             action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
             data: {
               action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
-              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (40 * 60 * 1000))
+              time: msToHMS(Date.now() + (branchPickupTimeInMinutes + 40 + branchTimeZoneOffsetInMinutes) * 60000)
             },
           },
         },
         {
           type: CONST.REPLY_TYPE.TEXT,
-          text: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (80 * 60 * 1000)),
+          text: msToHMS(Date.now() + (branchPickupTimeInMinutes + 80 + branchTimeZoneOffsetInMinutes) * 60000),
           clickData: {
             action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
             data: {
               action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
-              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (120 * 60 * 1000))
+              time:msToHMS(Date.now() + (branchPickupTimeInMinutes + 80 + branchTimeZoneOffsetInMinutes) * 60000)
             },
           },
         }

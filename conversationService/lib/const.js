@@ -33,6 +33,7 @@ module.exports = {
     APPROVE_DELIVERY_ADDRESS: 'ada',
     RESET_SESSION: 'reset_session',
     GET_MORE_INFO: 'get_more_info_on_item',
-    MORE: 'more'
+    MORE: 'more',
+    APPROVE_PICKUP_TIME: 'pickup_approved'
   }
 };

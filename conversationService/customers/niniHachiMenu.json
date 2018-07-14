@@ -27,7 +27,8 @@
       {
         "branchName": "בן יהודה",
         "branchAddress": "בן יהודה 228 תל אביב",
-        "branchPickUpTimeInMinutes":40
+        "branchPickUpTimeInMinutes":40,
+        "branchTimeZoneOffset": 180
       }
     ],
 		"openHours": [

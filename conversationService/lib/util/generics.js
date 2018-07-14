@@ -58,8 +58,15 @@ function itemToElement(item, itemId, lang, actions = []) {
     title: item.name,
     actions,
   };
+  let description = [];
+  if (item.price) {
+    description.push(`${item.price}₪\n`);
+  }
   if (item.desc) {
-    element.description = sanitizeHtml(item.desc);
+    description.push(sanitizeHtml(item.desc));
+  }
+  if (description.length) {
+    element.description = description.join('\n');
   }
   if (item.image) {
     element.imageUrl = item.image.substring(2, item.image.length);

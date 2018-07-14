@@ -9,6 +9,7 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
   return cartItems.map((cartItem) => {
     const menuItem = menuItems[cartItem.categoryId].items.find((element) => element.id === cartItem.id);
     const description = [];
+    description.push(`${cartItem.quantity}x ₪${cartItem.price}`);
     if (cartItem.customizations) {
       Object.entries(cartItem.customizations).forEach(([catId, items]) => {
         const catAdds = menuItem.CategoriesAdd.find(catAdds => catAdds.id.toString() === catId.toString());
@@ -24,7 +25,6 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
     if (!description.length) {
       description.push(menuItem.desc);
     }
-    description.push(`${cartItem.quantity}x ₪${cartItem.price}`);
     return {
       title: menuItem.name,
       description: description.join('\n'),
@@ -68,6 +68,10 @@ function getReceipt(cart = []) {
     },
     items,
   };
+}
+
+function getCartTotal(cart = []) {
+  return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 }
 
 function getPaymentURL(userSession) {
@@ -128,6 +132,7 @@ function getPaymentURL(userSession) {
 
 module.exports = {
   getCartItems,
+  getCartTotal,
   getPaymentURL,
   getReceipt,
 };

@@ -2,14 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express().use(bodyParser.json());
 const path = require('path');
-const jwt = require('jsonwebtoken');
-const secret = 'this_is_the_secret';
-
-const CONST = require('./lib/const');
-const Message = require('./lib/models/Message');
 
 const providers = module.exports.providers = require('./lib/providers');
-const messageHandler = require('./lib/messageHandler');
 console.log("Starting...");
 
 //remove technology exposure

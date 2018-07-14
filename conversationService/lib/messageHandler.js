@@ -3,6 +3,7 @@ const sessionManager = require('./sessionManager');
 const CONST = require('./const');
 const cordsToAddress = require('./util/locations').cordsToAddress;
 const strToAddress = require('./util/locations').strToAddress;
+const locations = require('./util/locations');
 const generics = require('./util/generics');
 const customizationsUtil = require('./util/customizations');
 
@@ -108,10 +109,26 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   const itemId = message.actionData.id;
   const categoryId = message.actionData.categoryId;
   const menuItem = menu.items[categoryId].items.find((e) => e.id === itemId);
-  userSession.cart = userSession.cart || [];
+  const cart = userSession.cart = userSession.cart || [];
+  const existingItem = cart.find((e) => e.id === itemId);
+
+  if (existingItem && !existingItem.hasCustomization) {
+    existingItem.quantity += 1;
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `הוספתי ${menuItem.name} נוסף, סה"כ ${existingItem.quantity}`,
+      replies: getCategories(menu.items, true),
+    });
+    return;
+  }
 
   if (!menuItem) {
-    response.text = `Sorry, I couldn't find it on the menu, please try again.`;
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `הפריט לא נמצא, אנא נסה פריט אחר`,
+      replies: getCategories(menu.items, true),
+    });
+    return;
   }
   const cartItem = {
     id: menuItem.id,
@@ -121,7 +138,7 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
     categoryId: categoryId,
     customizations: {}
   };
-  userSession.cart.push(cartItem);
+  cart.push(cartItem);
 
   if (menuItem.CategoriesAdd && menuItem.CategoriesAdd.length) {
     cartItem.hasCustomization = true;
@@ -136,7 +153,7 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   } else {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: `hurray, item ${menuItem.name} has been added to cart.`,
+      text: `יופי, הוספנו לך את `+ menuItem.name+ ' לעגלה',
       replies: getCategories(menu.items, true),
     });
   }
@@ -187,6 +204,14 @@ handlers[CONST.ACTIONS.CHOOSE_NOTES]  = (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.FIX_DELIVERY_ADDRESS]  = (message, userSession) => {
+  userSession.waitingForCity = true; //TODO send to log waiting for address
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'לאיזו עיר לשלוח?',
+  });
+};
+
 handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
   let response = {
     type: CONST.RESPONSE_TYPE.TEXT,
@@ -228,10 +253,6 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
     });
   } else {
     message.responses.push({
-      type: CONST.RESPONSE_TYPE.TEXT,
-      text: `  יש לך${cart.length}פריטים בעגלה  `,
-    });
-    message.responses.push({
       type: CONST.RESPONSE_TYPE.CART_SUMMARY,
       cartItems: cartUtils.getCartItems(cart, menu.items),
       cartActions: [
@@ -240,6 +261,13 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
           clickLink: cartUtils.getPaymentURL(userSession),
         },
       ],
+      replies: getCategories(menu.items, true),
+    });
+
+    const cartTotal = cartUtils.getCartTotal(cart);
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `סה"כ ${cart.length} פריטים על סך ${cartTotal}₪`,
       replies: getCategories(menu.items, true),
     });
   }
@@ -261,7 +289,7 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD] = (message, userSession) => {
 
   message.responses.push({
     type: CONST.RESPONSE_TYPE.TEXT,
-    text: `אנא הזן את הכתובת למשלוח`,
+    text: `אנא הזן את הכתובת למשלוח למשל\n דיזנגוף 22 תל אביב`,
     replies: [{
       type: CONST.REPLY_TYPE.LOCATION,
     }],
@@ -276,16 +304,35 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.APPROVE_PICKUP_TIME] = async (message, userSession) => {
+ userSession.chosenPickUpTime = message.actionData.time;
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'מעולה ההזמנה תחכה לך בסניף ' +userSession.branchForPickup+ ' תוכל לאסוף בשעה ' +userSession.chosenPickUpTime,
+  });
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'בוא נתחיל, מה תרצה להזמין?',
+    replies: getCategories(menu.items, true),
+  });
+};
+
 handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSession) => {
 
   //If the restaurant has only one branch, we pick the data from the only branch configured. If not, we need to
   //ask the consumer to pick up a branch maybe based on their location.
   if(branches.length == 1) {  //TODO: Add branch selection by location proximity.
-    const branchPickupTimeInMinutes = branches[0].branchPickUpTimeInMinutes;
-    const branchTimeZoneOffsetInMinutes = branches[0].branchTimeZoneOffset;
+
+    const branchPickupTimeInMinutes = branches[0].branchPickUpTimeInMinutes; // Defined at the rest conf file per branch
+    const branchTimeZoneOffsetInMinutes = branches[0].branchTimeZoneOffset; // Defined in the rest conf file per branch
+    userSession.branchForPickup = branches[0].branchName;
+    userSession.branchForPickupId = branches[0].branchId;
+    userSession.branchAddress = branches[0].branchAddress;
+
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text:   'תבחר מתי נוח לך לבוא לקחת' + "/n" + branches[0].branchName + `תוכל לאסוף מסניף `,
+      text:   'תבחר מתי נוח לך לבוא לקחת \nתוכל לאסוף מסניף ' + branches[0].branchName,
       replies: [
         {
           type: CONST.REPLY_TYPE.TEXT,
@@ -349,6 +396,60 @@ async function handle(message) {
         text: 'מגניב! בוא נמשיך',
         replies: getCategories(menu.items, true),
       });
+    }
+    else if (userSession.waitingForCity === true){
+      cityInput = await strToAddress(message.messageContent);
+      if(cityInput.length === 1){
+        userSession.waitingForCity = false;
+        userSession.waitingForStreet = true;
+        userSession.address += message.messageContent;
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: message.messageContent + ' מכיר\n מה שם הרחוב ומספר בית?',
+
+        });
+      } else if (cityInput.length < 1){
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'לא מכיר עיר כזאות, אולי תנסה אחרת?',
+        });
+
+      } else {
+        //TODO: send the list of responses as QR for the user to decide
+      }
+    }
+    else if (userSession.waitingForStreet === true){
+      street = await strToAddress(message.messageContent);
+      if(street.length === 1){
+        userSession.waitingForApartmentNumber = true;
+        userSession.waitingForStreet = false;
+        userSession.address += message.messageContent;
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'מה מספר דירה או כניסה?',
+
+        });
+      } else if (street.length < 1){
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'לא מצאתי רחוב כזה אולי תנסה אחרת?',
+        });
+
+      } else {
+        //TODO: send the list of responses as QR for the user to decide
+      }
+    }
+    else if (userSession.waitingForApartmentNumber === true){
+        userSession.waitingForApartmentNumber = false;
+        userSession.address += message.messageContent;
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'הייה קשה אבל הצלחנו\nבוא נתחיל, מה תרצה להזמין?',
+          replies: getCategories(menu.items, true),
+        });
+
+
+
     }
     else if (!userSession.deliveryMethod) {
       message.responses.push({

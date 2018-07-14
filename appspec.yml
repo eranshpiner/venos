@@ -11,6 +11,8 @@ files:
     destination: /home/ec2-user/venos/README.md
   - source: deploy.sh
     destination: /home/ec2-user/venos/deploy.sh  
+  - source: docker-compose.yml
+    destination: /home/ec2-user/venos/docker-compose.yml 
 hooks:
   BeforeInstall:
     - location: docker/scripts/before_install.sh

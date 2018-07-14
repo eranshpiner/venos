@@ -1,10 +1,10 @@
 const User = require('./models/User');
 const Session = require('./models/Session');
 
-async function getUserSession(userDetails) {
+async function getUserSession({userDetails, customerId}) {
   let session = await Session.get(userDetails.id);
   if (!session) {
-    session = await Session.createOrUpdate(userDetails.id, {userDetails});
+    session = await Session.createOrUpdate(userDetails.id, {userDetails, customerId});
     User.createOrUpdate(userDetails.id, userDetails);
   }
   return session;

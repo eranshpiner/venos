@@ -23,6 +23,23 @@ Object.keys(providers).forEach(provider => {
     app.use('/providers', providers[provider].router);
 });
 
-app.listen(8081, () => {
+//app
+//details: order_number, currency, payment_method (card type + last 4 details)
+app.post('/notification/order', (req, res) => {
+
+  const jwtToken = req.body.jwt;
+  const result = jwt.verify(jwtToken, secret);
+  const message = new Message(Date.now());
+  message.provider = result.conversationContext.conversationProvider;
+  message.customerId = result.conversationContext.customerId;//'378370189311177';//
+  message.userDetails = {};
+  message.userDetails.id = result.conversationContext.userSessionId;//'1629198287117755'//
+  message.orderContext = result.orderContext || {};
+  message.action = CONST.ACTIONS.ORDER_RECEIPT;
+  messageHandler.handle(message);
+  res.json({});
+});
+
+app.listen(8080, () => {
     console.log('Example app listening on port 8080!');
 });

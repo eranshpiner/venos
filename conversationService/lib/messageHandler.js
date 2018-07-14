@@ -15,6 +15,21 @@ const branches = restConfigFile.rest.branches;
 
 const handlers = {};
 
+handlers[CONST.ACTIONS.ORDER_RECEIPT] = (message, userSession) => {
+  let response = {
+    type: CONST.RESPONSE_TYPE.TEXT,
+  };
+
+  response.text = `תודה על הזמנתך. מספר הזמנה: ${message.orderContext.transactionId} `;
+  message.responses.push(response);
+  // let orderReceipt = {
+  //   type: CONST.RESPONSE_TYPE.ORDER_RECEIPT
+  //   orderContext: orderContext,
+  //
+  // };
+  // message.responses.push(orderReceipt);
+}
+
 handlers[CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS] = (message, userSession) => {
   let response = {};
 
@@ -359,7 +374,7 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSess
 
 async function handle(message) {
   const provider = providers[message.provider];
-  const userSession = await sessionManager.getUserSession(message.userDetails);
+  const userSession = await sessionManager.getUserSession(message);
 
   userSession.locale = userSession.locale || 'he_IL';
   message.responses = message.responses || [];

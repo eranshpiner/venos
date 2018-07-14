@@ -119,6 +119,11 @@ function getPaymentURL(userSession) {
       creditCardCvv: '000',
       creditCardHolderId: '343545645454',
     },
+    conversationContext: {
+      userSessionId: userSession.id,
+      conversationProvider: 'facebook',
+      customerId: userSession.customerId
+    }
   };
 
   const jwtToken = jwt.sign(JSON.stringify(payload), secret);

@@ -213,10 +213,6 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
     });
   } else {
     message.responses.push({
-      type: CONST.RESPONSE_TYPE.TEXT,
-      text: `  יש לך${cart.length}פריטים בעגלה  `,
-    });
-    message.responses.push({
       type: CONST.RESPONSE_TYPE.CART_SUMMARY,
       cartItems: cartUtils.getCartItems(cart, menu.items),
       cartActions: [
@@ -225,6 +221,13 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
           clickLink: cartUtils.getPaymentURL(userSession),
         },
       ],
+      replies: getCategories(menu.items, true),
+    });
+
+    const cartTotal = cartUtils.getCartTotal(cart);
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `סה"כ ${cart.length} פריטים על סך ${cartTotal}₪`,
       replies: getCategories(menu.items, true),
     });
   }

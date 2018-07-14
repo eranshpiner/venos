@@ -7,10 +7,6 @@ files:
     destination: /home/ec2-user/venos/docker/
   - source: orderService/
     destination: /home/ec2-user/venos/orderService/
-  - source: web/
-    destination: /home/ec2-user/venos/web/
-  - source: package-lock.json
-    destination: /home/ec2-user/venos/package-lock.json
   - source: README.md
     destination: /home/ec2-user/venos/README.md
   - source: deploy.sh

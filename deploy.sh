@@ -52,7 +52,7 @@ for (( ; ; ))
 do
    result=$(aws deploy get-deployment --cli-input-json "$deployment_status")
    sleep 5s
-   echo "$result" | grep -e status | cut -d "," -f 1 | cut -d ":" -f 2 | echo ...
+   echo "$result" | grep -e status | cut -d "," -f 1 | cut -d ":" -f 2 .
 
    #echo "$status"
 done

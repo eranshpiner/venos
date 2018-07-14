@@ -34,6 +34,7 @@ module.exports = {
     RESET_SESSION: 'reset_session',
     GET_MORE_INFO: 'get_more_info_on_item',
     MORE: 'more',
-    APPROVE_PICKUP_TIME: 'pickup_approved'
+    APPROVE_PICKUP_TIME: 'pickup_approved',
+    ORDER_RECEIPT: 'order_receipt'
   }
 };

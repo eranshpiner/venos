@@ -2,6 +2,7 @@ version: '3.3'
 
 services:
   database:
+    build: ./docker/db
     container_name: venosdbservice
     image: venos/mysql:1.0.0
     ports:
@@ -20,7 +21,9 @@ services:
           memory: 256M
 
   orderService:
+    build: ./orderService
     container_name: orderservice
+    restart: always
     image: venos/orderservice:1.0.0
     ports:
       - '3000:3000'   
@@ -33,7 +36,9 @@ services:
           memory: 256M
 
   conversationService:
+    build: ./conversationService
     container_name: conversationservice
+    restart: always
     image: venos/conversationservice:1.0.0
     ports:
       - '8080:8080'
@@ -62,6 +67,5 @@ services:
         - SUBDOMAINS=venos-stg
         - ONLY_SUBDOMAINS=true
         - VALIDATION=http
-
 volumes:
   dbdata:

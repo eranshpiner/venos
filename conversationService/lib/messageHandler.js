@@ -93,10 +93,26 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   const itemId = message.actionData.id;
   const categoryId = message.actionData.categoryId;
   const menuItem = menu.items[categoryId].items.find((e) => e.id === itemId);
-  userSession.cart = userSession.cart || [];
+  const cart = userSession.cart = userSession.cart || [];
+  const existingItem = cart.find((e) => e.id === itemId);
+
+  if (existingItem && !existingItem.hasCustomization) {
+    existingItem.quantity += 1;
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `הוספתי ${menuItem.name} נוסף, סה"כ ${existingItem.quantity}`,
+      replies: getCategories(menu.items, true),
+    });
+    return;
+  }
 
   if (!menuItem) {
-    response.text = `Sorry, I couldn't find it on the menu, please try again.`;
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `הפריט לא נמצא, אנא נסה פריט אחר`,
+      replies: getCategories(menu.items, true),
+    });
+    return;
   }
   const cartItem = {
     id: menuItem.id,
@@ -106,7 +122,7 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
     categoryId: categoryId,
     customizations: {}
   };
-  userSession.cart.push(cartItem);
+  cart.push(cartItem);
 
   if (menuItem.CategoriesAdd && menuItem.CategoriesAdd.length) {
     cartItem.hasCustomization = true;
@@ -121,7 +137,7 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   } else {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: `hurray, item ${menuItem.name} has been added to cart.`,
+      text: `יופי, הוספנו לך את `+ menuItem.name+ ' לעגלה',
       replies: getCategories(menu.items, true),
     });
   }
@@ -213,10 +229,6 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
     });
   } else {
     message.responses.push({
-      type: CONST.RESPONSE_TYPE.TEXT,
-      text: `  יש לך${cart.length}פריטים בעגלה  `,
-    });
-    message.responses.push({
       type: CONST.RESPONSE_TYPE.CART_SUMMARY,
       cartItems: cartUtils.getCartItems(cart, menu.items),
       cartActions: [
@@ -225,6 +237,13 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
           clickLink: cartUtils.getPaymentURL(userSession),
         },
       ],
+      replies: getCategories(menu.items, true),
+    });
+
+    const cartTotal = cartUtils.getCartTotal(cart);
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `סה"כ ${cart.length} פריטים על סך ${cartTotal}₪`,
       replies: getCategories(menu.items, true),
     });
   }
@@ -261,42 +280,66 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.APPROVE_PICKUP_TIME] = async (message, userSession) => {
+ userSession.chosenPickUpTime = message.actionData.time;
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'מעולה ההזמנה תחכה לך בסניף ' +userSession.branchForPickup+ ' תוכל לאסוף בשעה ' +userSession.chosenPickUpTime,
+  });
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'בוא נתחיל, מה תרצה להזמין?',
+    replies: getCategories(menu.items, true),
+  });
+};
+
 handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSession) => {
-  if(branches.length == 1) {
+
+  //If the restaurant has only one branch, we pick the data from the only branch configured. If not, we need to
+  //ask the consumer to pick up a branch maybe based on their location.
+  if(branches.length == 1) {  //TODO: Add branch selection by location proximity.
+
+    const branchPickupTimeInMinutes = branches[0].branchPickUpTimeInMinutes; // Defined at the rest conf file per branch
+    const branchTimeZoneOffsetInMinutes = branches[0].branchTimeZoneOffset; // Defined in the rest conf file per branch
+    userSession.branchForPickup = branches[0].branchName;
+    userSession.branchForPickupId = branches[0].branchId;
+    userSession.branchAddress = branches[0].branchAddress;
+
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text:   'תבחר מתי נוח לך לבוא לקחת' + "/n" + branches[0].branchName + `תוכל לאסוף מסניף `,
+      text:   'תבחר מתי נוח לך לבוא לקחת \nתוכל לאסוף מסניף ' + branches[0].branchName,
       replies: [
         {
           type: CONST.REPLY_TYPE.TEXT,
-          text: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000)),
-          clickData: {
-            action: CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS,
+          text: msToHMS(Date.now() + (branchPickupTimeInMinutes + branchTimeZoneOffsetInMinutes) * 60000),
+            clickData: {
+            action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
             data: {
               action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
-              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000))
+              time: msToHMS(Date.now() + (branchPickupTimeInMinutes + branchTimeZoneOffsetInMinutes) * 60000),
             },
           },
         },
         {
           type: CONST.REPLY_TYPE.TEXT,
-          text:  msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (40 * 60 * 1000)),
+          text:  msToHMS(Date.now() + (branchPickupTimeInMinutes + 40 + branchTimeZoneOffsetInMinutes) * 60000),
           clickData: {
             action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
             data: {
               action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
-              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (40 * 60 * 1000))
+              time: msToHMS(Date.now() + (branchPickupTimeInMinutes + 40 + branchTimeZoneOffsetInMinutes) * 60000)
             },
           },
         },
         {
           type: CONST.REPLY_TYPE.TEXT,
-          text: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (80 * 60 * 1000)),
+          text: msToHMS(Date.now() + (branchPickupTimeInMinutes + 80 + branchTimeZoneOffsetInMinutes) * 60000),
           clickData: {
             action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
             data: {
               action: CONST.ACTIONS.APPROVE_PICKUP_TIME,
-              time: msToHMS(Date.now() + (branches[0].branchPickUpTimeInMinutes * 60 * 1000) + (120 * 60 * 1000))
+              time:msToHMS(Date.now() + (branchPickupTimeInMinutes + 80 + branchTimeZoneOffsetInMinutes) * 60000)
             },
           },
         }

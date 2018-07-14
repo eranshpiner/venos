@@ -262,7 +262,10 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
 };
 
 handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSession) => {
-  if(branches.length == 1) {
+
+  //If the restaurant has only one branch, we pick the data from the only branch configured. If not, we need to
+  //ask the consumer to pick up a branch maybe based on their location.
+  if(branches.length == 1) {  //TODO: Add branch selection by location proximity.
     const branchPickupTimeInMinutes = branches[0].branchPickUpTimeInMinutes;
     const branchTimeZoneOffsetInMinutes = branches[0].branchTimeZoneOffset;
     message.responses.push({

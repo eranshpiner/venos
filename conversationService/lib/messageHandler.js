@@ -121,7 +121,7 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   } else {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: `hurray, item ${menuItem.name} has been added to cart.`,
+      text: `יופי, הוספנו לך את `+ menuItem.name+ ' לעגלה',
       replies: getCategories(menu.items, true),
     });
   }

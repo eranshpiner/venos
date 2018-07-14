@@ -199,8 +199,6 @@ app.post('/order', (req, res) => {
                         conversationContext: orderToConversionContext.get(orderId)
                     };
 
-                    console.log("logged here ---->>>> " + JSON.stringify(bodyJson));    
-
                     let body = validator.createJwt(bodyJson);
                     
                     request({

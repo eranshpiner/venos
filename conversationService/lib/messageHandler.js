@@ -264,13 +264,32 @@ handlers[CONST.ACTIONS.RESET_SESSION] = async (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.APPROVE_PICKUP_TIME] = async (message, userSession) => {
+ userSession.chosenPickUpTime = message.actionData.time;
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'מעולה ההזמנה תחכה לך בסניף ' +userSession.branchForPickup+ ' תוכל לאסוף בשעה ' +userSession.chosenPickUpTime,
+  });
+
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'בוא נתחיל, מה תרצה להזמין?',
+    replies: getCategories(menu.items, true),
+  });
+};
+
 handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSession) => {
 
   //If the restaurant has only one branch, we pick the data from the only branch configured. If not, we need to
   //ask the consumer to pick up a branch maybe based on their location.
   if(branches.length == 1) {  //TODO: Add branch selection by location proximity.
-    const branchPickupTimeInMinutes = branches[0].branchPickUpTimeInMinutes;
-    const branchTimeZoneOffsetInMinutes = branches[0].branchTimeZoneOffset;
+
+    const branchPickupTimeInMinutes = branches[0].branchPickUpTimeInMinutes; // Defined at the rest conf file per branch
+    const branchTimeZoneOffsetInMinutes = branches[0].branchTimeZoneOffset; // Defined in the rest conf file per branch
+    userSession.branchForPickup = branches[0].branchName;
+    userSession.branchForPickupId = branches[0].branchId;
+    userSession.branchAddress = branches[0].branchAddress;
+
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
       text:   'תבחר מתי נוח לך לבוא לקחת' + "/n" + branches[0].branchName + `תוכל לאסוף מסניף `,

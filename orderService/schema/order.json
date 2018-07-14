@@ -12,7 +12,7 @@
         "orderOwner",
         "orderPayment",
         "brandId",
-        "brandLocationId"                
+        "brandLocationId"            
     ],
     "properties": {
         "total": {
@@ -35,7 +35,10 @@
         },
         "brandLocationId": {
             "type": "string"
-        },                        
+        },
+        "conversationContext": {
+            "type": "object"
+        },                                
         "remarks": {
             "type": "string"                
         }        

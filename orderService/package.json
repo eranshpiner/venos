@@ -12,11 +12,13 @@
     "body-parser": "^1.18.2",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
+    "hashmap": "^2.3.0",
     "jsonschema": "^1.2.4",
     "jsonwebtoken": "^8.2.1",
     "mysql": "^2.15.0",
     "nodemailer": "^4.6.5",
     "nodemailer-mailgun-transport": "^1.4.0",
+    "request": "^2.87.0",
     "uuid": "^3.2.1"
   }
 }

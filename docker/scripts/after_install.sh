@@ -9,4 +9,4 @@ echo -e "\n\n-- Removing volume directories --\n"
 docker volume rm $(docker volume ls --quiet --filter="dangling=true")
 
 echo -e "-- start docker-compose --\n"
-/usr/local/bin/docker-compose -f /home/ec2-user/server/docker-compose.yml up -d
+/usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose.yml up -d

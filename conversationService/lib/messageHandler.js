@@ -3,6 +3,7 @@ const sessionManager = require('./sessionManager');
 const CONST = require('./const');
 const cordsToAddress = require('./util/locations').cordsToAddress;
 const strToAddress = require('./util/locations').strToAddress;
+const locations = require('./util/locations');
 const generics = require('./util/generics');
 const customizationsUtil = require('./util/customizations');
 
@@ -188,6 +189,14 @@ handlers[CONST.ACTIONS.CHOOSE_NOTES]  = (message, userSession) => {
   });
 };
 
+handlers[CONST.ACTIONS.FIX_DELIVERY_ADDRESS]  = (message, userSession) => {
+  userSession.waitingForCity = true; //TODO send to log waiting for address
+  message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'לאיזו עיר לשלוח?',
+  });
+};
+
 handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
   let response = {
     type: CONST.RESPONSE_TYPE.TEXT,
@@ -265,7 +274,7 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD] = (message, userSession) => {
 
   message.responses.push({
     type: CONST.RESPONSE_TYPE.TEXT,
-    text: `אנא הזן את הכתובת למשלוח`,
+    text: `אנא הזן את הכתובת למשלוח למשל\n דיזנגוף 22 תל אביב`,
     replies: [{
       type: CONST.REPLY_TYPE.LOCATION,
     }],
@@ -372,6 +381,60 @@ async function handle(message) {
         text: 'מגניב! בוא נמשיך',
         replies: getCategories(menu.items, true),
       });
+    }
+    else if (userSession.waitingForCity === true){
+      cityInput = await strToAddress(message.messageContent);
+      if(cityInput.length === 1){
+        userSession.waitingForCity = false;
+        userSession.waitingForStreet = true;
+        userSession.address += message.messageContent;
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: message.messageContent + ' מכיר\n מה שם הרחוב ומספר בית?',
+
+        });
+      } else if (cityInput.length < 1){
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'לא מכיר עיר כזאות, אולי תנסה אחרת?',
+        });
+
+      } else {
+        //TODO: send the list of responses as QR for the user to decide
+      }
+    }
+    else if (userSession.waitingForStreet === true){
+      street = await strToAddress(message.messageContent);
+      if(street.length === 1){
+        userSession.waitingForApartmentNumber = true;
+        userSession.waitingForStreet = false;
+        userSession.address += message.messageContent;
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'מה מספר דירה או כניסה?',
+
+        });
+      } else if (street.length < 1){
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'לא מצאתי רחוב כזה אולי תנסה אחרת?',
+        });
+
+      } else {
+        //TODO: send the list of responses as QR for the user to decide
+      }
+    }
+    else if (userSession.waitingForApartmentNumber === true){
+        userSession.waitingForApartmentNumber = false;
+        userSession.address += message.messageContent;
+        message.responses.push({
+          type: CONST.RESPONSE_TYPE.TEXT,
+          text: 'הייה קשה אבל הצלחנו\nבוא נתחיל, מה תרצה להזמין?',
+          replies: getCategories(menu.items, true),
+        });
+
+
+
     }
     else if (!userSession.deliveryMethod) {
       message.responses.push({

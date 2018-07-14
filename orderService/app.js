@@ -7,7 +7,13 @@ const validator = require('./util/validator.js');
 const beecomm = require('./providers/beecomm/beecomm.js');
 const dal = require ('./dal/dbfacade.js');
 const format = require('./dal/sqlFormatter.js');
+const hashmap = require('hashmap');
+const request = require('request');
 const app = express();
+
+// a mapping between the order ('orderId') and the conversion context which is meant to 
+// provide the mutual refernces of the 'orderService' and the 'conversationService'  
+const orderToConversionContext = new hashmap();
 
 app.set('views', path.join(__dirname, 'public'));
 app.set('view engine', 'ejs');
@@ -52,6 +58,10 @@ app.get('/payment', (req, res) => {
             }
             const orderId = orderReq.orderId;
             console.log(`an 'orderRecord' for order ${orderId} was saved to db... result is: ${result}`);
+            
+            if (order.conversationContext != null) {
+                orderToConversionContext.set(orderId, order.conversationContext)
+            }
             
             // todo: repond with a payment form - including the 'orderId' as a hidden field 
             res.status(200);
@@ -169,6 +179,31 @@ app.post('/order', (req, res) => {
                     res.status(201);
                     // res.send({orderId: orderId, transactionId: transactionId, message: result.message, code: result.code});
                     res.send({status: 'OK', message: 'order number ' + orderId + ' was accepted!'});
+                    
+                    // notifying the 'conversationService' of the succeeded transaction
+                    let bodyJson = {
+                        orderContext: {
+                            transactionId: transactionId, 
+                            paymentMethod: {
+                                currency: order.currency,
+                                creditCardType: order.orderPayment.paymentName, 
+                                creditCardDigits: '0000'
+                            }
+                        },
+                        conversationContext: orderToConversionContext.get(orderId)
+                    };
+                    let body = validator.createJwt(bodyJson);
+                    
+                    request({
+                        method: 'POST',
+                        url: 'https://venos-stg.natiziv.com/notification/order',
+                        json: {jwt: body}
+                    },
+                    function (error, response, body) {
+                        console.log('error:', error); // Print the error if one occurred
+                        console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+                        console.log('body:', body); // Print the HTML for the Google homepage.
+                    });
                     
                     // todo: if success, create and save 'orderLog'     
                     console.log("saving an 'orderLog' to the db for orderId %s", orderId);

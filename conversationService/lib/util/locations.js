@@ -6,6 +6,7 @@ const Address = require('./../models/Address');
 const API_KEY = 'AIzaSyANWevOyd82-eoNOA5mssoiyIE1eq-teqQ';
 
 const STREET_ADDRESS = 'street_address';
+const CITY = 'locality';
 
 const googleMapsClient = googleMaps.createClient({
   key: API_KEY,
@@ -47,7 +48,7 @@ async function placeToAddress(placeId) {
 function responseToAddresses(responseArr) {
   const arr = [];
   responseArr.forEach(function (address) {
-    if (address.types && address.types.includes(STREET_ADDRESS)) {
+    if (address.types && address.types.includes(STREET_ADDRESS) || address.types.includes(CITY)) {
       let lat;
       let lng;
       if (address.geometry && address.geometry.location) {

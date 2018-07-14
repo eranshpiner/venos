@@ -93,10 +93,26 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   const itemId = message.actionData.id;
   const categoryId = message.actionData.categoryId;
   const menuItem = menu.items[categoryId].items.find((e) => e.id === itemId);
-  userSession.cart = userSession.cart || [];
+  const cart = userSession.cart = userSession.cart || [];
+  const existingItem = cart.find((e) => e.id === itemId);
+
+  if (existingItem && !existingItem.hasCustomization) {
+    existingItem.quantity += 1;
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `הוספתי ${menuItem.name} נוסף, סה"כ ${existingItem.quantity}`,
+      replies: getCategories(menu.items, true),
+    });
+    return;
+  }
 
   if (!menuItem) {
-    response.text = `Sorry, I couldn't find it on the menu, please try again.`;
+    message.responses.push({
+      type: CONST.RESPONSE_TYPE.TEXT,
+      text: `הפריט לא נמצא, אנא נסה פריט אחר`,
+      replies: getCategories(menu.items, true),
+    });
+    return;
   }
   const cartItem = {
     id: menuItem.id,
@@ -106,7 +122,7 @@ handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
     categoryId: categoryId,
     customizations: {}
   };
-  userSession.cart.push(cartItem);
+  cart.push(cartItem);
 
   if (menuItem.CategoriesAdd && menuItem.CategoriesAdd.length) {
     cartItem.hasCustomization = true;

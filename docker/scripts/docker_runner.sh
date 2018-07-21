@@ -1,6 +1,4 @@
-#!/bin/sh
-
-echo "Current deployment environemnt is : $VENOS_ENV"
+#!/bin/bash
 if [ "$VENOS_ENV" = "staging" ]
 then 
   /usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose-staging.yml up -d

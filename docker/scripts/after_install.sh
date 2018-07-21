@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo  "-- Clean ... --\n"
 /usr/local/bin/docker-compose rm --force --stop

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 echo  "-- Clean ... --\n"
-#/usr/local/bin/docker-compose rm --force --stop
 docker stop $(docker ps -a -q)
 docker rm --force $(docker ps -a -q)
 docker rmi --force $(docker images -a -q)
@@ -24,5 +23,5 @@ echo "Deployment environment : $VENOS_ENV"
 #  /usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose-production.yml up -d
 #else 
 #    echo  "Error. Deployment environment variable is not set! Deployment is stopped!"
-#    exit
+#    exit 1
 #fi 

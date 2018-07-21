@@ -19,16 +19,16 @@ hooks:
   BeforeInstall:
     - location: docker/scripts/before_install.sh
       timeout: 300
-      runas: ec2-user
+      runas: root
   AfterInstall:
     - location: docker/scripts/after_install.sh
       timeout: 300
-      runas: ec2-user
+      runas: root
   ApplicationStart:
     - location: docker/scripts/application_start.sh
       timeout: 300
-      runas: ec2-user
+      runas: root
   ValidateService:
     - location: docker/scripts/validation_start.sh
       timeout: 300
-      runas: ec2-user
+      runas: root

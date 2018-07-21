@@ -1,0 +1,71 @@
+version: '3.3'
+
+services:
+  database:
+    build: ./docker/db
+    container_name: venosdbservice
+    image: venos/mysql:1.0.0
+    ports:
+      - '6000:3306'
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    command: mysqld --init-file="/usr/src/db/config/init.sql"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'admin123'
+      MYSQL_DATABASE: 'venos'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+  orderService:
+    build: ./orderService
+    container_name: orderservice
+    restart: always
+    image: venos/orderservice:1.0.0
+    ports:
+      - '3000:3000'   
+    links:
+      - database      
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+  conversationService:
+    build: ./conversationService
+    container_name: conversationservice
+    restart: always
+    image: venos/conversationservice:1.0.0
+    ports:
+      - '8080:8080'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+  letsencrypt:
+      restart: always
+      image: linuxserver/letsencrypt
+      container_name: letsencrypt
+      ports:
+        - '80:80'
+        - '443:443'
+      links:
+        - conversationService
+        - orderService
+      volumes:
+        - './web/conf:/config/nginx/site-confs:ro'
+        - './web/certs:/config/etc/letsencrypt:rw'
+      environment:
+        - EMAIL=n@natiziv.com
+        - URL=natiziv.com
+        - SUBDOMAINS=venos-prod
+        - ONLY_SUBDOMAINS=true
+        - VALIDATION=http
+volumes:
+  dbdata:

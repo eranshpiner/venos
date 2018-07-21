@@ -11,8 +11,10 @@ files:
     destination: /home/ec2-user/venos
   - source: deploy.sh
     destination: /home/ec2-user/venos  
-  - source: docker-compose.yml
-    destination: /home/ec2-user/venos 
+  - source: docker-compose-production.yml
+    destination: /home/ec2-user/venos
+  - source: docker-compose-staging.yml
+    destination: /home/ec2-user/venos
 hooks:
   BeforeInstall:
     - location: docker/scripts/before_install.sh

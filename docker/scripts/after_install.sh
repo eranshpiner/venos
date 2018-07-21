@@ -11,8 +11,11 @@ docker volume rm $(docker volume ls --quiet --filter="dangling=true")
 echo  "-- start docker-compose --\n"
 echo "Deployment environment : $VENOS_ENV"
 
-sudo chmod +x /home/ec2-user/venos/docker/scripts/docker_runner.sh
-sudo source /home/ec2-user/venos/docker/scripts/docker_runner.sh
+/usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose-$VENOS_ENV.yml up -d 
+
+#chmod +x /home/ec2-user/venos/docker/scripts/docker_runner.sh
+#source /home/ec2-user/venos/docker/scripts/docker_runner_new.sh
+
 #if [ "$VENOS_ENV" = "staging" ]
 #then 
 #  /usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose-staging.yml up -d

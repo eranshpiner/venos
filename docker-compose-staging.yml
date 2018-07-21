@@ -59,8 +59,8 @@ services:
         - conversationService
         - orderService
       volumes:
-        - './web/conf:/config/nginx/site-confs:ro'
-        - './web/certs:/config/etc/letsencrypt:rw'
+        - './docker/web/conf:/config/nginx/site-confs:ro'
+        - './docker/web/certs:/config/etc/letsencrypt:rw'
       environment:
         - EMAIL=n@natiziv.com
         - URL=natiziv.com

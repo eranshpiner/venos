@@ -11,12 +11,14 @@ docker volume rm $(docker volume ls --quiet --filter="dangling=true")
 echo  "-- start docker-compose --\n"
 echo "Deployment environment : $VENOS_ENV"
 
+chmod +x ./docker_runner.sh
+source ./docker_runner.sh
 #if [ "$VENOS_ENV" = "staging" ]
 #then 
 #  /usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose-staging.yml up -d
 #elif [ "$VENOS_ENV" = "production" ]
 #then 
-   /usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose-production.yml up -d
+#  /usr/local/bin/docker-compose -f /home/ec2-user/venos/docker-compose-production.yml up -d
 #else 
 #    echo  "Error. Deployment environment variable is not set! Deployment is stopped!"
 #    exit

@@ -10,7 +10,6 @@
         "currency",
         "orderItems",
         "orderOwner",
-        "orderPayment",
         "brandId",
         "brandLocationId"            
     ],

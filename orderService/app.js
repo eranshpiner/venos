@@ -31,6 +31,7 @@ dal.init();
 // this resource is a 'payment' form, which includes the 'orderId' as a hidden field. 
 app.get('/payment', (req, res) => {
     const order = validator.validateAndExtractJwt(req.query.jwt);
+    delete order.iat;
     
     if (order == null) {
         console.log("invalid jwt");
@@ -48,6 +49,13 @@ app.get('/payment', (req, res) => {
     
     try {
         
+        // the order is meant to include the identifiers of the brand to which the order 
+        // is supposed to be sent - for now, we explicitly assign it the identifiers of 
+        // "nini-hatchi" brand - e.g. the "Venos" indentifier for the restautrant (1001) 
+        // and the "BeeComm" identifier for the branch (58977cd2436ede4d0ebd7175) 
+        order.brandId = "vns1001";
+        order.brandLocationId = "58977cd2436ede4d0ebd7175";
+
         // create and save 'orderRecord' to get an 'orderId'
         var orderReq = dal.prepareOrderRecord(order);
         //console.log("orderReq=", orderReq.orderCommand);
@@ -123,7 +131,7 @@ app.post('/order', (req, res) => {
                 res.send({message: "error processing order"});
                 return;
             }
-            
+
             const order = format.orderRecordResultTranslator(result);
             
             // todo: need to valite these fields before setting them of the order

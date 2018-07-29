@@ -40,7 +40,7 @@ function cartButtonToElement() {
 }
 function moreButtonToElement(sliceStart, sliceEnd) {
   const element = {
-    text: 'עוד',
+    text: 'עוד...',
     image_url:"https://visualpharm.com/assets/482/Shopping%20Cart-595b40b65ba036ed117d241c.svg",
     clickData: {
       action: CONST.ACTIONS.MORE,

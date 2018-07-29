@@ -35,6 +35,7 @@ module.exports = {
     GET_MORE_INFO: 'get_more_info_on_item',
     MORE: 'more',
     APPROVE_PICKUP_TIME: 'pickup_approved',
-    ORDER_RECEIPT: 'order_receipt'
+    ORDER_RECEIPT: 'order_receipt',
+    FIX_ITEM_IN_CART: 'fix_item_in_order'
   }
 };

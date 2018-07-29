@@ -21,6 +21,7 @@ handlers[CONST.ACTIONS.ORDER_RECEIPT] = (message, userSession) => {
   };
 
   response.text = `תודה על הזמנתך. מספר הזמנה: ${message.orderContext.transactionId} `;
+  sessionManager.resetSession(userSession);
   message.responses.push(response);
   // let orderReceipt = {
   //   type: CONST.RESPONSE_TYPE.ORDER_RECEIPT
@@ -28,6 +29,7 @@ handlers[CONST.ACTIONS.ORDER_RECEIPT] = (message, userSession) => {
   //
   // };
   // message.responses.push(orderReceipt);
+
 }
 
 handlers[CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS] = (message, userSession) => {

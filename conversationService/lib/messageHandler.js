@@ -38,14 +38,14 @@ handlers[CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS] = (message, userSession) => {
 
   message.responses.push({
     type: CONST.RESPONSE_TYPE.TEXT,
-    text: `מיקום 🔥! אנחנו שולחים ל${address}!`
+    text: "מה מס בית ודירה או כניסה?"
   });
 
-  message.responses.push({
-    type: CONST.RESPONSE_TYPE.TEXT,
-    text: 'בחר קטגוריה',
-    replies: getCategories(menu.items, true),
-  });
+  // message.responses.push({
+  //   type: CONST.RESPONSE_TYPE.TEXT,
+  //   text: 'בחר קטגוריה',
+  //   replies: getCategories(menu.items, true),
+  // });
 
 };
 

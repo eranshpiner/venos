@@ -32,6 +32,7 @@ handlers[CONST.ACTIONS.ORDER_RECEIPT] = (message, userSession) => {
 
 handlers[CONST.ACTIONS.APPROVE_DELIVERY_ADDRESS] = (message, userSession) => {
   let response = {};
+  userSession.waitingForApartmentNumber = true;
 
   const address = message.actionData.address;
 
@@ -444,7 +445,7 @@ async function handle(message) {
         userSession.address += message.messageContent;
         message.responses.push({
           type: CONST.RESPONSE_TYPE.TEXT,
-          text: 'הייה קשה אבל הצלחנו\nבוא נתחיל, מה תרצה להזמין?',
+          text:'מצויין נשלח ל '+userSession.address+ '\n בוא נתחיל, תבחר מהקטגוריות',
           replies: getCategories(menu.items, true),
         });
 
@@ -613,8 +614,8 @@ function getCategories(items, onlyTopLevel = false, lang = 'he_IL', sliceStart, 
     }
 
   }
-  elements.push(generics.cartButtonToElement());
-  elements.push(generics.moreButtonToElement(sliceStart, sliceEnd));
+  elements.unshift(generics.cartButtonToElement());
+  elements.unshift(generics.moreButtonToElement(sliceStart, sliceEnd));
   return elements;
 }
 

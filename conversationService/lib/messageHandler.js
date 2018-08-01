@@ -590,7 +590,10 @@ function msToHMS( duration ) {
   minutes = (minutes < 10) ? "0" + minutes : minutes;
   seconds = (seconds < 10) ? "0" + seconds : seconds;
 
-  return hours + ":" + minutes;
+  var m = (((minutes + 7.5)/15 | 0) * 15) % 60;
+  var h = ((((minutes/105) + .5) | 0) + hours) % 24;
+
+  return h + ":" + m;
 }
 
 function getCategories(items, onlyTopLevel = false, lang = 'he_IL', sliceStart, sliceEnd) {

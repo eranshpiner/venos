@@ -335,7 +335,7 @@ handlers[CONST.ACTIONS.CHOOSE_DELIVERY_METHOD_PICKUP] = async (message, userSess
 
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text:   'תבחר מתי נוח לך לבוא לקחת \nתוכל לאסוף מסניף ' + branches[0].branchName,
+      text:   'תבחר מתי נוח לך לבוא לקחת \nתוכל לאסוף מסניף ' + branches[0].branchName + '\n אלה הזמנים הפנויים להיסוף. ',
       replies: [
         {
           type: CONST.REPLY_TYPE.TEXT,

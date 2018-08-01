@@ -22,13 +22,14 @@ function categoryToElement(item, itemId, lang) {
   if (item.image) {
     element.imageUrl = item.image.substring(2, item.image.length);
   }
+
   return element;
 }
 
 function cartButtonToElement() {
   const element = {
     text: 'עגלה',
-    image_url:"https://visualpharm.com/assets/482/Shopping%20Cart-595b40b65ba036ed117d241c.svg",
+    image_url:"www.visualpharm.com/assets/482/Shopping%20Cart-595b40b65ba036ed117d241c.svg",
     clickData: {
       action: CONST.ACTIONS.GET_CART,
       data: {
@@ -41,7 +42,7 @@ function cartButtonToElement() {
 function moreButtonToElement(sliceStart, sliceEnd) {
   const element = {
     text: 'עוד...',
-    image_url:"https://visualpharm.com/assets/482/Shopping%20Cart-595b40b65ba036ed117d241c.svg",
+    image_url:"www.visualpharm.com/assets/482/Shopping%20Cart-595b40b65ba036ed117d241c.svg",
     clickData: {
       action: CONST.ACTIONS.MORE,
       data: {
@@ -70,6 +71,8 @@ function itemToElement(item, itemId, lang, actions = []) {
   }
   if (item.image) {
     element.imageUrl = item.image.substring(2, item.image.length);
+  } else {
+    element.imageUrl = "https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png";
   }
   return element;
 }

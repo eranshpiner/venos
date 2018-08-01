@@ -590,8 +590,8 @@ function msToHMS( duration ) {
   minutes = (minutes < 10) ? "0" + minutes : minutes;
   seconds = (seconds < 10) ? "0" + seconds : seconds;
 
-  var m = (((minutes + 7.5)/15 | 0) * 15) % 60;
-  var h = ((((minutes/105) + .5) | 0) + hours) % 24;
+  var m = (parseInt((minutes + 7.5)/15) * 15) % 60;
+  var h = minutes > 52 ? (hours === 23 ? 0 : ++hours) : hours;
 
   return h + ":" + m;
 }

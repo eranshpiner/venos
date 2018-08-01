@@ -84,7 +84,7 @@ handlers[CONST.ACTIONS.CHOOSE_CATEGORY] = (message, userSession) => {
   } else {
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
-      text: `oh nooooo, category ${message.actionData.id} has no items.`,
+      text: ` אוי לא אין פריטים בקטגוריה${message.actionData.id} `,
       replies: getCategories(menu.items, true),
     });
   }
@@ -227,15 +227,15 @@ handlers[CONST.ACTIONS.REMOVE_FROM_CART] = (message, userSession) => {
   const cartItemIndex = userSession.cart.findIndex((item) => item.id === itemId);
   const cartItem = userSession.cart[cartItemIndex];
   if (cartItemIndex === -1) {
-    response.text = `Sorry, we couldn't find ${itemName} in your cart cart.`;
+    response.text = `סליחה לא מצאתי את  ${itemName} בעגלה `;
   } else {
     if (isReduceQuantity && cartItem.quantity > 1) {
       cartItem.quantity -= 1;
-      response.text = `hurray, item ${itemName} has been reduced to ${cartItem.quantity}.`;
+      response.text = `הסרתי את  ${itemName} בהורדתי את הכמות ל ${cartItem.quantity}.`;
       response.replies = getCategories(menu.items, true);
     } else {
       userSession.cart.splice(cartItemIndex, 1); // TODO normal remove
-      response.text = `hurray, item ${itemName} has been removed from cart.`;
+      response.text = `מחקתי את  ${itemName} מהעגלה .`;
       response.replies = getCategories(menu.items, true);
     }
   }
@@ -280,7 +280,7 @@ handlers[CONST.ACTIONS.EMPTY_CART] = (message, userSession) => {
   userSession.cart = [];
   message.responses.push({
     type: CONST.RESPONSE_TYPE.TEXT,
-    text: 'Your card has been emptied',
+    text: 'כל הפריטים בעגלה הוסרו',
     replies: getCategories(menu.items, true),
   });
 };
@@ -387,7 +387,7 @@ async function handle(message) {
     } else {
       message.responses.push({
         type: CONST.RESPONSE_TYPE.TEXT,
-        text: `I don't know this one, ${message.action}`
+        text: `לא מכיר את זה, ${message.action}`
       });
     }
   } else {

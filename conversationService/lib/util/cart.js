@@ -31,12 +31,14 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
       imageUrl: menuItem.image.substring(2, menuItem.image.length),
       actions: [
         {
-          text: 'הסר',
+          text: 'הסר / תקן / הוסף',
           clickData: {
-            action: CONST.ACTIONS.REMOVE_FROM_CART,
+            action: CONST.ACTIONS.CART_ITEM_OPTIONS,
             data: {
               id: cartItem.id,
-              name: menuItem.name
+              name: menuItem.name,
+              categoryId: cartItem.categoryId
+
             },
           },
         },

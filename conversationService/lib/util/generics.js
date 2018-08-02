@@ -89,7 +89,8 @@ function getItems(items, categoryId, lang = 'he_IL') {
           action: CONST.ACTIONS.ADD_TO_CART,
           data: {
             id: item.id,
-            categoryId: categoryId
+            categoryId: categoryId,
+            deletePreviouslyAddedItem: false
           },
         }
       }]));

@@ -108,12 +108,100 @@ handlers[CONST.ACTIONS.MORE] = (message, userSession) => {
 
 };
 
+handlers[CONST.ACTIONS.CART_ITEM_OPTIONS] = (message, userSession) => {
+  const itemId = message.actionData.id;
+ //const customizationItem = item.menuItem.CategoriesAdd[item.customizationItemPosition];
+  const categoryId = message.actionData.categoryId;
+  const menuItem = menu.items[categoryId].items.find((e) => e.id === itemId);
+
+
+
+    message.responses.push({
+    type: CONST.RESPONSE_TYPE.TEXT,
+    text: 'מה תרצה לשנות?',
+      replies: [{
+        text: 'לתקן',
+        clickData: {
+          action: CONST.ACTIONS.ADD_TO_CART,
+          data: {
+            id: itemId,
+            categoryId: categoryId,
+            deletePreviouslyAddedItem: true
+          },
+        },
+      },
+        {
+          text: 'להסיר',
+          clickData: {
+            action: CONST.ACTIONS.REMOVE_FROM_CART,
+            data: {
+              id: itemId,
+              categoryId: categoryId,
+              name: menuItem.name
+            },
+          },
+        },
+        {
+
+          text: '+',
+          clickData: {
+            action: CONST.ACTIONS.ADD_TO_CART,
+            data: {
+              id: itemId,
+              categoryId: categoryId,
+              deletePreviouslyAddedItem: false
+            },
+          },
+
+        },
+        {
+
+          text: 'חזרה',
+          type: CONST.REPLY_TYPE.TEXT,
+          clickData: {
+            //action: CONST.ACTIONS.CHOOSE_NOTES,
+            data: {
+              type: -1,
+            },
+          },
+
+        }
+      ],
+
+  });
+
+};
+
+
 handlers[CONST.ACTIONS.ADD_TO_CART] = (message, userSession) => {
   const itemId = message.actionData.id;
+  const deletePReviouslyAddedItem = message.actionData.deletePreviouslyAddedItem;
   const categoryId = message.actionData.categoryId;
   const menuItem = menu.items[categoryId].items.find((e) => e.id === itemId);
   const cart = userSession.cart = userSession.cart || [];
   const existingItem = cart.find((e) => e.id === itemId);
+
+  if(deletePReviouslyAddedItem === true){
+
+    const isReduceQuantity = false;
+    userSession.cart = userSession.cart || [];
+
+    const cartItemIndex = userSession.cart.findIndex((menuItem) => menuItem.id === itemId);
+    const cartItem = userSession.cart[cartItemIndex];
+    if (cartItemIndex === -1) {
+      //TODO normal logging
+
+    } else {
+      if (isReduceQuantity && cartItem.quantity > 1) {
+        cartItem.quantity -= 1;
+        //TODO normal logging
+      } else {
+        userSession.cart.splice(cartItemIndex, 1); // TODO normal remove
+        //TODO normal logging
+      }
+    }
+
+  }
 
   if (existingItem && !existingItem.hasCustomization) {
     existingItem.quantity += 1;

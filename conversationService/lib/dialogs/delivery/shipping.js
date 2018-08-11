@@ -15,11 +15,11 @@ module.exports = ({bot, provider, customer}) => {
     },
     (session, results, next) => {
       const context = session.userData;
-      if (!context.deliveryInfo.houseNumber) {
+      //if (!context.deliveryInfo.houseNumber) { // TODO
         session.beginDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.FLOOR_APT_ENT);
-      } else {
-        next();
-      }
+      //} else {
+      //  next();
+      //}
     },
     (session) => {
       const context = session.userData;

@@ -35,4 +35,5 @@ module.exports = {
   CART: {
     ROOT: '/cart',
   },
+  RESET: '/reset',
 };

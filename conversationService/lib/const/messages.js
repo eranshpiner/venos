@@ -162,5 +162,10 @@ module.exports = {
       text: `סה"כ ${items} פריטים על סך ${total}₪`,
       quickReplies: categories,
     }),
+  },
+  RESET: {
+    SUCCESSFULLY_RESET: () => ({
+      text: 'אין בעיה, בוא נתחיל מההתחלה.'
+    }),
   }
 };

@@ -16,6 +16,10 @@ class Bot {
 
     this.bot = new builder.UniversalBot(this.provider);
 
+    this.bot.beginDialogAction('reset', FLOW.RESET, {
+      matches: /reset|איפוס/,
+    });
+
     this.bot.beginDialogAction('moreCategories', FLOW.ORDER.CATEGORIES, {
       onSelectAction: (session, args, next) => {
         session.clearDialogStack();

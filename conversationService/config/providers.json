@@ -1,0 +1,8 @@
+{
+  "providers": {
+    "facebook": {
+      "appId": "162763734389729",
+      "verifyToken": "af5a72d5-c241-4472-b4ef-855b90165fd5"
+    }
+  }
+}

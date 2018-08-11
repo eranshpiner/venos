@@ -117,7 +117,7 @@ async function strToAddress(addressStr) {
     const response = await googleMapsClient.geocode({address: addressStr, components: { country: 'IL' }}).asPromise();
     return responseToAddresses(response.json.results);
   } catch (err) {
-    console.log(err);
+    log.error(err);
     return null;
   }
 }
@@ -127,7 +127,7 @@ async function placeToAddress(placeId) {
     const response = await googleMapsClient.reverseGeocode({place_id: placeId}).asPromise();
     return responseToAddresses(response.json.results);
   } catch (err) {
-    console.log(err);
+    log.error(err);
     return null;
   }
 }

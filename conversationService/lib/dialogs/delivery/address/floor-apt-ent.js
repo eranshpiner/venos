@@ -16,12 +16,13 @@ module.exports = ({bot, customer}) => {
       }
     },
     (session, results) => {
-      if (!results.response || !results.response.entity) {
+      if (!results.response) {
         // TODO: handle misscommunication
+        session.endDialog();
         return;
       }
       const context = session.userData;
-      context.deliveryInfo.houseNumber = results.response.entity; // TODO: split to houseNumber, floor, entrance
+      context.deliveryInfo.houseNumber = results.response; // TODO: split to houseNumber, floor, entrance
       session.endDialog();
     }
   ]);

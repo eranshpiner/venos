@@ -1,21 +1,44 @@
 const jwt = require('jsonwebtoken');
 
+const menuUtils = require('./menu');
+
 const CONST = require('./../const');
 
 const secret = 'this_is_the_secret';
 const PAYMENT_URL = (jwt) => `https://venos-stg.natiziv.com/payment?jwt=${jwt}`;
+const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 
-function getCartItems(cartItems, menuItems, lang = 'he_IL') {
-  return cartItems.map((cartItem) => {
-    const menuItem = menuItems[cartItem.categoryId].items.find((element) => element.id === cartItem.id);
+function addToCart({cart, customer, item, customizations, notes, categoryId, itemId}) {
+  cart.push({
+    id: Date.now(),
+    name: item.name,
+    itemId,
+    categoryId,
+    customizations,
+    notes,
+    price: item.price,
+    quantity: 1,
+  });
+}
+
+function getCartItems({customer, provider, context: { cart }}) {
+  return cart.map((cartItem) => {
+    const {itemId, categoryId, customizations} = cartItem;
+    const menuItem = menuUtils.getItem(customer, categoryId, itemId);
+
     const description = [];
     description.push(`${cartItem.quantity}x ₪${cartItem.price}`);
-    if (cartItem.customizations) {
-      Object.entries(cartItem.customizations).forEach(([catId, items]) => {
-        const catAdds = menuItem.CategoriesAdd.find(catAdds => catAdds.id.toString() === catId.toString());
+    let totalCustomizationsPrice = 0;
+    if (customizations) {
+      Object.entries(customizations).forEach(([custCatId, items]) => {
         items.forEach(item => {
-          const custItem = catAdds.itemsAdd.find(itemAdd => itemAdd.id === item);
-          description.push(custItem.name);
+          const custItem = menuUtils.getCustomizationsItem(customer, categoryId, itemId, custCatId, item);
+          if (custItem.price > 0) {
+            description.push(`${custItem.name} - בתוספת ₪${cartItem.price} `);
+            totalCustomizationsPrice += custItem.price;
+          } else {
+            description.push(custItem.name);
+          }
         });
       });
     }
@@ -25,25 +48,12 @@ function getCartItems(cartItems, menuItems, lang = 'he_IL') {
     if (!description.length) {
       description.push(menuItem.desc);
     }
-    return {
+    return provider.createListElement({
       title: menuItem.name,
-      description: description.join('\n'),
-      imageUrl: menuItem.image.substring(2, menuItem.image.length),
-      actions: [
-        {
-          text: 'הסר / תקן / הוסף',
-          clickData: {
-            action: CONST.ACTIONS.CART_ITEM_OPTIONS,
-            data: {
-              id: cartItem.id,
-              name: menuItem.name,
-              categoryId: cartItem.categoryId
-
-            },
-          },
-        },
-      ],
-    }
+      subtitle: description.join('\n'),
+      image_url: menuItem.image !== '' ? menuItem.image.substring(2) : NO_IMAGE,
+      buttons: [provider.createButton('ערוך', `action?editItem?${cartItem.id}`)],
+    });
   });
 }
 
@@ -72,23 +82,42 @@ function getReceipt(cart = []) {
   };
 }
 
-function getCartTotal(cart = []) {
-  return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+function getCartTotal({cart = [], customer}) {
+  return cart.reduce((total, item) => {
+    let sum = total + (item.price * item.quantity);
+    Object.entries(item.customizations).forEach(([custCat, custItems]) => {
+      custItems.forEach(custItemId => {
+        const customizationItem = menuUtils.getCustomizationsItem(customer, item.categoryId, item.itemId, custCat, custItemId);
+        if (customizationItem && customizationItem.price > 0) {
+          sum += customizationItem.price;
+        }
+      });
+    });
+    return sum;
+  }, 0);
 }
 
-function getPaymentURL(userSession) {
-  const cart = userSession.cart || [];
-
-  let total = 0;
+function getPaymentURL({customer, provider, context: {cart = [], deliveryInfo = {}, userDetails = {}}}) {
+  const total = getCartTotal({cart, customer});
   const orderItems = cart.map(item => {
-    const price = item.price * item.quantity;
-    total += price;
+    const {categoryId, itemId} = item;
+    let price = item.price;
+    if (item.customizations) {
+      Object.entries(item.customizations).forEach(([custCatId, items]) => {
+        items.forEach(item => {
+          const custItem = menuUtils.getCustomizationsItem(customer, categoryId, itemId, custCatId, item);
+          if (custItem.price > 0) {
+            price += custItem.price;
+          }
+        });
+      });
+    }
     return {
-      itemId: item.id.toString(),
+      itemId: item.itemId.toString(),
       itemName: item.name,
       quantity: item.quantity,
       unitPrice: item.price,
-      price,
+      price: price * item.quantity,
     }
   });
 
@@ -99,17 +128,11 @@ function getPaymentURL(userSession) {
     brandLocationId: 'kfar-vitkin',
     remarks: '',
     orderOwner: {
-      firstName: 'joe',
-      lastName: 'doe',
-      phone: '123-456-678',
-      email: 'tzuvys@gmail.com',
-      deliveryInfo: {
-        city: 'new-york',
-        street: 'pizza',
-        houseNumber: '45a',
-        apartment: '23',
-        floor: 3
-      },
+      firstName: userDetails.first_name,
+      lastName: userDetails.last_name,
+      phone: userDetails.phone,
+      email: userDetails.email,
+      deliveryInfo,
     },
     orderItems: orderItems,
     orderPayment: {
@@ -122,9 +145,9 @@ function getPaymentURL(userSession) {
       creditCardHolderId: '343545645454',
     },
     conversationContext: {
-      userSessionId: userSession.id,
-      conversationProvider: 'facebook',
-      customerId: userSession.customerId
+      userSessionId: userDetails.id,
+      conversationProvider: provider.name,
+      customerId: customer.id,
     }
   };
 
@@ -133,6 +156,8 @@ function getPaymentURL(userSession) {
 }
 
 module.exports = {
+  addToCart,
+
   getCartItems,
   getCartTotal,
   getPaymentURL,

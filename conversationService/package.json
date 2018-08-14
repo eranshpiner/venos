@@ -11,10 +11,17 @@
     "@google/maps": "^0.4.6",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
+    "botbuilder": "^3.15.0",
+    "botly": "^1.6.1",
     "express": "4.16.0",
+    "glob": "^7.1.2",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",
+    "nconf": "^0.10.0",
+    "pino": "^5.0.1",
+    "pino-pretty": "^2.0.1",
     "request": "^2.87.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "verror": "^1.10.0"
   }
 }

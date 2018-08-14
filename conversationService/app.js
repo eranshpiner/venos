@@ -1,26 +1,22 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const app = express().use(bodyParser.json());
 const path = require('path');
+const log = require('./lib/util/log')('App');
 
-const providers = module.exports.providers = require('./lib/providers');
-console.log("Starting...");
+const conf = require('./config/conf');
+const customers = require('./lib/customers/customers');
+const providers = require('./lib/providers');
 
-//remove technology exposure
-app.use(function (req, res, next) {
-    res.removeHeader("X-Powered-By");
-    next();
-});
+const app = express();
+app
+  .set('port', process.env.PORT || conf.get('server:port'))
+  .disable('x-powered-by')
+  .use(bodyParser.json())
+  .use('/static', express.static(path.join(__dirname, 'public')));
 
-//short term to serve static files
-app.use('/static',express.static(path.join(__dirname, 'public')));
-
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
 
 Object.keys(providers).forEach(provider => {
-    app.use('/providers', providers[provider].router);
+  app.use(`/providers/${provider}`, providers[provider].router(customers));
 });
 
 //app
@@ -40,6 +36,4 @@ app.post('/notification/order', (req, res) => {
   res.json({});
 });
 
-app.listen(8080, () => {
-    console.log('Example app listening on port 8080!');
-});
+app.listen(app.get('port'), () => log.info(`[App] Listening on port ${app.get('port')}`));

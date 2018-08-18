@@ -1,10 +1,9 @@
 const jwt = require('jsonwebtoken');
 
 const menuUtils = require('./menu');
+const conf = require('./../../config/conf');
 
-const CONST = require('./../const');
-
-const secret = 'this_is_the_secret';
+const secret = conf.get('server:jwt:secret');
 const PAYMENT_URL = (jwt) => `https://venos-stg.natiziv.com/payment?jwt=${jwt}`;
 const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const log = require('./lib/util/log')('App');
 
 const conf = require('./config/conf');
@@ -24,16 +25,16 @@ Object.keys(providers).forEach(provider => {
 app.post('/notification/order', (req, res) => {
 
   const jwtToken = req.body.jwt;
-  const result = jwt.verify(jwtToken, secret);
-  const message = new Message(Date.now());
-  message.provider = result.conversationContext.conversationProvider;
-  message.customerId = result.conversationContext.customerId;//'378370189311177';//
-  message.userDetails = {};
-  message.userDetails.id = result.conversationContext.userSessionId;//'1629198287117755'//
-  message.orderContext = result.orderContext || {};
-  message.action = CONST.ACTIONS.ORDER_RECEIPT;
-  messageHandler.handle(message);
-  res.json({});
+  const orderDetails = jwt.verify(jwtToken, conf.get('server:jwt:secret'));
+
+  const bot = customers[orderDetails.conversationContext.customerId];
+  if (!bot) {
+    res.status(404).json({error: { message: 'customerId not found' }});
+    return;
+  }
+
+  bot.provider.externalAction(orderDetails.conversationContext.userSessionId, 'successfulOrder', orderDetails.orderContext);
+  res.status(200).json({});
 });
 
 app.listen(app.get('port'), () => log.info(`[App] Listening on port ${app.get('port')}`));

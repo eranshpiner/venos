@@ -53,6 +53,7 @@ class Bot {
     });
 
     this.bot.beginDialogAction('cart', FLOW.CART.ROOT);
+    this.bot.beginDialogAction('checkoutResult', FLOW.CHECKOUT.RESULT.ROOT);
 
     this.bot.dialog(FLOW.BASE, [
       (session) => {

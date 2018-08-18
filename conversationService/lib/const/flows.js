@@ -35,5 +35,12 @@ module.exports = {
   CART: {
     ROOT: '/cart',
   },
+  CHECKOUT: {
+    RESULT: {
+      ROOT: '/checkout/result',
+      SUCCESS: '/orderResult/success',
+      ERROR: '/orderResult/error',
+    },
+  },
   RESET: '/reset',
 };

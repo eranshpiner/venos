@@ -127,7 +127,7 @@ class FacebookProvider {
     });
   }
 
-  externalAction(sender, action) {
+  externalAction(sender, action, attachment) {
     const msg = new BotBuilderMessage()
       .address({
         channelId: 'facebook',
@@ -137,6 +137,9 @@ class FacebookProvider {
       })
       .timestamp()
       .text(action);
+    if (attachment) {
+      msg.addAttachment(attachment);
+    }
     this.handler(msg.toMessage());
   }
 

@@ -124,15 +124,21 @@ function getPaymentURL({customer, provider, context: {cart = [], deliveryInfo = 
   const payload = {
     total,
     currency: 'nis',
-    brandId: 'shabtai',
-    brandLocationId: 'kfar-vitkin',
+    brandId: customer.id + "", // TODO: shpiner why is this not a number?
+    brandLocationId: customer.branches[0].branchAddress, // TODO: ?
     remarks: '',
     orderOwner: {
       firstName: userDetails.first_name,
       lastName: userDetails.last_name,
-      phone: userDetails.phone,
-      email: userDetails.email,
-      deliveryInfo,
+      phone: userDetails.phone || '052-TOD0000', // TODO: should be collected on checkout page
+      email: userDetails.email || 'noemail@mail.com', // TODO: should be collected on checkout page
+      deliveryInfo: {
+        city: deliveryInfo.city,
+        street: deliveryInfo.street,
+        houseNumber: deliveryInfo.houseNumber || 'N/A',
+        apartment: deliveryInfo.apartment || 'N/A',
+        floor: deliveryInfo.floor || 0,
+      },
     },
     orderItems: orderItems,
     orderPayment: {
@@ -148,7 +154,7 @@ function getPaymentURL({customer, provider, context: {cart = [], deliveryInfo = 
       userSessionId: userDetails.id,
       conversationProvider: provider.name,
       customerId: customer.id,
-    }
+    },
   };
 
   const jwtToken = jwt.sign(JSON.stringify(payload), secret);

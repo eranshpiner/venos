@@ -1,4 +1,7 @@
-CREATE DATABASE IF NOT EXISTS venos;
+CREATE DATABASE IF NOT EXISTS venos
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
 USE venos;
 
 CREATE TABLE IF NOT EXISTS `ORDER` (
@@ -70,5 +73,8 @@ CREATE TABLE IF NOT EXISTS `LOG` (
  CONSTRAINT `orderId` FOREIGN KEY (`orderId`) REFERENCES `ORDER` (`orderId`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+insert into venos.brandToPosvendor values ('ניני חאצ׳י','תל-אביב','beecomm','123456');
 insert into venos.brandToPosvendor values ('shabtai','kfar-vitkin','beecomm','shab_kfar-vit_1');
+
+
 

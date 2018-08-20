@@ -62,6 +62,7 @@ var orderRecordResultTranslator = (result) => {
  * @param {*} order 
  */
 var orderRecordBuilder = (order) => {
+    console.log('house number=%s',order.orderOwner.deliveryInfo.houseNumber)
     console.log('start orderRecordBuilder...');
     var orderRecord = {
         orderId      : uuid(),

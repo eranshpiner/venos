@@ -41,9 +41,9 @@ app.get('/payment', (req, res) => {
     }
     
     if (!validator.validateInternalOrder(order)) {
-        console.log("invalid order");
+        console.log("invalid order ");
         res.status(400);
-        res.send({message: "invalid order"});
+        res.send({message: "invalid order "});
         return;
     };
     

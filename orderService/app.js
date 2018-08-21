@@ -62,10 +62,12 @@ app.get('/payment', (req, res) => {
         dal.commandWithTransaction(orderReq.commands, (error, result) => {
             
             if (error) {
+                console.log('db error in order creation !')
+                console.log("an error occurred while creating an 'orderRecord'... the error is: %s", error);
                 throw error;
             }
             const orderId = orderReq.orderId;
-            console.log(`an 'orderRecord' for order ${orderId} was saved to db... result is: ${result}`);
+            console.log(` 'orderRecord' for order ${orderId} was saved to db successfully ...`);
             
             if (order.conversationContext != null) {
                 orderToConversionContext.set(orderId, order.conversationContext)
@@ -74,20 +76,16 @@ app.get('/payment', (req, res) => {
             // todo: repond with a payment form - including the 'orderId' as a hidden field 
             res.status(200);
             res.render('tempPayment', {orderId});
-            return;
-            
+            return; 
         });  
     } 
     catch (error) {
-        
-        console.log("an error occurred while creating an 'orderRecord'... error is: %s", error);
         console.log("failed to create an 'orderRecord' in db for order %s...", order);
-        
+        console.log("an error occurred while creating an 'orderRecord'... error is: %s", error);
         // todo: what should we return here... ?
         res.status(500);
         res.send({message: "error processing order"});
     }
-    
 });
 
 // this is the POST 'order' resource which is meant be called from the consumer client side, 
@@ -108,14 +106,16 @@ app.post('/order', (req, res) => {
     try {
         
         // todo: need a join query to retrieve both the order and the orderItems
-        const sqlQueryString_getOrderByOrderId = "SELECT * FROM venos.ORDER INNER JOIN venos.ORDERITEMS ON ORDER.orderId=ORDERITEMS.orderId WHERE ORDER.orderId=?";
+        const sqlQueryString_getOrderByOrderId = 
+        "SELECT * FROM venos.ORDER INNER JOIN venos.ORDERITEMS ON ORDER.orderId=ORDERITEMS.orderId WHERE ORDER.orderId=?";
         
         // use the 'orderId' to retrieve the 'orderRecord' from the db
         dal.queryWithParams(sqlQueryString_getOrderByOrderId, [orderId], (error, result) => {
             
             if (error) {
-                console.log("an error occurred while retrieving an 'orderRecord'... error is: %s", error);
+
                 console.log("failed to retrieve an 'orderRecord' from db for orderId %s...", orderId);
+                console.log("an error occurred while retrieving an 'orderRecord'... error is: %s", error);  
                 
                 // todo: what should we return here... ?
                 res.status(500);
@@ -134,22 +134,15 @@ app.post('/order', (req, res) => {
 
             const order = format.orderRecordResultTranslator(result);
             
-            // todo: need to valite these fields before setting them of the order
-            const creditCardType = req.body.creditCardType;
-            const creditCardNumber = req.body.creditCardNumber;
-            const creditCardExp = req.body.creditCardExp;
-            const creditCardHolderId = req.body.creditCardHolderId;
-            const creditCardCvv = req.body.creditCardCvv;
-            
+            // todo: need to valite these fields before setting them of the order    
             order.orderPayment = {
-                paymentName: creditCardType,    
+                paymentName: req.body.creditCardType,    
                 paymentType: 1,
                 paymentSum: order.total,
-                creditCard: creditCardNumber,
-                creditCardExp: creditCardExp,
-                creditCardCvv: creditCardCvv,
-                creditCardHolderId: creditCardHolderId,
-                
+                creditCard: req.body.creditCardNumber,
+                creditCardExp: req.body.creditCardExp,
+                creditCardCvv: req.body.creditCardCvv,
+                creditCardHolderId: req.body.creditCardHolderId,
             }
             
             // call pos provider
@@ -240,21 +233,17 @@ app.post('/order', (req, res) => {
                                 throw error;
                             }
                             
-                            console.log("an 'orderLog' was saved in db");
+                            console.log("'orderLog' was saved in db successfully ....");
                         });
-                    });
-                    
+                    }); 
                 }
-                
             });
             
         });  
         
     } 
     catch (error) {
-        
-        console.log("an error occurred while retrieving an 'orderRecord'... error is: %s", error);
-        console.log("failed to retrieve an 'orderRecord' from db for orderId %s...", orderId);
+        console.log("an error occurred while processing order log : %s, for orderId : %s", error, orderId);
         
         // todo: what should we return here... ?
         res.status(500);

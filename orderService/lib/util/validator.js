@@ -3,10 +3,10 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const secret = "this_is_the_secret";
 
-const orderSchema = require('./../schema/order.json');
-const orderItemsSchema = require('./../schema/orderItems.json');
-const orderOwnerSchema = require('./../schema/orderOwner.json');
-const orderPaymentSchema = require('./../schema/orderPayment.json');
+const orderSchema = require('../../schema/order.json');
+const orderItemsSchema = require('../../schema/orderItems.json');
+const orderOwnerSchema = require('../../schema/orderOwner.json');
+const orderPaymentSchema = require('../../schema/orderPayment.json');
 
 const Validator = require('jsonschema').Validator;
 const v = new Validator();

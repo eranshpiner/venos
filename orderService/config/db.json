@@ -1,0 +1,8 @@
+{
+  "db": {
+    "host": "venosdbservice",
+    "database": "venos",
+    "user": "root",
+    "password": "admin123"
+  }
+}

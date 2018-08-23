@@ -68,14 +68,14 @@ const fs = require('fs');
 //just safe json into disk
 fs.writeFileSync('./order.json', JSON.stringify(order,undefined,2));
 
-const format = require('../../dal/sqlFormatter');
-const dal = require ('../../dal/dbfacade');
+const format = require('../../lib/dal/sqlFormatter');
+const dal = require ('../../lib/dal/dbfacade');
 
-var orderRecord = format.orderRecordBuilder(order);
+const orderRecord = format.orderRecordBuilder(order);
 //console.log('order is formatted: ' ,orderRecord);
 
 //console.log('sql:', JSON.stringify (orderRecord));
-var orderItems = format.orderItemsBuilder(orderRecord.orderId, order);
+const orderItems = format.orderItemsBuilder(orderRecord.orderId, order);
 //console.log('orderItems:', JSON.stringify (orderItems[0]));
 //console.log('###orderItems.length=', orderItems.length);
 
@@ -119,17 +119,18 @@ for (i=0; i < orderItems.length; i++){
     //})
 
 //read all orders 
-dal.query('SELECT COUNT(*) FROM venos.ORDER',(result)=> {
+dal.query('SELECT COUNT(*) FROM venos.ORDER').then((result)=> {
     console.log('result=',JSON.stringify(result,undefined,2));
 });
 //query with parameters
-dal.queryWithParams('SELECT * from venos.ORDER WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'], (result)=>{
+dal.queryWithParams('SELECT * from venos.ORDER WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8']).then((result)=>{
     console.log('result=', JSON.stringify(result,undefined,2));
-})
+});
 
-dal.queryWithParams('SELECT * from venos.ORDERITEMS WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'], (result)=>{
+dal.queryWithParams('SELECT * from venos.ORDERITEMS WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'])
+  .then((result)=>{
     console.log('result=', JSON.stringify(result,undefined,2));
-})
+});
 
 
 

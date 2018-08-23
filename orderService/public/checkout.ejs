@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Payment card checkout</title>
+    <title>ביצוע הזמנה</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
     <style>
@@ -13,6 +13,7 @@
     </style>
     <!-- CSS Files -->
     <!--<link href="../css/bootstrap.min.css" rel="stylesheet"/>-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     <link href="../css/bulma.min.css" rel="stylesheet"/>
 
     <!--   Core JS Files   -->
@@ -24,25 +25,46 @@
     <h3 class="subtitle has-text-centered has-text-white" style="margin-bottom: 0.2rem">ביצוע הזמנה</h3>
     <div class="box" style="min-height: 93vh;">
         <section class="section">
-            <h3 class="subtitle"><strong>פרטי משלוח</strong></h3>
-            <div class="columns">
-                <div class="column is-half">
+            <h3 class="subtitle"><strong>פרטי המזמין</strong></h3>
+            <div class="field">
+                <label class="label">כתובת דוא"ל</label>
+                <div class="control">
+                    <input name="address" class="input" type="text" placeholder="">
+                </div>
+            </div>
             <div class="field">
                 <label class="label">שם פרטי</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="">
+                    <input name="firstName" class="input" type="text" placeholder="">
                 </div>
-            </div></div>
-                <div class=" column">
+            </div>
             <div class="field">
                 <label class="label">שם משפחה</label>
                 <div class="control">
-                    <input class="input" type="text" placeholder="">
+                    <input name="lastName" class="input" type="text" placeholder="">
                 </div>
-            </div></div>
+            </div>
+            <div class="field">
+                <label class="label">כתובת</label>
+                <div class="control">
+                    <input name="fullAddress" class="input" type="text" placeholder="">
+                </div>
             </div>
         </section>
-        <button class="button is-fullwidth is-primary">בצע הזמנה</button>
+        <section>
+            <h3 class="subtitle"><strong>תשלום</strong></h3>
+            <div class="field">
+                <label class="label">מספר כרטיס</label>
+                <p class="control has-icons-right">
+                    <span class="icon is-small is-right"><i class="fas fa-credit-card"></i></span>
+                    <input name="creditCard" class="input" type="tel" placeholder="" pattern="\d*">
+                </p>
+            </div>
+        </section>
+        <section>
+            <h3 class="subtitle"><strong>סיכום פרטי ההזמנה</strong></h3>
+        </section>
+        <button class="button is-fullwidth is-primary" style="background-color: #ff5e00">בצע הזמנה</button>
     </div>
 </div>
 </body>

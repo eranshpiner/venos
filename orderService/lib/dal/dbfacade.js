@@ -189,10 +189,10 @@ function selectOrderDetails(orderId) {
 function close() {
   db.end((error) => {
     db.destroy();
+    log.info('Connection to db is closed....');
     //TODO - end doesn't work for some reason. investigatr it
     //throw new Error('Failed close connection to DB : ', err);
   });
-  log.info('Connection to db is closed....');
 }
 
 module.exports = {

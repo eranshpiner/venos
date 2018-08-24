@@ -17,10 +17,10 @@ var db;
 
 var init = () => {
         db = mysql.createConnection({
-        host : 'venosdbservice',
+        host : '127.0.0.1',
         database : 'venos',
         user : 'root',
-        password : 'admin123'
+        password : 'bokerTov1!'
     });
 }
 

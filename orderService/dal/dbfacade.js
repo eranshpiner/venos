@@ -160,7 +160,7 @@ var prepareOrderLog = (order,submitOrderOutput, callback) => {
     var pos;
     console.log('brandId=%s',order.brandId)
     console.log('brandLocationId=%s',order.brandLocationId)
-    queryWithParams('SELECT posId, posVendorId FROM venos.brandToPosvendor WHERE brandId=? AND brandLocationId=?',
+    queryWithParams('SELECT posId, posVendorId FROM venos.POS WHERE brandId=? AND brandLocationId=?',
     [order.brandId,order.brandLocationId],(error, result) => {
         
         if (error) {

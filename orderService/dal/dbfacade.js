@@ -17,9 +17,9 @@ var db;
 
 var init = () => {
         db = mysql.createConnection({
-        host : '127.0.0.1',
-        database : 'venos',
-        user : 'root',
+        host : 'venosdb.c5hcdvwwmarq.eu-central-1.rds.amazonaws.com',
+        database : 'venosdb',
+        user : 'dbadmin',
         password : 'bokerTov1!'
     });
 }

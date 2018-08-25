@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS venosdb
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
-USE venos;
+USE venosdb;
 
 CREATE TABLE IF NOT EXISTS `ORDER` (
   `orderId` varchar(64) NOT NULL COMMENT 'Order id',

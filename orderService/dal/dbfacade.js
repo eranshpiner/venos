@@ -130,7 +130,7 @@ var prepareOrderRecord = (order) => {
     commandForTransaction.orderId = orderRecord.orderId;
 
     var orderCommand = {
-        query:`INSERT INTO ORDER SET ?`,
+        query:'INSERT INTO `ORDER` SET ?',
         parameters:orderRecord
     }
     commandForTransaction.push(orderCommand);

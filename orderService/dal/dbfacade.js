@@ -17,12 +17,12 @@ var db;
 
 var init = () => {
     db = mysql.createConnection({
-    host : 'venosdb.c5hcdvwwmarq.eu-central-1.rds.amazonaws.com',
+    host     : 'venosdb.c5hcdvwwmarq.eu-central-1.rds.amazonaws.com',
     database : 'venosdb',
-    user : 'dbadmin',
+    user     : 'dbadmin',
     password : 'bokerTov1!'
-});
-
+    });
+}
 
 /**
  * Simple not parametrized query
@@ -130,7 +130,7 @@ var prepareOrderRecord = (order) => {
     commandForTransaction.orderId = orderRecord.orderId;
 
     var orderCommand = {
-        query:'INSERT INTO `ORDER` SET ?',
+        query:'INSERT INTO ORDER SET ?',
         parameters:orderRecord
     }
     commandForTransaction.push(orderCommand);
@@ -247,11 +247,4 @@ module.exports =
     close
 }
              
-
-
-
-
-
-
-
 

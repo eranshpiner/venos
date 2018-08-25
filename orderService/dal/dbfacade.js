@@ -16,12 +16,21 @@ var db;
 //TODO - replace hardcoded parameters by properties/yaml files
 
 var init = () => {
+<<<<<<< HEAD
     db = mysql.createConnection({
     host : 'venosdb.c5hcdvwwmarq.eu-central-1.rds.amazonaws.com',
     database : 'venosdb',
     user : 'dbadmin',
     password : 'bokerTov1!'
 });
+=======
+        db = mysql.createConnection({
+        host : 'venosdb.c5hcdvwwmarq.eu-central-1.rds.amazonaws.com',
+        database : 'venosdb',
+        user : 'dbadmin',
+        password : 'bokerTov1!'
+    });
+>>>>>>> 3954bdbeeaa5ba88c8d6cf467de625b6ea114263
 }
 
 /**

@@ -16,12 +16,12 @@ var db;
 //TODO - replace hardcoded parameters by properties/yaml files
 
 var init = () => {
-        db = mysql.createConnection({
-        host : 'venosdbservice',
-        database : 'venos',
-        user : 'root',
-        password : 'admin123'
-    });
+    db = mysql.createConnection({
+    host : 'venosdb.c5hcdvwwmarq.eu-central-1.rds.amazonaws.com',
+    database : 'venosdb',
+    user : 'dbadmin',
+    password : 'bokerTov1!'
+});
 }
 
 /**
@@ -130,14 +130,14 @@ var prepareOrderRecord = (order) => {
     commandForTransaction.orderId = orderRecord.orderId;
 
     var orderCommand = {
-        query:'INSERT INTO venos.ORDER SET ?',
+        query:'INSERT INTO `ORDER` SET ?',
         parameters:orderRecord
     }
     commandForTransaction.push(orderCommand);
 
     for (i=0; i < orderItems.length; i++){
         var orderItem = {
-            query:'INSERT INTO venos.ORDERITEMS SET ?',
+            query:'INSERT INTO ORDERITEMS SET ?',
             parameters:orderItems[i]
         } 
         commandForTransaction.push(orderItem);
@@ -160,7 +160,7 @@ var prepareOrderLog = (order,submitOrderOutput, callback) => {
     var pos;
     console.log('brandId=%s',order.brandId)
     console.log('brandLocationId=%s',order.brandLocationId)
-    queryWithParams('SELECT posId, posVendorId FROM venos.POS WHERE brandId=? AND brandLocationId=?',
+    queryWithParams('SELECT posId, posVendorId FROM POS WHERE brandId=? AND brandLocationId=?',
     [order.brandId,order.brandLocationId],(error, result) => {
         
         if (error) {
@@ -177,7 +177,7 @@ var prepareOrderLog = (order,submitOrderOutput, callback) => {
         var orderLog = format.orderLogBuilder(order, submitOrderOutput, pos);
     
         var orderLogCommand = {
-            query: 'INSERT INTO venos.ORDERLOG SET ? ',
+            query: 'INSERT INTO ORDERLOG SET ? ',
             parameters: orderLog
         }
         commandForTransaction.push(orderLogCommand);
@@ -198,7 +198,7 @@ var prepareLog = (order,orderLog,error,result) => {
     var commandForTransaction=[];
     var log = format.logBuilder(order,orderLog, error,result);
     var logCommand = {
-        query : 'INSERT INTO venos.LOG SET ? ',
+        query : 'INSERT INTO LOG SET ? ',
         parameters : log
     }
     commandForTransaction.push(logCommand);
@@ -213,7 +213,7 @@ var selectOrderDetails = (orderId) => {
 
     var logCommand = {
         query : 
-        `SELECT * FROM venos.ORDER INNER JOIN venos.ORDERITEMS ON ORDER.orderId=ORDERITEMS.orderId
+        `SELECT * FROM ORDER INNER JOIN ORDERITEMS ON ORDER.orderId=ORDERITEMS.orderId
         WHERE ORDER.orderId=?`,
         parameters : orderId
     }

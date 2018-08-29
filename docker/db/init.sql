@@ -1,5 +1,8 @@
-CREATE DATABASE IF NOT EXISTS venos;
-USE venos;
+CREATE DATABASE IF NOT EXISTS venosdb
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
+USE venosdb;
 
 CREATE TABLE IF NOT EXISTS `ORDER` (
   `orderId` varchar(64) NOT NULL COMMENT 'Order id',
@@ -14,15 +17,15 @@ CREATE TABLE IF NOT EXISTS `ORDER` (
   `email` varchar(50) DEFAULT NULL,
   `city` varchar(50) NOT NULL,
   `street` varchar(50) NOT NULL,
-  `houseNumber` varchar(10) NOT NULL,
-  `apartment` varchar(10) DEFAULT NULL,
+  `houseNumber` varchar(100) NOT NULL,
+  `apartment` varchar(100) DEFAULT NULL,
   `floor` int(11) DEFAULT NULL,
   `company` varchar(60) DEFAULT NULL,
   `remarks` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`orderId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
- CREATE TABLE IF NOT EXISTS `brandToPosvendor` (
+ CREATE TABLE IF NOT EXISTS `POS` (
   `brandId` varchar(45) NOT NULL,
   `brandLocationId` varchar(45) NOT NULL,
   `posVendorId` varchar(45) NOT NULL,
@@ -70,5 +73,9 @@ CREATE TABLE IF NOT EXISTS `LOG` (
  CONSTRAINT `orderId` FOREIGN KEY (`orderId`) REFERENCES `ORDER` (`orderId`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into venos.brandToPosvendor values ('shabtai','kfar-vitkin','beecomm','shab_kfar-vit_1');
+insert into venos.POS values ('vns1001','58977cd2436ede4d0ebd7175','beecomm','beecomm-nini');
+insert into venos.POS values ('ניני חאצ׳י','תל-אביב','beecomm','123456');
+insert into venos.POS values ('shabtai','kfar-vitkin','beecomm','shab_kfar-vit_1');
+
+
 

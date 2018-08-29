@@ -1,24 +1,24 @@
 version: '3.3'
 
 services:
-  database:
-    build: ./docker/db
-    container_name: venosdbservice
-    image: venos/mysql:1.0.0
-    ports:
-      - '6000:3306'
-    volumes:
-      - dbdata:/var/lib/mysql
-    restart: always
-    command: mysqld --init-file="/usr/src/db/config/init.sql"
-    environment:
-      MYSQL_ROOT_PASSWORD: 'admin123'
-      MYSQL_DATABASE: 'venos'
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 256M
+#  database:
+#    build: ./docker/db
+#    container_name: venosdbservice
+#    image: venos/mysql:1.0.0
+#    ports:
+#      - '6000:3306'
+#    volumes:
+#      - dbdata:/var/lib/mysql
+#    restart: always
+#    command: mysqld --init-file="/usr/src/db/config/init.sql"
+#    environment:
+#      MYSQL_ROOT_PASSWORD: 'admin123'
+#      MYSQL_DATABASE: 'venos'
+#    deploy:
+#      resources:
+#        limits:
+#        cpus: '0.50'
+#        memory: 256M
 
   orderService:
     build: ./orderService
@@ -27,8 +27,8 @@ services:
     image: venos/orderservice:1.0.0
     ports:
       - '3000:3000'   
-    links:
-      - database      
+    #links:
+    #  - database      
     deploy:
       resources:
         limits:
@@ -67,5 +67,5 @@ services:
         - SUBDOMAINS=venos-stg
         - ONLY_SUBDOMAINS=true
         - VALIDATION=http
-volumes:
-  dbdata:
+#volumes:
+  #dbdata:

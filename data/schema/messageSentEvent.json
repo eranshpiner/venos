@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "eventName": {
+        "type": "string"
+      },
+      "provider": {
+        "type": "string"
+      },
+      "side": {
+        "type": "string"
+      },
+      "accountId": {
+        "type": "string"
+      },
+      "consumerId": {
+        "type": "string"
+      },
+      "conversatonId": {
+        "type": "string"
+      },
+      "messageId": {
+        "type": "integer"
+      },
+      "timestamp": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "eventName",
+      "provider",
+      "side",
+      "accountId",
+      "consumerId",
+      "conversatonId",
+      "messageId",
+      "timestamp",
+      "text"
+    ]
+  }

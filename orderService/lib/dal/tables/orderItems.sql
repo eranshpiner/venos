@@ -1,5 +1,5 @@
-CREATE TABLE `orderItems` (
-  `itemId` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `ORDERITEMS` (
+  `itemId` varchar(30) NOT NULL,
   `itemName` varchar(150) NOT NULL,
   `quantity` int(11) NOT NULL,
   `price` double NOT NULL,
@@ -8,5 +8,5 @@ CREATE TABLE `orderItems` (
   `remarks` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`itemId`,`itemName`,`orderId`),
   KEY `order_id_fk_idx` (`orderId`),
-  CONSTRAINT `order_items_fk` FOREIGN KEY (`orderId`) REFERENCES `order` (`orderId`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `order_items_fk` FOREIGN KEY (`orderId`) REFERENCES `ORDER` (`orderId`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

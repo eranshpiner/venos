@@ -29,4 +29,9 @@ module.exports = {
     status: 500,
     internalCode: 6,
   },
+  INVALID_PAYMENT_DETAILS: {
+    message: 'invalid payment details',
+    status: 400,
+    internalCode: 7,
+  }
 };

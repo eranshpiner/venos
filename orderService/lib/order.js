@@ -1,22 +1,20 @@
 const axios = require('axios');
 
 const beecomm = require('./providers/beecomm/beecomm');
+const mailer = require('./util/mailer');
+const conf = require('./../config/conf');
 const errors = require('./errors/errors');
 const OrderError = require('./errors/OrderError');
-const dal = require('./dal/dbfacade');
+const db = require('./model');
 const validator = require('./util/validator');
-const format = require('./dal/sqlFormatter');
+const format = require('./util/format');
 const log = require('./util/log')('OrderAPI');
 
-const QUERIES = {
-  GET_ORDER_BY_ID: 'SELECT * FROM venos.ORDER INNER JOIN venos.ORDERITEMS ON ORDER.orderId=ORDERITEMS.orderId WHERE ORDER.orderId=?',
-};
-
-const convServiceNotifyEndpoint = 'https://venos-stg.natiziv.com/notification/order';
+const convServiceNotifyEndpoint = `https://${conf.get('server:conversationServiceDomain')}/api/conversation/notify`;
 
 const orderToConversionContext = {};
 
-async function getCheckOutDetails(jwtToken) {
+async function createOrder(jwtToken) {
   const order = validator.validateAndExtractJwt(jwtToken);
   if (order === null) {
     log.error('Invalid JWT', {jwtToken});
@@ -26,23 +24,20 @@ async function getCheckOutDetails(jwtToken) {
   }
 
   if (!validator.validateInternalOrder(order)) {
-    log.error('Invalid order', { order });
+    log.error('Invalid order', {order});
     throw new OrderError(errors.INVALID_ORDER);
   }
 
-  // the order is meant to include the identifiers of the brand to which the order
-  // is supposed to be sent - for now, we explicitly assign it the identifiers of
-  // "nini-hatchi" brand - e.g. the "Venos" indentifier for the restautrant (1001)
-  // and the "BeeComm" identifier for the branch (58977cd2436ede4d0ebd7175)
-  //order.brandId = "vns1001";
-  //order.brandLocationId = "58977cd2436ede4d0ebd7175";
+  if (!order.total) {
+    order.total = order.subTotal + order.deliveryFee;
+  }
 
   // create and save 'orderRecord' to get an 'orderId'
-  const orderReq = dal.prepareOrderRecord(order);
+  const orderReq = format.toOrderRecord(order);
   const orderId = orderReq.orderId;
   try {
-    const result = await dal.commandWithTransaction(orderReq.commands);
-    log.info(`an 'orderRecord' for order ${orderId} was saved to db... result is: ${result}`);
+    await db.sequelize.transaction((t) => db.order.create(orderReq, {transaction: t, include: [db.orderItem]}));
+    log.info(`Successfully created order ${orderId}`);
   } catch (error) {
     log.error("failed to create an 'orderRecord' in db for order %s...", {error, order});
     throw new OrderError(errors.DB_ERROR);
@@ -54,102 +49,175 @@ async function getCheckOutDetails(jwtToken) {
   return {orderId, order};
 }
 
-async function executeOrder(orderId, paymentDetails = {}) {
+async function executeOrder(orderId, paymentDetails, deliveryDetails) {
+  if (!validator.validateOrderId(orderId)) {
+    log.error('executeOrder: invalid orderId', {orderId});
+    throw new OrderError(errors.INVALID_ORDER_ID);
+  }
+
+  if (!validator.validateCreditCard(paymentDetails)) {
+    log.error('executeOrder: invalid payment details');
+    throw new OrderError(errors.INVALID_PAYMENT_DETAILS);
+  }
+
+  await updateOrderDetails(orderId, {... deliveryDetails, email: paymentDetails.email});
 
   const order = await getOrder(orderId);
-  Object.assign(order, { orderPayment: {
-    paymentName: paymentDetails.creditCardType,
-    paymentType: 1,
-    paymentSum: order.total,
-    creditCard: paymentDetails.creditCardNumber,
-    creditCardExp: paymentDetails.creditCardExp,
-    creditCardCvv: paymentDetails.creditCardCvv,
-    creditCardHolderId: paymentDetails.creditCardHolderId,
-  } });
+
+  let pos;
+  try {
+    pos = await db.pos.findOne({where: {brandId: order.brandId, brandLocationId: order.brandLocationId}});
+  } catch (error) {
+    log.error('executeOrder: Failed to get POS from DB', error);
+    throw new OrderError(errors.DB_ERROR);
+  }
+
+  if (!pos) {
+    log.error('executeOrder: No POS found', {brandId: order.brandId, brandLocationId: order.brandLocationId});
+    throw new OrderError(errors.INVALID_ORDER);
+  }
+
   let transaction;
   try {
-    const result = await beecomm.executePushOrder(order);
+    const result = await beecomm.executePushOrder(order, paymentDetails, pos);
     transaction = result.transaction;
   } catch (error) {
+    log.error('executeOrder: Failed to execute order with provider', error);
     throw new OrderError(errors.PROVIDER_ERROR);
   }
 
   try {
-    await notifiyConvService(transaction.id, order);
+    await notifyConversationService(order, paymentDetails, transaction);
+  } catch (error) {
+    log.error('executeOrder: Failed to notify conversation service', error);
+    // TODO: what to do here
+  }
+
+
+  try {
+    await mailer.sendBrandNotificationEmail(order, transaction);
+    log.info(`executeOrder: a confirmation email for orderId [${orderId}] was sent to brand!`);
   } catch (error) {
     // TODO: what to do here
+    log.error('executeOrder: an error occurred attempting to send confirmation email', {error, orderId});
   }
 
   try {
-    await logOrder(order, orderId, transaction);
+    await mailer.sendCustomerConfirmationEmail(order, transaction);
+    log.info(`executeOrder: a confirmation email for orderId [${orderId}] was sent to vendor!`);
   } catch (error) {
+    // TODO: what to do here
+    log.error('executeOrder: an error occurred attempting to send confirmation email', {error, orderId});
+  }
+
+  try {
+    await logOrder(order, transaction, pos);
+  } catch (error) {
+    log.error('executeOrder: Failed to log order', error);
     // TODO: what to do here
   }
 
+  return transaction;
 }
 
 async function getOrder(orderId) {
   let order;
 
   if (!validator.validateOrderId(orderId)) {
-    log.error('invalid orderId', { orderId });
+    log.error('getOrder: invalid orderId', {orderId});
     throw new OrderError(errors.INVALID_ORDER_ID);
   }
 
   try {
-    order = await dal.queryWithParams(QUERIES.GET_ORDER_BY_ID, [orderId]);
+    order = await db.order.findOne({
+      where: {orderId},
+      include: [{model: db.orderItem, required: true}],
+    });
   } catch (error) {
+    log.error(error);
     throw new OrderError(errors.DB_ERROR);
   }
-  if (!order || !order.length) {
+  if (!order) {
     log.error(`getOrder: Order ID ${orderId} not found`);
     throw new OrderError(errors.ORDER_NOT_FOUND);
   }
-  return format.orderRecordResultTranslator(order);
+  return format.fromOrderRecord(order);
 }
 
-async function logOrder(orderId, order, transaction = {}) {
-  log.info(`saving an 'orderLog' to the db for orderId ${orderId}`);
+async function logOrder(order, transaction, pos) {
+  log.info(`logOrder: saving orderLog for orderId ${order.orderId}`);
 
-  order.orderId = orderId;
   order.orderStatus = 1;
+  const orderLogRecord = format.toOrderLogRecord(order, transaction, pos);
 
   try {
-    const orderLog = await dal.prepareOrderLog(order, transaction);
-    await dal.commandWithTransaction(orderLog);
-    log.info("an 'orderLog' was saved in db");
+    await db.orderLog.create(orderLogRecord);
     return true;
   } catch (error) {
-    log.error("an error occurred while creating an 'orderLog' for orderId %s ... error is: %s", orderId, error);
     throw error;
   }
 }
 
-async function notifiyConvService(orderId, order, transaction) {
+async function notifyConversationService(order, paymentDetails, transaction) {
   const body = {
-    orderContext: {
-      transactionId: transaction.id,
-      paymentMethod: {
-        currency: order.currency,
-        creditCardType: order.orderPayment.paymentName,
-        creditCardDigits: validator.getCreditCardLastDigits(order.orderPayment.creditCard)
-      }
+    order,
+    transaction,
+    payment: {
+      method: validator.getCreditCardLastDigits(paymentDetails.creditCardNumber),
     },
-    conversationContext: orderToConversionContext[orderId],
+    context: orderToConversionContext[order.orderId],
   };
 
   try {
-    await axios.post(convServiceNotifyEndpoint, {jwt: validator.createJwt(body)});
-    log.info(`Successfully notified conversation service on successful order ${orderId}`);
+    const response = await axios.post(convServiceNotifyEndpoint, {jwt: validator.createJwt(body)});
+    log.info(`Successfully notified conversation service on successful order ${order.orderId}`);
     return true;
   } catch (error) {
-    log.error('Error notifying conversation service on successful order', error);
-    throw new Error('Failed to notify conversation service: ');
+    log.error(`Error notifying conversation service on successful order: ${error.response && error.response.status}`, error.response.data);
+    throw new Error(`Failed to notify conversation service: ${error.response && error.response.status}`);
   }
 }
 
+async function updateOrderDetails(orderId, details) {
+  const order = await getOrder(orderId);
+  const values = {};
+
+  if (details.email) {
+    values.email = details.email;
+  }
+  if (details.city) {
+    values.city = details.city;
+  }
+  if (details.street) {
+    values.street = details.street;
+  }
+  if (details.houseNumber) {
+    values.houseNumber = details.houseNumber;
+  }
+  if (details.postalCode) {
+    values.postalCode = details.postalCode;
+  }
+  if ('tipPercentage' in details) {
+    values.tipPercentage = details.tipPercentage;
+  }
+
+  if ('tipAmount' in details) {
+    values.tipAmount = details.tipAmount;
+  }
+
+  values.total = order.subTotal + order.deliveryFee + (details.tipAmount || 0);
+
+  try {
+    await db.order.update(values, { where: { orderId } });
+  } catch (error) {
+    log.error(`updateOrderDeliveryDetails: Failed to update order details for ${orderId}`, error);
+    throw new OrderError(errors.DB_ERROR);
+  }
+  return true;
+}
 
 module.exports = {
-  getCheckOutDetails,
+  createOrder,
+  getOrder,
   executeOrder,
 };

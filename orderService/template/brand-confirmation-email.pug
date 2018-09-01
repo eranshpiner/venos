@@ -1,0 +1,23 @@
+doctype html(lang='iw')
+html
+    head
+        meta(charset='utf-8')
+
+    body
+        div
+            h1 הזמנה חדשה
+            div
+                table
+                    thead
+                        tr
+                            th פריט
+                            th כמות
+                            th הערות
+                            th מחיר
+                    tbody
+                        each orderItem, i  in order.orderItems
+                            tr
+                                td #{orderItem.itemName}
+                                td #{orderItem.quantity}
+                                td #{orderItem.remarks}
+                                td #{orderItem.price}

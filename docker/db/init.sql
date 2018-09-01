@@ -7,9 +7,13 @@ USE venosdb;
 CREATE TABLE IF NOT EXISTS `ORDER` (
   `orderId` varchar(64) NOT NULL COMMENT 'Order id',
   `total` double NOT NULL,
+  `subTotal` double NOT NULL,
   `currency` varchar(10) NOT NULL,
   `brandId` varchar(60) NOT NULL,
   `brandLocationId` varchar(60) NOT NULL,
+  `tipPercentage` int(11) NOT NULL,
+  `tipAmount` int(11) NOT NULL,
+  `deliveryFee` int(11) NOT NULL,
   `orderCreationTime` bigint(20) NOT NULL,
   `firstName` varchar(50) NOT NULL,
   `lastName` varchar(50) NOT NULL,
@@ -20,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `ORDER` (
   `houseNumber` varchar(100) NOT NULL,
   `apartment` varchar(100) DEFAULT NULL,
   `floor` int(11) DEFAULT NULL,
+  `postalCode` varchar(50) DEFAULT NULL,
   `company` varchar(60) DEFAULT NULL,
   `remarks` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`orderId`)
@@ -36,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `ORDER` (
 CREATE TABLE IF NOT EXISTS `ORDERITEMS` (
   `itemId` varchar(30) NOT NULL,
   `itemName` varchar(150) NOT NULL,
+  `categoryId` varchar(30) NOT NULL,
   `quantity` int(11) NOT NULL,
   `price` double NOT NULL,
   `unitPrice` double NOT NULL,
@@ -73,9 +79,7 @@ CREATE TABLE IF NOT EXISTS `LOG` (
  CONSTRAINT `orderId` FOREIGN KEY (`orderId`) REFERENCES `ORDER` (`orderId`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into venos.POS values ('vns1001','58977cd2436ede4d0ebd7175','beecomm','beecomm-nini');
-insert into venos.POS values ('ניני חאצ׳י','תל-אביב','beecomm','123456');
-insert into venos.POS values ('shabtai','kfar-vitkin','beecomm','shab_kfar-vit_1');
+insert into venosdb.POS values ('בן יהודה','6366','beecomm','58977cd2436ede4d0ebd7175');
 
 
 

@@ -1,6 +1,6 @@
 
 # container image includes Node.JS 8 over centos7
-FROM eranshpiner/venos:1.0.0
+FROM venos/venos-base:1.0.0
 
 # set env variables
 ENV base_dir /usr/src/venos
@@ -17,10 +17,10 @@ WORKDIR ${app_dir}
 COPY . ./
 
 # RUN npm install (--only=production to exclude devDependencies)
-RUN npm install --only=production
+RUN yarn install --production --pure-lockfile
 
 # expose service port
 EXPOSE 8080
 
 # run application
-CMD [ "npm", "start" ]
+CMD [ "yarn", "start" ]

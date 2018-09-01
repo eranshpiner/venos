@@ -2,60 +2,54 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const order = require('./lib/order');
-const dal = require('./lib/dal/dbfacade');
-const log = require('./lib/util/log');
+const orderApi = require('./lib/order');
+const log = require('./lib/util/log')('App');
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'public')))
-app.set('views', path.join(__dirname, 'public'));
-app.set('view engine', 'ejs');
-
-// Middleware
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-//init db
-dal.init();
-
-// this is the GET 'payment' resource which is meant be called from the consumer client side, 
-// after being redirected from the conversation flow upon selecting to pay for an order that 
-// was completed. the provided jwt is meant to contain the actual 'order'. the response of 
-// this resource is a 'payment' form, which includes the 'orderId' as a hidden field. 
-app.get('/payment', async (req, res) => {
-  try {
-    //const checkoutPageDetails = await order.getCheckOutDetails(req.query.jwt);
-    //res.status(200).render('checkout', checkoutPageDetails);
-    res.status(200).render('checkout');
-  } catch (error) {
-    res.status(500).send({message: "error processing order"});
-  }
-
+app.get('/payment', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
 });
 
-// this is the POST 'order' resource which is meant be called from the consumer client side, 
-// submitting the form which contains the payment details for an order (together with the 
-// 'orderId' hiddin field). 
-app.post('/order', async (req, res) => {
-  const { orderId } = req.body;
-
-  const paymentDetails = {
-    paymentName: req.body.creditCardType,
-    creditCard: req.body.creditCardNumber,
-    creditCardExp: req.body.creditCardExp,
-    creditCardCvv: req.body.creditCardCvv,
-    creditCardHolderId: req.body.creditCardHolderId,
-  };
-
+app.post('/api/order', async (req, res) => {
+  const jwtToken = req.body.jwt;
   try {
-    const transaction = await order.executeOrder(orderId, paymentDetails);
-    res.status(200).render('success', transaction);
-  } catch (error) {
-    res.status(error.status || 500).json(error);
+    const order = await orderApi.createOrder(jwtToken);
+    res.status(200).json(order);
+  } catch (err) {
+    res.status(err.status || 500).json(err.message || { message: 'failed to create order' });
   }
 });
 
-app.listen(3000, () => console.log('Restaurant Integration Service - listening on port 3000...'));
+app.get('/api/order/:id', async (req, res) => {
+  const orderId = req.params.id;
+  try {
+    const order = await orderApi.getOrder(orderId);
+    res.status(200).json(order);
+  } catch (err) {
+    res.status(err.status || 500).json(err.message || { message: 'failed to get order' });
+  }
+});
+
+app.post('/api/order/:id/pay', async (req, res) => {
+  const { paymentDetails, deliveryDetails } = req.body || {};
+  const orderId = req.params.id;
+
+  try {
+    const transaction = await orderApi.executeOrder(orderId, paymentDetails, deliveryDetails);
+    res.status(200).json({transaction});
+  } catch (error) {
+    log.error(error);
+    res.status(error.status || 500).json(error.message || { message: 'failed to execute order' });
+  }
+});
+
+app.listen(3000, () => {
+  log.info('Restaurant Integration Service - listening on port 3000...');
+});
 
 

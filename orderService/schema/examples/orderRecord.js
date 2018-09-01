@@ -8,7 +8,7 @@ const uuidv1=require('uuid/v1');
 var orderRecord = {
     'orderId':uuidv1(), //UUID
     'total':430.00,
-    'currency': 'nis',
+    'currency': 'ILS',
     'brandId':'shabtai',
     'brandLocationId':'kfar-vitkin',
     'orderTimeCreation':121232131321, //UTC time

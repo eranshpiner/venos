@@ -1,8 +1,9 @@
 {
   "db": {
-    "host": "venosdbservice",
-    "database": "venos",
-    "user": "root",
-    "password": "admin123"
+    "host": "localhost",
+    "database": "venosdb",
+    "username": "root",
+    "password": "password",
+    "dialect": "mysql"
   }
 }

@@ -8,6 +8,8 @@ const conf = require('./config/conf');
 const customers = require('./lib/customers/customers');
 const providers = require('./lib/providers');
 
+const jwtSecret = conf.get('server:jwt:secret');
+
 const app = express();
 app
   .set('port', process.env.PORT || conf.get('server:port'))
@@ -17,23 +19,22 @@ app
 
 
 Object.keys(providers).forEach(provider => {
-  app.use(`/providers/${provider}`, providers[provider].router(customers));
+  app.use(`/api/conversation/providers/${provider}`, providers[provider].router(customers));
 });
 
 //app
 //details: order_number, currency, payment_method (card type + last 4 details)
-app.post('/notification/order', (req, res) => {
-
+app.post('/api/conversation/notify', (req, res) => {
   const jwtToken = req.body.jwt;
-  const orderDetails = jwt.verify(jwtToken, conf.get('server:jwt:secret'));
+  const orderDetails = jwt.verify(jwtToken, jwtSecret);
 
-  const bot = customers[orderDetails.conversationContext.customerId];
+  const bot = customers[orderDetails.context && orderDetails.context.botId];
   if (!bot) {
-    res.status(404).json({error: { message: 'customerId not found' }});
+    res.status(404).json({error: { message: `customerId not found` }});
     return;
   }
 
-  bot.provider.externalAction(orderDetails.conversationContext.userSessionId, 'successfulOrder', orderDetails.orderContext);
+  bot.provider.externalAction(orderDetails.context.userSessionId, 'checkoutResult', orderDetails);
   res.status(200).json({});
 });
 

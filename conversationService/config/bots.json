@@ -1,5 +1,5 @@
 {
-  "customers": {
+  "bots": {
     "niniHachi-TakeOut-Bot-Production": {
       "provider": "facebook",
       "confFile": "./customers/niniHachi.json",

@@ -1,5 +1,5 @@
+const ccValidator = require('card-validator');
 
-const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const secret = "this_is_the_secret";
 
@@ -38,21 +38,22 @@ function validateOrderId(orderId) {
     return true;
 }
 
-function getCreditCardLastDigits(creditCard) {
-    if (creditCard == null) {
-        return null;
-    }
-    let ccLength = creditCard.length;
-    if (ccLength < 4) {
-        return creditCard;
-    }
-    return creditCard.substring(ccLength - 4, ccLength);
+function validateCreditCard({creditCardNumber, creditCardExp, creditCardCvv}) {
+  const ccValidation = ccValidator.number(creditCardNumber);
+  const expirationDateValidation = ccValidator.expirationDate(creditCardExp);
+  const cvvValidation = ccValidator.cvv(creditCardCvv, ccValidation && ccValidation.card.code && ccValidation.card.code.size);
+  return ccValidation.isValid && expirationDateValidation.isValid  && cvvValidation.isValid;
+}
+
+function getCreditCardLastDigits(creditCardNumber) {
+  const ccValidation = ccValidator.number(creditCardNumber);
+  return `${ccValidation.card.niceType} ${creditCardNumber.substr(-4)}`;
 }
 
 function createTestJwt() {
     let payload = {
         total: 430,
-        currency: "nis",
+        currency: "ILS",
         brandId: "shabtai",
         brandLocationId: "kfar-vitkin",
         conversationContext: {
@@ -106,7 +107,7 @@ function createTestJwt() {
     };
 
     // let payload = "{\"userSessionId\":\"userSession.id\",\"conversationProvider\":\"facebook\"}";
-    // let payload = {transactionId: 'transaction.id', currency: 'NIS', creditCardType: 'VISA', creditCardDigits: '0000', conversationContext: {userSessionId: 'userSession.id', conversationProvider: 'facebook', customerId: 'userSession.customerId'}};
+    // let payload = {transactionId: 'transaction.id', currency: 'ILS', creditCardType: 'VISA', creditCardDigits: '0000', conversationContext: {userSessionId: 'userSession.id', conversationProvider: 'facebook', customerId: 'userSession.customerId'}};
     let jwtToken = jwt.sign(payload, secret);
     console.log(jwtToken);
     console.log(validateAndExtractJwt(jwtToken));
@@ -114,15 +115,16 @@ function createTestJwt() {
 
 function createJwt(payload) {
     let jwtToken = jwt.sign(payload, secret);
-    return jwtToken;    
+    return jwtToken;
 }
 
-// validateJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMDhmODZhZi0zNWRhLTQ4ZjItOGZhYi1jZWYzOTA0NjYwYmQiLCJpYXQiOjE1MjU1MTIwODR9.F1P3Df86YNsmmeAIQU6YEE-lierTnMiU97jkpuzM7pw");
-// createTestJwt();
+module.exports = {
+  validateInternalOrder,
+  validateExternalOrder,
+  validateAndExtractJwt,
+  validateOrderId,
+  createJwt,
+  getCreditCardLastDigits,
+  validateCreditCard,
+};
 
-exports.validateInternalOrder = validateInternalOrder;
-exports.validateExternalOrder = validateExternalOrder;
-exports.validateAndExtractJwt = validateAndExtractJwt;
-exports.validateOrderId = validateOrderId;
-exports.createJwt = createJwt;
-exports.getCreditCardLastDigits = getCreditCardLastDigits;

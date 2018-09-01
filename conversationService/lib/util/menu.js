@@ -1,3 +1,4 @@
+const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 
 function getCategories({menu}, page = 1, perPage = 7) {
   -- page;
@@ -78,4 +79,6 @@ module.exports = {
   hasCustomizations,
   getCustomizationsCategory,
   getCustomizationsItem,
+
+  NO_IMAGE,
 };

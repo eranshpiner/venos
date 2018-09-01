@@ -5,7 +5,7 @@ const conf = nconf
   .env({'separator': '_'})
   .argv();
 
-['server', 'db', 'providers', 'email'].forEach(confType =>
+['server', 'db', 'customers', 'providers', 'email'].forEach(confType =>
   conf.file(confType, { file: path.join(__dirname, `/${confType}.json`) }));
 
 module.exports = conf;

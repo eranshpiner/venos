@@ -2,9 +2,8 @@ const axios = require('axios');
 const qs = require('querystring');
 
 const conf = require('../../../config/conf');
-const log = require('../../util/log');
+const log = require('../../util/log')('BeecommProvider');
 const validator = require('../../util/validator');
-const mailer = require('../../util/mailer');
 const beecommOrderSchema = require('./beecommOrder.json');
 
 // beecomm api consts
@@ -80,8 +79,8 @@ function transformOrder(source) {
 }
 
 
-async function executePushOrder(source) {
-  const target = transformOrder(source);
+async function executePushOrder(order, paymentDetails, pos) {
+  const target = transformOrder(order);
   if (target === null) {
     throw new Error({code: 1, message: 'failure in transfromOrder'});
   }
@@ -112,18 +111,12 @@ async function executePushOrder(source) {
 
   // req.write(JSON.stringify(target));
   // req.end();
-  try {
-    await mailer.sendOrderConfirmationEmail(target.branchId, target);
-    log.info('a confirmation email for orderId [%s] was sent!', source.orderId);
-  } catch (error) {
-    log.error('an error occurred attempting to send confirmation email for orderId [%s]', {error, orderId: source.orderId});
-  }
 
   return {
     code: '200',
     message: 'OK',
     transaction: {
-      id: '333444555',
+      id: Date.now() + '',
       creationTime: Date.now(),
       status: 'OK',
     }
@@ -143,5 +136,7 @@ async function retrieveToken() {
 
 }
 
-exports.executePushOrder = executePushOrder;
-exports.retrieveToken = retrieveToken;
+module.exports = {
+  executePushOrder,
+  retrieveToken
+};

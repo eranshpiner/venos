@@ -17,10 +17,35 @@ const logBase = pino({
   },
 });
 
-module.exports = (loggerName, opts = {}) => {
-  const options = {...opts, logger: loggerName };
+module.exports = (loggerName, options = {}) => {
+  const opts = {...options, logger: loggerName };
   if (!Object.keys(pino.levels).includes(opts.level)) {
     Reflect.deleteProperty(opts, 'level');
   }
-  return logBase.child(options);
+
+  const log = logBase.child(opts);
+
+  Object.keys(pino.levels.values).forEach((lvl) => {
+    const orig = log[lvl];
+    log[lvl] = (msg, ...objs) => {
+      const objects = { level: lvl };
+      if (objs) {
+        objs.forEach((obj) => {
+          if (typeof obj === 'object' && obj !== null) {
+            if (obj instanceof Error) {
+              console.log("WTF", obj);
+              objects.error = obj;
+            } else {
+              Object.assign(objects, obj);
+            }
+          } else {
+            msg += ` ${obj}`;
+          }
+        });
+      }
+      orig.apply(log, [objects, msg]);
+    };
+  });
+
+  return log;
 };

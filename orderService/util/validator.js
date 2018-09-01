@@ -42,11 +42,7 @@ function getCreditCardLastDigits(creditCard) {
     if (creditCard == null) {
         return null;
     }
-    let ccLength = creditCard.length;
-    if (ccLength < 4) {
-        return creditCard;
-    }
-    return creditCard.substring(ccLength - 4, ccLength);
+    return creditCard.slice(-4);
 }
 
 function createTestJwt() {

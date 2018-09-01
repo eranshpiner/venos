@@ -22,5 +22,7 @@ RUN yarn install --production --pure-lockfile
 # expose service port
 EXPOSE 8080
 
+ENV NODE_ENV production
+
 # run application
 CMD [ "yarn", "start" ]

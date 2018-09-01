@@ -5,7 +5,7 @@ const menuUtils = require('./menu');
 const conf = require('./../../config/conf');
 
 const secret = conf.get('server:jwt:secret');
-const PAYMENT_URL = (jwt) => `http${conf.get('dev') ? '' : 's'}://${conf.get('server:orderServiceDomain')}/payment?jwt=${jwt}`;
+const PAYMENT_URL = (jwt) => `http${conf.get('dev') ? '' : 's'}://${conf.get('server:orderServiceDomain')}/payment/?jwt=${jwt}`;
 const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 
 function addToCart({cart, customer, item, customizations, notes, categoryId, itemId}) {

@@ -1,4 +1,6 @@
 module.exports = {
+  baseUrl: './',
+  outputDir: './../web/public/payment',
   devServer: {
     port: 8081,
     allowedHosts: [

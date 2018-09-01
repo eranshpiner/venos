@@ -12,10 +12,10 @@ module.exports = ({bot, provider, customer}) => {
       next();
     },
     (session, results) => {
-      const context = session.context;
+      const context = session.userData;
       context.cart = [];
       // TODO
-      session.endDialog();
+      session.replaceDialog(FLOWS.WELCOME);
     }
   ]);
 };

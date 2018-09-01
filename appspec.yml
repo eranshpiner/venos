@@ -10,7 +10,7 @@ files:
   - source: checkout-page
     destination: /home/ec2-user/venos/checkout-page
   - source: web
-      destination: /home/ec2-user/venos/web
+    destination: /home/ec2-user/venos/web
   - source: README.md
     destination: /home/ec2-user/venos
   - source: deploy.sh

@@ -7,6 +7,8 @@ files:
     destination: /home/ec2-user/venos/docker
   - source: orderService
     destination: /home/ec2-user/venos/orderService
+  - source: checkout-page
+    destination: /home/ec2-user/venos/checkout-page
   - source: README.md
     destination: /home/ec2-user/venos
   - source: deploy.sh

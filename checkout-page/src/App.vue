@@ -10,6 +10,7 @@
 import axios from 'axios';
 
 import DeliveryPage from './components/Delivery.vue';
+import PickupPage from './components/Pickup.vue';
 import AddressPage from './components/Address.vue';
 import PaymentPage from './components/Payment.vue';
 import ConfirmationPage from './components/Confirmation.vue';
@@ -28,7 +29,11 @@ export default {
           this.$store.orderDetails = order;
           this.$store.orderId = orderId;
           f7.dialog.close();
-          f7.router.navigate('/checkout/delivery/', { animate: false });
+          if (order.deliveryMethod === 'shipping') {
+            f7.router.navigate('/checkout/delivery/', { animate: false });
+          } else {
+            f7.router.navigate('/checkout/pickup/', { animate: false });
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -59,6 +64,10 @@ export default {
                 component: AddressPage,
               },
             ],
+          },
+          {
+            path: '/checkout/pickup/',
+            component: PickupPage,
           },
           {
             path: '/checkout/payment',

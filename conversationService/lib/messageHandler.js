@@ -355,7 +355,7 @@ handlers[CONST.ACTIONS.GET_CART] = (message, userSession) => {
       replies: getCategories(menu.items, true),
     });
 
-    const cartTotal = cartUtils.getCartTotal(cart);
+    const cartTotal = cartUtils.getCartSubTotal(cart);
     message.responses.push({
       type: CONST.RESPONSE_TYPE.TEXT,
       text: `סה"כ ${cart.length} פריטים על סך ${cartTotal}₪`,

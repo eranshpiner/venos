@@ -1,0 +1,9 @@
+
+.ios .list .item-after {
+    padding-left: 0;
+    padding-right: 5px;
+}
+.list .item-after {
+    margin-left: unset;
+    margin-right: auto;
+}

@@ -1,12 +1,12 @@
-const customersConfig = require('./../../config/conf').get('customers');
+const botsConfig = require('./../../config/conf').get('bots');
 const log = require('./../util/log')('Customers');
 const Bot = require('./../bot/bot');
 
-const customers = {};
+const bots = {};
 
-Object.keys(customersConfig).forEach(customer => {
-  customers[customer] = new Bot(customersConfig[customer]);
-  log.info(`Successfully loaded customer ${customer}`);
+Object.keys(botsConfig).forEach(botId => {
+  bots[botId] = new Bot(botsConfig[botId], botId);
+  log.info(`Successfully loaded bot ${botId}`);
 });
 
-module.exports = customers;
+module.exports = bots;

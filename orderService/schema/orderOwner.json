@@ -47,6 +47,9 @@
                 "floor": {
                     "type": "integer"
                 },
+                "postalCode": {
+                    "type": "string"
+                },
                 "companyName": {
                     "type": "string"
                 }                                                                                                                                                                                                   

@@ -5,7 +5,7 @@
 
 var order = {
     'total':430.00,
-    'currency': 'nis',
+    'currency': 'ILS',
     'brandId':'shabtai',
     'brandLocationId':'kfar-vitkin',
     'remarks':'',
@@ -68,14 +68,14 @@ const fs = require('fs');
 //just safe json into disk
 fs.writeFileSync('./order.json', JSON.stringify(order,undefined,2));
 
-const format = require('../../dal/sqlFormatter');
-const dal = require ('../../dal/dbfacade');
+const format = require('../../lib/util/format');
+const dal = require ('../../lib/dal/dbfacade');
 
-var orderRecord = format.orderRecordBuilder(order);
+const orderRecord = format.orderRecordBuilder(order);
 //console.log('order is formatted: ' ,orderRecord);
 
 //console.log('sql:', JSON.stringify (orderRecord));
-var orderItems = format.orderItemsBuilder(orderRecord.orderId, order);
+const orderItems = format.orderItemsBuilder(orderRecord.orderId, order);
 //console.log('orderItems:', JSON.stringify (orderItems[0]));
 //console.log('###orderItems.length=', orderItems.length);
 
@@ -83,12 +83,12 @@ dal.init();
 
 /*
 //insert order to db (order table)
-dal.command('INSERT INTO venos.ORDER SET ?',orderRecord, (result) => {
+dal.command('INSERT INTO venosdb.ORDER SET ?',orderRecord, (result) => {
     console.log('result=',JSON.stringify(result,undefined,2));
 } );
 
 for (i=0; i < orderItems.length; i++){
-    dal.command('INSERT INTO venos.orderItems SET ?', orderItems[i], (result) => {
+    dal.command('INSERT INTO venosdb.orderItems SET ?', orderItems[i], (result) => {
         console.log('result',JSON.stringify(result,undefined,2));
     })
 }
@@ -98,14 +98,14 @@ for (i=0; i < orderItems.length; i++){
 // var commandForTransaction=[];
 
 // var orderCommand = {
-//     query:'INSERT INTO venos.ORDER SET ?',
+//     query:'INSERT INTO venosdb.ORDER SET ?',
 //     parameters:orderRecord
 // }
 // commandForTransaction.push(orderCommand);
 
 // for (i=0; i < orderItems.length; i++){
 //     var orderItem = {
-//         query:'INSERT INTO venos.orderItems SET ?',
+//         query:'INSERT INTO venosdb.orderItems SET ?',
 //         parameters:orderItems[i]
 //     } 
 //     commandForTransaction.push(orderItem);
@@ -114,22 +114,23 @@ for (i=0; i < orderItems.length; i++){
 //     console.log('result=',JSON.stringify(result,undefined,2));
 //  })
 
-    //dal.command('INSERT INTO venos.orderItems SET ?', orderItems[i], (result) => {
+    //dal.command('INSERT INTO venosdb.orderItems SET ?', orderItems[i], (result) => {
       //  console.log('result',JSON.stringify(result,undefined,2));
     //})
 
 //read all orders 
-dal.query('SELECT COUNT(*) FROM venos.ORDER',(result)=> {
+dal.query('SELECT COUNT(*) FROM venosdb.ORDER').then((result)=> {
     console.log('result=',JSON.stringify(result,undefined,2));
 });
 //query with parameters
-dal.queryWithParams('SELECT * from venos.ORDER WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'], (result)=>{
+dal.queryWithParams('SELECT * from venosdb.ORDER WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8']).then((result)=>{
     console.log('result=', JSON.stringify(result,undefined,2));
-})
+});
 
-dal.queryWithParams('SELECT * from venos.ORDERITEMS WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'], (result)=>{
+dal.queryWithParams('SELECT * from venosdb.ORDERITEMS WHERE orderId=?', ['b1b5d6d0-4a30-11e8-a242-9138c93c5bd8'])
+  .then((result)=>{
     console.log('result=', JSON.stringify(result,undefined,2));
-})
+});
 
 
 

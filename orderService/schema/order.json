@@ -6,20 +6,36 @@
     "type": "object",
     "additionalProperties": false,    
     "required": [
-        "total",
+        "subTotal",
         "currency",
+        "deliveryFee",
         "orderItems",
         "orderOwner",
         "brandId",
         "brandLocationId"            
     ],
     "properties": {
+        "orderId": {
+            "type": "string"
+        },
         "total": {
+            "type": "number"
+        },
+        "subTotal": {
             "type": "number"
         },
         "currency": {
             "type": "string"
-        },        
+        },
+        "tipPercentage": {
+            "type": "number"
+        },
+        "tipAmount": {
+            "type": "number"
+        },
+        "deliveryFee": {
+            "type": "number"
+        },
         "orderItems": {
             "$ref": "/orderItems"
         },                       

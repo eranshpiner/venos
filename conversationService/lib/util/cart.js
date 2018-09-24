@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken');
 
+const log = require('./log')('CartUtil');
 const menuUtils = require('./menu');
 const conf = require('./../../config/conf');
 
 const secret = conf.get('server:jwt:secret');
-const PAYMENT_URL = (jwt) => `https://venos-stg.natiziv.com/payment?jwt=${jwt}`;
+const PAYMENT_URL = (jwt) => `http${conf.get('dev') ? '' : 's'}://${conf.get('server:orderServiceDomain')}/payment/?jwt=${jwt}`;
 const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 
 function addToCart({cart, customer, item, customizations, notes, categoryId, itemId}) {
@@ -56,32 +57,46 @@ function getCartItems({customer, provider, context: { cart }}) {
   });
 }
 
-function getReceipt(cart = []) {
-  const items = [...cart.items];
-  return {
-    recipientName: 'TODO',
-    orderNumber: '12345',
-    currency: 'ILS',
-    timestamp: '1530298536336',
+function getReceipt({customer, order, payment, transaction}) {
+  const receipt = {
+    recipient_name: `${order.orderOwner.firstName} ${order.orderOwner.lastName}`,
+    order_number: order.orderId,
+    currency: order.currency,
+    payment_method: payment.method,
     address: {
-      city: 'TODO-city',
-      address: 'address',
-      postalCode: '12345',
-      state: '',
-      country: 'Israel',
+      street_1: order.orderOwner.deliveryInfo.street,
+      street_2: order.orderOwner.deliveryInfo.houseNumber,
+      city: order.orderOwner.deliveryInfo.city,
+      state: 'ישראל',
+      country: 'ישראל',
+      postal_code: order.orderOwner.deliveryInfo.postalCode || 0,
+    },
+    summary: {
+      subtotal: order.subTotal,
+      shipping_cost: order.deliveryFee,
+      total_tax: 0, // TODO
+      total_cost: order.total,
     },
     adjustments: [],
-    summary: {
-      subTotal: 100,
-      shipping: 10,
-      tax: 0,
-      total: 110,
-    },
-    items,
+    elements: order.orderItems.map((item) => {
+      const menuItem = menuUtils.getItem(customer, item.categoryId, item.itemId);
+      return {
+        title: item.itemName,
+        subtitle: item.remarks,
+        quantity: item.quantity,
+        price: item.price,
+        currency: order.currency,
+        image_url: (menuItem && (menuItem.imageThumbnail || menuItem.image)).substring(2) || menuUtils.NO_IMAGE,
+      };
+    }),
   };
+  if (order.tipAmount > 0) {
+    receipt.adjustments.push({name: 'טיפ', amount: order.tipAmount});
+  }
+  return receipt;
 }
 
-function getCartTotal({cart = [], customer}) {
+function getCartSubTotal({cart = [], customer}) {
   return cart.reduce((total, item) => {
     let sum = total + (item.price * item.quantity);
     Object.entries(item.customizations).forEach(([custCat, custItems]) => {
@@ -96,11 +111,12 @@ function getCartTotal({cart = [], customer}) {
   }, 0);
 }
 
-function getPaymentURL({customer, provider, context: {cart = [], deliveryInfo = {}, userDetails = {}}}) {
-  const total = getCartTotal({cart, customer});
+function getPaymentURL({botId, customer, provider, context: {cart = [], deliveryInfo = {}, userDetails = {}}}) {
+  const subTotal = getCartSubTotal({cart, customer});
   const orderItems = cart.map(item => {
     const {categoryId, itemId} = item;
     let price = item.price;
+    let remarks = [item.notes];
     if (item.customizations) {
       Object.entries(item.customizations).forEach(([custCatId, items]) => {
         items.forEach(item => {
@@ -108,23 +124,26 @@ function getPaymentURL({customer, provider, context: {cart = [], deliveryInfo = 
           if (custItem.price > 0) {
             price += custItem.price;
           }
+          remarks.push(custItem.name);
         });
       });
     }
     return {
       itemId: item.itemId.toString(),
       itemName: item.name,
+      categoryId: item.categoryId,
       quantity: item.quantity,
       unitPrice: item.price,
       price: price * item.quantity,
+      remarks: remarks.join(', '),
     }
   });
 
   const payload = {
-    total,
-    currency: 'nis',
+    subTotal,
+    currency: 'ILS',
     brandId: customer.id + "", // TODO: shpiner why is this not a number?
-    brandLocationId: customer.branches[0].branchAddress, // TODO: ?
+    brandLocationId: customer.branches[0].branchName, // TODO: ?
     remarks: '',
     orderOwner: {
       firstName: userDetails.first_name,
@@ -139,20 +158,21 @@ function getPaymentURL({customer, provider, context: {cart = [], deliveryInfo = 
         floor: deliveryInfo.floor || 0,
       },
     },
+    deliveryFee: customer.deliveryFee, // TODO[seba] dynamic per location
     orderItems: orderItems,
     orderPayment: {
       paymentType: 1,
-      paymentSum: total,
-      paymentName: 'wtf?',
-      creditCard: '3434-3434-4334-3434',
-      creditCardExp: '09/20',
-      creditCardCvv: '000',
-      creditCardHolderId: '343545645454',
+      paymentSum: subTotal,
+      paymentName: '',
+      creditCard: '',
+      creditCardExp: '',
+      creditCardCvv: '',
+      creditCardHolderId: '',
     },
     conversationContext: {
       userSessionId: userDetails.id,
       conversationProvider: provider.name,
-      customerId: customer.id,
+      botId,
     },
   };
 
@@ -164,7 +184,7 @@ module.exports = {
   addToCart,
 
   getCartItems,
-  getCartTotal,
+  getCartSubTotal,
   getPaymentURL,
   getReceipt,
 };

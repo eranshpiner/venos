@@ -136,7 +136,7 @@ class FacebookProvider {
         conversation: {id: sender}
       })
       .timestamp()
-      .text(action);
+      .text(`action?${action}`);
     if (attachment) {
       msg.addAttachment(attachment);
     }
@@ -225,7 +225,13 @@ class FacebookProvider {
         replies = replies.filter((rep) => rep !== null);
       }
 
-      if (message.url && message.title) {
+
+      if (message.receipt) {
+        this.botly.sendReceipt({
+          id: recipientId,
+          payload: message.receipt,
+        }, _createSendCallback(this.botly, recipientId, message, callback));
+      } else if (message.url && message.title) {
         this.botly.sendButtons({
           id: recipientId,
           text: message.text,
@@ -305,7 +311,7 @@ class FacebookProvider {
 
   createButton(title, payload = '') {
     if (typeof payload === 'string' && payload.startsWith('http')) {
-      return this.botly.createWebURLButton(title, payload);
+      return this.botly.createWebURLButton(title, payload, null, true);
     }
     return this.botly.createPostbackButton(title, payload || title);
   }

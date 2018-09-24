@@ -7,14 +7,17 @@ const dialogs = require('./../dialogs');
 const FLOW = require('./../const/flows');
 
 class Bot {
-  constructor(conf) {
+  constructor(conf, botId) {
     this.conf = conf;
+    this.botId = botId;
 
     this.customer = require(path.resolve(this.conf.confFile));
 
     this.provider = new providers[conf.provider](conf.providers[conf.provider]); // currently always FB
 
-    this.bot = new builder.UniversalBot(this.provider);
+    this.bot = new builder.UniversalBot(this.provider, {
+      dialogErrorMessage: 'אוי לא! משהו השתבש ונצטרך להתחיל מחדש',
+    });
 
     this.bot.beginDialogAction('reset', FLOW.RESET, {
       matches: /reset|איפוס/,

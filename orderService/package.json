@@ -1,24 +1,33 @@
 {
-  "name": "restaurantintergrationservice",
+  "name": "venos-conversation-service",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Eran Shpiner",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
+    "card-validator": "^5.0.0",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
-    "hashmap": "^2.3.0",
     "jsonschema": "^1.2.4",
     "jsonwebtoken": "^8.2.1",
     "mysql": "^2.15.0",
+    "mysql2": "^1.6.1",
+    "nconf": "^0.10.0",
     "nodemailer": "^4.6.5",
     "nodemailer-mailgun-transport": "^1.4.0",
+    "pino": "^5.1.1",
+    "pino-pretty": "^2.0.1",
+    "pug": "^2.0.3",
     "request": "^2.87.0",
-    "uuid": "^3.2.1"
+    "sequelize": "^4.38.0",
+    "uuid": "^3.2.1",
+    "verror": "^1.10.0"
   }
 }

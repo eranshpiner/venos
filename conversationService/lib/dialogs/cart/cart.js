@@ -23,7 +23,7 @@ function chunks(array = [], size = 0) {
 }
 
 
-module.exports = ({bot, provider, customer}) => {
+module.exports = ({botId, bot, provider, customer}) => {
   const perList = PER_LIST[provider.name];
 
   const categoriesReplies = menuUtils.getCategoriesReplies({customer, provider});
@@ -37,9 +37,9 @@ module.exports = ({bot, provider, customer}) => {
         session.send(MESSAGES.CART.EMPTY({context, categories: categoriesReplies}));
         session.endDialog();
       } else {
-        const total = cartUtils.getCartTotal({cart, customer});
+        const total = cartUtils.getCartSubTotal({cart, customer});
         const itemsChunks = chunks(cartUtils.getCartItems({customer, provider, context}), perList);
-        const buttons = [provider.createButton('הזמן עכשיו', cartUtils.getPaymentURL({customer, context, provider}))];
+        const buttons = [provider.createButton('הזמן עכשיו', cartUtils.getPaymentURL({botId, customer, context, provider}))];
 
         itemsChunks.forEach(items => session.send(MESSAGES.CART.CART_ITEMS({context, items, buttons})));
 

@@ -21,7 +21,9 @@ services:
  #         memory: 256M
 
   orderService:
-    build: ./orderService
+    build:
+      context: .
+      dockerfile: ./orderService/Dockerfile
     container_name: orderservice
     restart: always
     image: venos/orderservice:1.0.0
@@ -34,6 +36,12 @@ services:
         limits:
           cpus: '0.50'
           memory: 256M
+    environment:
+      - db_host=venosdb.c5hcdvwwmarq.eu-central-1.rds.amazonaws.com
+      - db_database=venosdb
+      - db_username=dbadmin
+      - db_password=bokerTov1!
+      - server_conversationServiceDomain=venos-prod.natiziv.com
 
   conversationService:
     build: ./conversationService
@@ -47,6 +55,8 @@ services:
         limits:
           cpus: '0.50'
           memory: 256M
+    environment:
+      - server_orderServiceDomain=venos-prod.natiziv.com
 
   letsencrypt:
       restart: always
@@ -59,8 +69,9 @@ services:
         - conversationService
         - orderService
       volumes:
-        - './docker/web/conf:/config/nginx/site-confs:ro'
-        - './docker/web/certs:/config/etc/letsencrypt:rw'
+        - './web/conf:/config/nginx/site-confs:ro'
+        - './web/certs:/config/etc/letsencrypt:rw'
+        - './web/public:/public:ro'
       environment:
         - EMAIL=n@natiziv.com
         - URL=natiziv.com

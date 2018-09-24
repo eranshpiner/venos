@@ -1,0 +1,9 @@
+{
+  "db": {
+    "host": "localhost",
+    "database": "venosdb",
+    "username": "root",
+    "password": "password",
+    "dialect": "mysql"
+  }
+}

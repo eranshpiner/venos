@@ -1,0 +1,11 @@
+{
+  "providers": {
+    "beecomm": {
+      "host": "biapp.beecomm.co.il",
+      "port": 8094,
+      "client_id": "S1kGCnm9hkKfh0plonkVBmALJvzGcVW1a0qe8BO0PTgWTP0gmiTN300SmWpZtzMx",
+      "client_secret": "5F6zsjU6HNVP61uq3UDDzl3TOAOihXzGyBEUjmO0dj0siK1LgBwPv0cMk0d2QM9V",
+      "apiVersion": 2
+    }
+  }
+}

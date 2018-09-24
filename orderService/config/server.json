@@ -1,0 +1,9 @@
+{
+  "server": {
+    "port": "8080",
+    "jwt": {
+      "secret": "this_is_the_secret"
+    },
+    "conversationServiceDomain": "local-dev.tagoose.com"
+  }
+}

@@ -8,8 +8,8 @@ module.exports = ({bot, customer}) => {
     (session) => {
       const context = session.userData;
       if (!context.deliveryInfo) {
-        session.replaceDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.AUTO);
-      } else if (!context.deliveryInfo.houseNumber) {
+        session.replaceDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ROOT);
+      } else if (!context.deliveryInfo.apartment) {
         builder.Prompts.text(session, MESSAGES.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.FLOOR_APT_ENT({context, customer}));
       } else {
         session.endDialog();
@@ -22,7 +22,7 @@ module.exports = ({bot, customer}) => {
         return;
       }
       const context = session.userData;
-      context.deliveryInfo.houseNumber = results.response; // TODO: split to houseNumber, floor, entrance
+      context.deliveryInfo.apartment = results.response; // TODO: split to houseNumber, floor, entrance
       session.endDialog();
     }
   ]);

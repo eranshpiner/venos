@@ -30,7 +30,14 @@ function init() {
     }
   });
 
-  log.info('DB: Successfully initialized DB models.');
+  db.sequelize
+  .authenticate()
+  .then(() => {
+    log.info('DB: Successfully initialized DB models and connected.');
+  })
+  .catch(err => {
+    log.info('DB: Error connecting to DB.', err);
+  });
 }
 
 init();

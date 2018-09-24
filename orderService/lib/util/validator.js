@@ -41,7 +41,8 @@ function validateOrderId(orderId) {
 function validateCreditCard({creditCardNumber, creditCardExp, creditCardCvv}) {
   const ccValidation = ccValidator.number(creditCardNumber);
   const expirationDateValidation = ccValidator.expirationDate(creditCardExp);
-  const cvvValidation = ccValidator.cvv(creditCardCvv, ccValidation && ccValidation.card.code && ccValidation.card.code.size);
+  const cvvValidation = ccValidator.cvv(creditCardCvv, ccValidation && ccValidation.card && ccValidation.card.code && ccValidation.card.code.size);
+  console.info(ccValidation, expirationDateValidation, cvvValidation);
   return ccValidation.isValid && expirationDateValidation.isValid  && cvvValidation.isValid;
 }
 

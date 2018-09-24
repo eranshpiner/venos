@@ -3,6 +3,7 @@ const Botly = require('botly');
 const { Router } = require('express');
 
 const MemoryBotStorage = require('./../store/memory');
+const events = require('./../events/events');
 const providerConf = require('./../../config/conf').get('providers:facebook');
 const log = require('../util/log')('FacebookProvider');
 
@@ -74,6 +75,7 @@ class FacebookProvider {
         .text(data.text);
 
       _addAttachments(msg, data.attachments);
+      events.fireEvent(msg); // todo format
       this.handler(msg.toMessage());
     });
 
@@ -89,6 +91,7 @@ class FacebookProvider {
         .timestamp()
         .text(postback === 'GET_STARTED' ? 'hi' : postback);
 
+      events.fireEvent(msg); // todo format
       this.handler(msg.toMessage());
     });
 
@@ -140,6 +143,7 @@ class FacebookProvider {
     if (attachment) {
       msg.addAttachment(attachment);
     }
+    events.fireEvent(msg); // todo format
     this.handler(msg.toMessage());
   }
 
@@ -193,9 +197,10 @@ class FacebookProvider {
   send(messages, done) {
     messages.reduce((p, msg) =>
       p.then(() =>
-        new Promise((resolve, reject) =>
-          this.postMessage(msg, (e, r) => e ? reject(e) : resolve(r))
-        )), Promise.resolve())
+        new Promise((resolve, reject) => {
+          events.fireEvent(msg); // todo: format
+          this.postMessage(msg, (e, r) => e ? reject(e) : resolve(r));
+        })), Promise.resolve())
       .then(() => done())
       .catch(done);
   }

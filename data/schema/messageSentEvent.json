@@ -17,7 +17,7 @@
       "consumerId": {
         "type": "string"
       },
-      "conversatonId": {
+      "conversationId": {
         "type": "string"
       },
       "messageId": {

@@ -19,7 +19,7 @@ module.exports = {
       }),
       SHIPPING: {
         CONFIRM: ({context: { deliveryInfo }}) => ({
-          text: `המשלוח ישלח לכתובת הבאה:\nעיר: ${deliveryInfo.city}\nרחוב: ${deliveryInfo.street}\nמס׳ בית/קומה/כניסה: ${deliveryInfo.houseNumber}\n* תוכל/י לשנות את פרטים אלו בסיום ההזמנה.`
+          text: `המשלוח ישלח לכתובת הבאה:\nעיר: ${deliveryInfo.city}\nרחוב: ${deliveryInfo.street}\nמס׳ בית/קומה/כניסה: ${[deliveryInfo.houseNumber,deliveryInfo.apartment].join(',')}\n* תוכל/י לשנות את פרטים אלו בסיום ההזמנה.`
         }),
         ADDRESS: {
           ENTER_ADDRESS: ({context, customer, api}) => ({

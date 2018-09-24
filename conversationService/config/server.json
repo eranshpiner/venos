@@ -4,6 +4,11 @@
     "jwt": {
       "secret": "this_is_the_secret"
     },
-    "orderServiceDomain": "local-dev.tagoose.com"
+    "orderServiceDomain": "local-dev.tagoose.com",
+    "aws": {
+      "bucket": "venos",
+      "id": "AKIAJR4WERNLXVK4CNYQ",
+      "key": "JGUmVKTW9G6uguh3Q3MDIdhTBAyBRIfN3SpY74nA"
+    }
   }
 }

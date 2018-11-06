@@ -49,6 +49,17 @@
           "accessToken": "EAAXSuZCK0EJ0BAIuEnKSdaAnJtYwuwOCwcTohT1ZAEgktEeTHM9pRMifJwLRMJJZBsUdZBWOAe4AYgJDPM3MDZAsdSYGOR1VpZBJbHXNZB1UaKpzFDHPEdS3q134ss6IkMRKvugRF901yQqpJX4zkm1ZCSvZBTZC7CjESy8r2V9xQKkZCghEzZCDsMpv"
         }
       }
-    }
+    },
+    "niniHachi-Eran-Venosbotlocal_page1": {
+      "provider": "facebook",
+      "confFile": "./customers/niniHachi.json",
+      "providers": {
+        "facebook": {
+          "pageId": "132833927599928",
+          "accessToken": "EAAFC3vSt8BYBAAA20TiWXZBi74uJKlMCOPRCZA5kAXEEeGzevAc5sYpWLYaerqZAH6tvmQe83ZAFeRWs1yN4rg6ZCojy6WR0ZBB6lhhFLTo6M5f07JFVD0aO7A5zGLOnqoIr0dU3tzQvWq7wrqrSvormJGeennL5mZBsFecsxw1XSiHTalsg9zKDbaocZAxUs8gZD"
+        }
+      }
+    }    
+    
   }
 }

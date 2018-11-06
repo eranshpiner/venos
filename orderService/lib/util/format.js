@@ -71,7 +71,7 @@ function fromOrderItemRecord(orderItemRecord) {
     quantity: orderItemRecord.quantity,
     price: orderItemRecord.price,
     unitPrice: orderItemRecord.unitPrice,
-    remarks: orderItemRecord.remarks,
+    remarks: orderItemRecord.remarks == null ? "" : orderItemRecord.remarks,
   };
 }
 

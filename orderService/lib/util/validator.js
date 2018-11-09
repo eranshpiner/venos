@@ -39,74 +39,63 @@ function validateOrderId(orderId) {
 }
 
 function validateCreditCard({creditCardNumber, creditCardExp, creditCardCvv}) {
-  const ccValidation = ccValidator.number(creditCardNumber);
-  const expirationDateValidation = ccValidator.expirationDate(creditCardExp);
-  const cvvValidation = ccValidator.cvv(creditCardCvv, ccValidation && ccValidation.card && ccValidation.card.code && ccValidation.card.code.size);
-  console.info(ccValidation, expirationDateValidation, cvvValidation);
-  return ccValidation.isValid && expirationDateValidation.isValid  && cvvValidation.isValid;
+    const ccValidation = ccValidator.number(creditCardNumber);
+    const expirationDateValidation = ccValidator.expirationDate(creditCardExp);
+    const cvvValidation = ccValidator.cvv(creditCardCvv, ccValidation && ccValidation.card && ccValidation.card.code && ccValidation.card.code.size);
+    console.info(ccValidation, expirationDateValidation, cvvValidation);
+    return ccValidation.isValid && expirationDateValidation.isValid  && cvvValidation.isValid;
 }
 
 function getCreditCardLastDigits(creditCardNumber) {
-  const ccValidation = ccValidator.number(creditCardNumber);
-  return `${ccValidation.card.niceType} ${creditCardNumber.substr(-4)}`;
+    const ccValidation = ccValidator.number(creditCardNumber);
+    return `${ccValidation.card.niceType} ${creditCardNumber.substr(-4)}`;
 }
 
 function createTestJwt() {
     let payload = {
-        total: 430,
+        subTotal: 78,
         currency: "ILS",
-        brandId: "shabtai",
-        brandLocationId: "kfar-vitkin",
+        brandId: "6366",
+        brandLocationId: "tel-aviv",
         conversationContext: {
             userSessionId: "userSession.id",
             conversationProvider: "facebook"
         },
         remarks: "",
+        deliveryFee: 0,
         orderOwner: {
-            firstName: "vladi",
-            lastName: "king",
-            phone: "123-456-678",
-            email: "johndoe@gmail.com",
+            firstName: "sebastian",
+            lastName: "bogacz",
+            phone: "0547739985",
+            email: "7739985@gmail.com",
             deliveryInfo: {
-                city: "paris",
-                street: "champs elysees",
-                houseNumber: "45a",
-                apartment: "23",
-                floor: 3
+                city: "tel-aviv",
+                street: "liberman",
+                houseNumber: "7",
+                apartment: "5",
+                floor: 2
             }
         },
         orderItems: [
             {
-                itemId: "156",
-                itemName: "pizzapepperoni",
-                quantity: 3,
-                unitPrice: 70,
-                price: 210
-            },
-            {
-                itemId: "435",
-                itemName: "pizzatuna",
+                itemId: "288506",
+                itemName: "ניני סשימי",
+                categoryId: "yy",
                 quantity: 1,
-                unitPrice: 60,
-                price: 60
+                unitPrice: 66,
+                price: 66
             },
             {
-                itemId: "2",
-                itemName: "beer",
-                quantity: 4,
-                unitPrice: 30,
-                price: 120
-            },
-            {
-                itemId: "3",
-                itemName: "dietcola",
-                quantity: 4,
-                unitPrice: 10,
-                price: 40
+                itemId: "288653",
+                itemName: "קולה זירו אישי",
+                categoryId: "xx",
+                quantity: 1,
+                unitPrice: 12,
+                price: 12
             }
         ]
     };
-
+    
     // let payload = "{\"userSessionId\":\"userSession.id\",\"conversationProvider\":\"facebook\"}";
     // let payload = {transactionId: 'transaction.id', currency: 'ILS', creditCardType: 'VISA', creditCardDigits: '0000', conversationContext: {userSessionId: 'userSession.id', conversationProvider: 'facebook', customerId: 'userSession.customerId'}};
     let jwtToken = jwt.sign(payload, secret);
@@ -120,12 +109,12 @@ function createJwt(payload) {
 }
 
 module.exports = {
-  validateInternalOrder,
-  validateExternalOrder,
-  validateAndExtractJwt,
-  validateOrderId,
-  createJwt,
-  getCreditCardLastDigits,
-  validateCreditCard,
+    validateInternalOrder,
+    validateExternalOrder,
+    validateAndExtractJwt,
+    validateOrderId,
+    createJwt,
+    getCreditCardLastDigits,
+    validateCreditCard,
 };
 

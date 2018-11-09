@@ -7,6 +7,7 @@ const errors = require('./errors/errors');
 const OrderError = require('./errors/OrderError');
 const db = require('./model');
 const validator = require('./util/validator');
+const mapper = require('./util/mapper');
 const format = require('./util/format');
 const log = require('./util/log')('OrderAPI');
 
@@ -79,6 +80,7 @@ async function executeOrder(orderId, paymentDetails, deliveryDetails) {
 
   let transaction;
   try {
+    await mapper.applyPosCodes(order);
     const result = await beecomm.executePushOrder(order, paymentDetails, pos);
     transaction = result.transaction;
   } catch (error) {

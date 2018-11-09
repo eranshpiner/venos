@@ -16,25 +16,23 @@ function buildMap(categories) {
     const result = {};
     for (cIndex in categories) {
         let category = categories[cIndex];
-        if (category.id != 38753) {
-            for (ciIndex in category.items) {
-                let item = category.items[ciIndex];
-                let sourceId;
-                let targetId;
-                for (key in item) {
-                    if (key.toLowerCase() == 'id') {
-                        sourceId = item[key];
-                    }
-                    if (key.toLowerCase() == 'poscode') {
-                        targetId = item[key];
-                    }
-                    if (targetId != null && sourceId != null) {
-                        break;
-                    }
+        for (ciIndex in category.items) {
+            let item = category.items[ciIndex];
+            let sourceId;
+            let targetId;
+            for (key in item) {
+                if (key.toLowerCase() == 'id') {
+                    sourceId = item[key];
                 }
-                if (targetId != null && targetId != "" && sourceId != null && sourceId != "") {
-                    result[sourceId] = targetId;
+                if (key.toLowerCase() == 'poscode') {
+                    targetId = item[key];
                 }
+                if (targetId != null && sourceId != null) {
+                    break;
+                }
+            }
+            if (targetId != null && targetId != "" && sourceId != null && sourceId != "") {
+                result[sourceId] = targetId;
             }
         }
     }

@@ -8,7 +8,9 @@ module.exports = ({bot, provider, customer}) => {
     (session, args, next) => {
       const context = session.userData;
       if (!context.deliveryInfo || !context.deliveryInfo.city || !context.deliveryInfo.street) {
-        session.beginDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.AUTO);
+        //session.beginDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.AUTO); // disabled location sharing
+        session.beginDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.MANUAL.ROOT);
+
       } else {
         next();
       }

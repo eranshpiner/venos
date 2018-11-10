@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@google/maps": "^0.4.6",
+    "aws-sdk": "^2.353.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "botbuilder": "^3.15.0",

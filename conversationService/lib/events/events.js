@@ -30,5 +30,5 @@ module.exports = {
   fireEvent,
 };
 
-s3.listObjectsV2({Prefix: 'event'}, console.log);
+// s3.listObjectsV2({Prefix: 'event'}, console.log);
 // s3.getObject({Key: 'event-1537784194977.json'}, (err, data) => console.log(data.Body.toString()));

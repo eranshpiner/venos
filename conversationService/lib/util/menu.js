@@ -1,5 +1,17 @@
 const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 
+function isOpenNow(customer) {
+  if (customer.openHours) {
+    const d = new Date();
+    const operatingHoursToday = customer.openHours[d.getDay()];
+    const from = operatingHoursToday.fromTime - (operatingHoursToday.day * 24 * 60);
+    const to = operatingHoursToday.toTime - (operatingHoursToday.day * 24 * 60);
+    const currentTimeInMinutes = (d.getHours() * 60) + d.getMinutes();
+    return from <= currentTimeInMinutes && to >= currentTimeInMinutes;
+  }
+  return true;
+}
+
 function getCategories({menu}, page = 1, perPage = 7) {
   -- page;
   return menu.items.slice(page * perPage, (page + 1) * perPage);
@@ -79,6 +91,8 @@ module.exports = {
   hasCustomizations,
   getCustomizationsCategory,
   getCustomizationsItem,
+
+  isOpenNow,
 
   NO_IMAGE,
 };

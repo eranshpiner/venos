@@ -3,8 +3,10 @@ const path = require('path');
 
 const providers = require('./../providers');
 const dialogs = require('./../dialogs');
+const menuUtils = require('./../util/menu');
 
 const FLOW = require('./../const/flows');
+const MESSAGES = require('./../const/messages');
 
 class Bot {
   constructor(conf, botId) {
@@ -59,6 +61,15 @@ class Bot {
     this.bot.beginDialogAction('checkoutResult', FLOW.CHECKOUT.RESULT.ROOT);
 
     this.bot.dialog(FLOW.BASE, [
+      (session, args, next) => {
+        const context = session.userData;
+        if (!menuUtils.isOpenNow(this.customer)) {
+          session.send(MESSAGES.CLOSED({context, customer: this.customer}));
+          session.endDialog();
+        } else {
+          next();
+        }
+      },
       (session) => {
         session.beginDialog(FLOW.WELCOME);
       },

@@ -1,3 +1,5 @@
+const textUtils = require('./../util/text');
+
 module.exports = {
   WELCOME: ({context, customer}) => ({
     elements: {
@@ -6,6 +8,9 @@ module.exports = {
       //subtitle : customer.desc90,
       subtitle : customer.desc90,
     },
+  }),
+  CLOSED: ({context, customer}) => ({
+    text: `המסעדה סגורה כעת.\nשעות הפעילות:\n${textUtils.sanitizeHtml(customer.openHoursMessage)}`,
   }),
   ORDER_DETAILS: {
     DELIVERY: {

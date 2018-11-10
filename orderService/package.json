@@ -10,6 +10,7 @@
   "author": "Eran Shpiner",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.353.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "card-validator": "^5.0.0",

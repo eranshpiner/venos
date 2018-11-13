@@ -1,12 +1,14 @@
+const moment = require('moment-timezone');
+
 const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 
 function isOpenNow(customer) {
   if (customer.openHours) {
-    const d = new Date();
-    const operatingHoursToday = customer.openHours[d.getDay()];
+    const d = moment().tz("Asia/Jerusalem");
+    const operatingHoursToday = customer.openHours[d.day()];
     const from = operatingHoursToday.fromTime - (operatingHoursToday.day * 24 * 60);
     const to = operatingHoursToday.toTime - (operatingHoursToday.day * 24 * 60);
-    const currentTimeInMinutes = (d.getHours() * 60) + d.getMinutes();
+    const currentTimeInMinutes = (d.hours() * 60) + d.minutes();
     return from <= currentTimeInMinutes && to >= currentTimeInMinutes;
   }
   return true;

@@ -130,6 +130,5 @@ async function executePushOrder(order, paymentDetails, pos) {
 }
 
 module.exports = {
-  executePushOrder,
-  retrieveToken
+  executePushOrder
 };

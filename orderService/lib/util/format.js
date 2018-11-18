@@ -96,7 +96,7 @@ function toOrderLogRecord(order, transaction, pos) {
   return {
     orderId: order.orderId,
     transactionId: transaction.id,
-    transactionCreationTime: transaction.creationTime,
+    transactionCreationTime: transaction.time,
     brandId: order.brandId,
     brandLocationId: order.brandLocationId,
     posVendorId: pos.posVendorId,

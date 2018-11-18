@@ -35,7 +35,7 @@ app.post('/api/order/:id/pay', async (req, res) => {
 
   try {
     const transaction = await orderApi.executeOrder(orderId, paymentDetails, deliveryDetails);
-    res.status(200).json({transaction});
+    res.status(200).json({transaction: {id: transaction.id, time: transaction.time, status: transaction.status}});
   } catch (error) {
     log.error(error);
     res.status(error.status || 500).json(error.message || { message: 'failed to execute order' });

@@ -11,7 +11,7 @@ const beecommOrderSchema = require('./beecommOrder.json');
 const providerConf = conf.get('providers:beecomm');
 const providerBaseUrl = `https://${providerConf.host}:${providerConf.port || 443}`;
 const tokenResource = `${providerBaseUrl}/v${providerConf.apiVersion}/oauth/token`;
-const orderCenterResource = `/api/v${providerConf.apiVersion}/services/orderCenter`;
+const orderCenterResource = `${providerBaseUrl}/api/v${providerConf.apiVersion}/services/orderCenter`;
 const pushOrderResource = orderCenterResource + '/pushOrder';
 
 // beecomm access token
@@ -89,44 +89,27 @@ async function executePushOrder(order, paymentDetails, pos) {
     throw new Error({code: 1, message: 'failure in transfromOrder'});
   }
 
-  // todo: for now we always say 'OK' and send the confirmation e-mail to '7739985@gmail.com' (seba)
-
-  
-
   let headers = {
       'Content-Type': 'application/json',
       'access_token': access_token
   };
 
-  let options = {
-      host: providerConf.host,
-      port: providerConf.port,
-      path: pushOrderResource,
-      method: 'POST',
-      headers: headers
-  };
-
-  let req = https.request(options, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-          console.log('pushed order to ' + pushOrderResource);
-          console.log('response: ' + chunk);
-          // callback(undefined, {code: res.statusCode, message: chunk});
-      });
-  });
-
-  req.write(JSON.stringify(target));
-  req.end();
-
-  return {
-    code: '200',
-    message: 'OK',
-    transaction: {
-      id: Date.now() + '',
-      creationTime: Date.now(),
-      status: 'OK',
+  const ocRes = await axios.post(pushOrderResource, target, {headers: headers});
+  
+  if (ocRes.status == 200) {
+    return {
+      code: '200',
+      message: 'OK',
+      transaction: {
+        id: ocRes.data.orderCenterId,
+        time: Date.now(),
+        status: ocRes.data.message,
+      }
     }
-  };
+  }
+
+  throw new Error({code: 3, message: 'failed to push order to "orderCenter"'});
+  
 }
 
 async function retrieveToken() {
@@ -135,7 +118,7 @@ async function retrieveToken() {
       client_id: providerConf.client_id,
       client_secret: providerConf.client_secret
     }));
-    return res.data;
+    return res.data.access_token;
   } catch (error) {
     log.error('Error retrieving token', error);
   }

@@ -1,5 +1,5 @@
 const axios = require('axios');
-const https = require('https');
+const schedule = require('node-schedule');
 const qs = require('querystring');
 
 const conf = require('../../../config/conf');
@@ -15,7 +15,24 @@ const orderCenterResource = `${providerBaseUrl}/api/v${providerConf.apiVersion}/
 const pushOrderResource = orderCenterResource + '/pushOrder';
 
 // beecomm access token
-const access_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NDI3NDUxODY5NDIsImNsaWVudCI6eyJfaWQiOiI1YWQ3MjUxYjBkZmJlMGEwOTAyOGU0ZjciLCJjbGllbnRfbmFtZSI6InZlbm9zIiwiaGViTmFtZSI6IteV16DXldehIiwidHlwZSI6ImRlbGl2ZXJ5IiwiaXNBY3RpdmUiOnRydWUsInJlZ2lzdHJhdGlvbkRhdGUiOiIxOC0wNC0yMDE4IDEzOjU5OjM5IiwibGV2ZWwiOjUsInJvbGUiOiJhcHAtY2xpZW50IiwiY2xpZW50X2lkIjoiUzFrR0NubTloa0tmaDBwbG9ua1ZCbUFMSnZ6R2NWVzFhMHFlOEJPMFBUZ1dUUDBnbWlUTjMwMFNtV3BadHpNeCIsImNsaWVudF9zZWNyZXQiOiI1RjZ6c2pVNkhOVlA2MXVxM1VERHpsM1RPQU9paFh6R3lCRVVqbU8wZGowc2lLMUxnQndQdjBjTWswZDJRTTlWIn19.aMqYlmgXEd8LmXwPSOG-ENB9c6Q1fxRbfs0l7tj6IN4';
+var access_token = 'NA';
+
+// schedule the renewal of the token from beecomm every day
+schedule.scheduleJob('0 0 */1 * *', function() {
+  axios.post(tokenResource, qs.stringify({
+    client_id: providerConf.client_id,
+    client_secret: providerConf.client_secret
+  })).then(function (res) {
+    if (res.status == 200) {
+      access_token = res.data.access_token;
+      log.info('A new token was retrieved successfully from beecomm');
+    } else {
+      log.error('Recieved an error from beecomm while retrieving a new token', error);
+    }
+  }).catch(function (error) {
+    log.error('Error while trying to retrieve a new token from beecomm', error);
+  });
+}).invoke();
 
 function transformOrder(source, pos) {
   // validate that source odrer json is according to the internal data-model
@@ -110,19 +127,6 @@ async function executePushOrder(order, paymentDetails, pos) {
 
   throw new Error({code: 3, message: 'failed to push order to "orderCenter"'});
   
-}
-
-async function retrieveToken() {
-  try {
-    const res = await axios.post(tokenResource, qs.stringify({
-      client_id: providerConf.client_id,
-      client_secret: providerConf.client_secret
-    }));
-    return res.data.access_token;
-  } catch (error) {
-    log.error('Error retrieving token', error);
-  }
-
 }
 
 module.exports = {

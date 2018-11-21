@@ -34,7 +34,7 @@ schedule.scheduleJob('0 0 */1 * *', function() {
   });
 }).invoke();
 
-function transformOrder(source, pos) {
+function transformOrder(source, paymentDetails, pos) {
   // validate that source odrer json is according to the internal data-model
   let result = validator.validateInternalOrder(source);
   if (!result) {
@@ -49,7 +49,7 @@ function transformOrder(source, pos) {
       dinners: 2,
       discountSum: 0.0,
       outerCompId: 63,
-      outerCompOrderId: 'venos102',
+      outerCompOrderId: source.orderId,
       arrivalTime: '',
       remarks: source.remarks,
       firstName: source.orderOwner.firstName,
@@ -61,13 +61,13 @@ function transformOrder(source, pos) {
         paymentSum: source.subTotal, 
       }],
       deliveryInfo: {
-        deliveryCost: 0,
+        deliveryCost: source.deliveryFee,
         deliveryRemarks: '',
-        city: '',
-        street: '',
-        homeNum: '',
-        apartment: '',
-        floor: '',
+        city: source.orderOwner.deliveryInfo.city,
+        street: source.orderOwner.deliveryInfo.street,
+        homeNum: source.orderOwner.deliveryInfo.houseNumber,
+        apartment: source.orderOwner.deliveryInfo.apartment,
+        floor: '${source.orderOwner.deliveryInfo.floor}',
         companyName: ''
       },
       items: [],
@@ -101,7 +101,7 @@ function transformOrder(source, pos) {
 
 
 async function executePushOrder(order, paymentDetails, pos) {
-  const target = transformOrder(order, pos);
+  const target = transformOrder(order, paymentDetails, pos);
   if (target === null) {
     throw new Error({code: 1, message: 'failure in transfromOrder'});
   }

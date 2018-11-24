@@ -16,7 +16,8 @@
       "providers": {
         "facebook": {
           "pageId": "2055256904743938",
-          "accessToken": "EAAXV0ZAN3aacBAGjPAKp0eYF1WMBhv9QSxDDZAqinktIZAjuX5b9RNC6rVVK3ewdSYyws1ho7bc5Gc5IDkKkD7sLkZA4um9Io0ezdfHmxBLC7FLs0SXhcXJLeU6HEqZCkcUTCXqF8eWCBy8efVk3uv8ZBr8BOXDPPgNyctK8a45ZCbIVSZAT12Yp"
+          "accessToken": "EAAXV0ZAN3aacBAFZBxMcUlI9Ho4tTKR5ZC85dutCpdAKgM7etHitfQVZBB1ZAbtus1cavEtfnaAZBzk6kbm06pMnAVtHXbw3uoTHJpiJKoyOo5Cb5rs92ket4NBaa08YlgKtm5nEwbCML5Ehlofz6PBPtFTQJMf1AI0jHtmKacsp71QCtsZBB7Y"
+
         }
       }
     },
@@ -59,7 +60,7 @@
           "accessToken": "EAAFC3vSt8BYBAAA20TiWXZBi74uJKlMCOPRCZA5kAXEEeGzevAc5sYpWLYaerqZAH6tvmQe83ZAFeRWs1yN4rg6ZCojy6WR0ZBB6lhhFLTo6M5f07JFVD0aO7A5zGLOnqoIr0dU3tzQvWq7wrqrSvormJGeennL5mZBsFecsxw1XSiHTalsg9zKDbaocZAxUs8gZD"
         }
       }
-    }    
-    
+    }
+
   }
 }

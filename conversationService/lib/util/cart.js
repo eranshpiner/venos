@@ -86,7 +86,7 @@ function getReceipt({customer, order, payment, transaction}) {
         quantity: item.quantity,
         price: item.price,
         currency: order.currency,
-        image_url: (menuItem && (menuItem.imageThumbnail || menuItem.image)).substring(2) || menuUtils.NO_IMAGE,
+        image_url: (menuItem && (menuItem.imageThumbnail || menuItem.image) || '').substring(2) || menuUtils.NO_IMAGE,
       };
     }),
   };

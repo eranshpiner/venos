@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `LOG` (
  CONSTRAINT `orderId` FOREIGN KEY (`orderId`) REFERENCES `ORDER` (`orderId`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into venosdb.POS values ('בן יהודה','6366','beecomm','58977cd2436ede4d0ebd7175');
+insert into venosdb.POS values ('ניני הא׳צי תל אביב','6366','beecomm','584d68cc3f87fb5f7e31ec76');
 
 
 

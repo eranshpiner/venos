@@ -14,4 +14,4 @@ Venos Project Repository
 - cd checkout-page && yarn serve
 - cd conversationService && yarn start --server:orderServiceDomain=DOMAIN_FROM_NGROK
 - cd orderService && yarn start --server:conversationServiceDomain=DOMAIN_FROM_NGROK
-- node dev.js --wh https://DOMAIN_FROM_NGROK (make sure accessToken and pageToken are yours)
+- node dev.js --wh https://DOMAIN_FROM_NGROK (make sure accessToken and pageToken are yours in dev.js)

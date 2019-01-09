@@ -2,6 +2,7 @@ module.exports = {
   baseUrl: './',
   outputDir: './../web/public/payment',
   devServer: {
+    publicPath: '/payment/',
     port: 8081,
     allowedHosts: [
       '.natiziv.com',

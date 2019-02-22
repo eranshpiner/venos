@@ -14,6 +14,9 @@ module.exports = ({bot, customer}) => {
       session.beginDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.MANUAL.STREET);
     },
     (session) => {
+      session.beginDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.MANUAL.HOUSE_NUMBER);
+    },
+    (session) => {
       session.endDialog();
     }
   ]);

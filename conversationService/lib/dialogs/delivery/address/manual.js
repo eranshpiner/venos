@@ -61,4 +61,27 @@ module.exports = ({bot, customer}) => {
         }
       })
   );
+
+  bot.dialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.MANUAL.HOUSE_NUMBER, [
+    (session) => {
+      const context = session.userData;
+      if (!context.deliveryInfo) {
+        session.replaceDialog(FLOWS.ORDER_DETAILS.DELIVERY.SHIPPING.ROOT);
+      } else if (!context.deliveryInfo.houseNumber) {
+        builder.Prompts.text(session, MESSAGES.ORDER_DETAILS.DELIVERY.SHIPPING.ADDRESS.MANUAL.HOUSE_NUMBER.ENTER_HOUSE_NUMBER({context, customer}));
+      } else {
+        session.endDialog();
+      }
+    },
+    (session, results) => {
+      if (!results.response) {
+        // TODO: handle misscommunication
+        session.endDialog();
+        return;
+      }
+      const context = session.userData;
+      context.deliveryInfo.houseNumber = results.houseNumber; // TODO: split to houseNumber, floor, entrance
+      session.endDialog();
+    }
+  ]);
 };

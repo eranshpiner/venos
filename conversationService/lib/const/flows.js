@@ -22,6 +22,7 @@ module.exports = {
             ROOT: '/delivery/shipping/address/manual',
             CITY: '/delivery/shipping/address/manual/city',
             STREET: '/delivery/shipping/address/manual/street',
+            HOUSE_NUMBER: '/delivery/shipping/address/manual/houseNumber',
           },
           FLOOR_APT_ENT: '/delivery/shipping/address/floor-apt-ent'
         },

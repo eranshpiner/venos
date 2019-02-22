@@ -68,7 +68,11 @@ module.exports = {
                 text: 'מצאנו מספר רחובות, אנא בחר מהרחובות הבאים',
                 quickReplies: streets,
               }),
-
+            },
+            HOUSE_NUMBER: {
+              ENTER_HOUSE_NUMBER: ({context}) => ({
+                text: 'נא הכנס את מספר הבית',
+              }),
             }
           },
           FLOOR_APT_ENT: ({context}) => ({

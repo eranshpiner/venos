@@ -67,7 +67,7 @@ function transformOrder(source, paymentDetails, pos) {
         street: source.orderOwner.deliveryInfo.street,
         homeNum: source.orderOwner.deliveryInfo.houseNumber,
         apartment: source.orderOwner.deliveryInfo.apartment,
-        floor: '${source.orderOwner.deliveryInfo.floor}',
+        floor: source.orderOwner.deliveryInfo.floor,
         companyName: ''
       },
       items: [],
@@ -96,6 +96,7 @@ function transformOrder(source, paymentDetails, pos) {
     return null;
   }
 
+  log.info(`beecomm:transformOrder: ${JSON.stringify(target)}`);
   return target;
 }
 

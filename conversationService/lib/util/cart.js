@@ -148,7 +148,7 @@ function getPaymentURL({botId, customer, provider, context: {cart = [], delivery
     orderOwner: {
       firstName: userDetails.first_name,
       lastName: userDetails.last_name,
-      phone: userDetails.phone || '052-TOD0000', // TODO: should be collected on checkout page
+      phone: userDetails.phone || 'N/A', // TODO: should be collected on checkout page
       email: userDetails.email || 'noemail@mail.com', // TODO: should be collected on checkout page
       deliveryInfo: {
         city: deliveryInfo.city,

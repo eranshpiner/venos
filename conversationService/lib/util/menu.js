@@ -3,6 +3,7 @@ const moment = require('moment-timezone');
 const NO_IMAGE = 'https://afs.googleusercontent.com/gumtree-com/noimage_thumbnail_120x92_v2.png';
 
 function isOpenNow(customer) {
+  return true; // TODO: seba remove.
   if (customer.openHours) {
     const d = moment().tz("Asia/Jerusalem");
     const operatingHoursToday = customer.openHours[d.day()];
